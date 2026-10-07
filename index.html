@@ -322,7 +322,52 @@
     .date-number { display: block; font-size: 15px; margin-bottom: 4px; }
     .weekday { display: block; color: var(--muted); font-size: 11px; font-weight: normal; }
     .weekend { background: var(--weekend); }
-    .today { outline: 2px solid var(--primary); outline-offset: -2px; }
+
+    .today {
+      outline: 2px solid var(--primary);
+      outline-offset: -2px;
+    }
+
+    /* Голубая подсветка всей колонки текущего дня */
+    th.today-column {
+      background: #dbeafe !important;
+      color: var(--primary-dark);
+    }
+
+    td.today-column {
+      background: #dbeafe;
+    }
+
+    td.today-column .attendance-button {
+      background: #ffffff;
+      border: 1px solid #93c5fd;
+    }
+
+    td.today-column .attendance-button.absent {
+      background: var(--absent);
+      border: 2px solid var(--absent-border);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      th.today-column {
+        background: #1e3a5f !important;
+        color: #93c5fd;
+      }
+
+      td.today-column {
+        background: #1e3a5f;
+      }
+
+      td.today-column .attendance-button {
+        background: #0f172a;
+        border: 1px solid #3b82f6;
+      }
+
+      td.today-column .attendance-button.absent {
+        background: var(--absent);
+        border: 2px solid var(--absent-border);
+      }
+    }
 
     .attendance-button {
       width: 36px;
@@ -378,6 +423,22 @@
       background: var(--absent);
       border: 2px solid var(--absent-border);
       flex-shrink: 0;
+    }
+
+    .legend-box-today {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: #dbeafe;
+      border: 1px solid #93c5fd;
+      flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .legend-box-today {
+        background: #1e3a5f;
+        border: 1px solid #3b82f6;
+      }
     }
 
     .toast {
@@ -513,6 +574,7 @@
 
       <div class="legend">
         <div class="legend-item"><span class="legend-box"></span><span>Ученик отсутствует</span></div>
+        <div class="legend-item"><span class="legend-box-today"></span><span>Текущий день</span></div>
         <div class="legend-item"><span>Нажмите на ячейку, чтобы изменить статус</span></div>
       </div>
     </section>
@@ -892,7 +954,6 @@
       if (!ls) {
         byId[rs.id] = rs;
       } else {
-        // При равенстве updatedAt предпочитаем local
         if ((rs.updatedAt || 0) > (ls.updatedAt || 0)) {
           byId[rs.id] = rs;
         }
@@ -919,7 +980,6 @@
       var lTime = Number(le.updatedAt) || 0;
       var rTime = Number(re.updatedAt) || 0;
 
-      // При равенстве предпочитаем local
       if (rTime > lTime) result[k] = re;
       else result[k] = le;
     });
@@ -971,7 +1031,6 @@
 
     var startRevision = state.revision;
 
-    // Чистим старые tombstones перед merge
     state.students = pruneTombstones(state.students);
 
     var localSnapshot = {
@@ -994,8 +1053,6 @@
             "students=" + merged.students.length,
             "attendance=" + Object.keys(merged.attendance).length);
 
-        // Проверяем: если во время fetch пользователь что-то изменил,
-        // применяем merged к актуальному local (а не к снимку)
         if (state.revision !== startRevision) {
           log("sync: local изменён во время fetch — сливаю повторно");
           var merged2 = mergeData({
@@ -1032,7 +1089,6 @@
 
         if (reason === "manual") showToast("Синхронизация выполнена", "success");
 
-        // Если во время синхронизации пришли новые изменения — повторяем
         if (pendingSync || state.revision !== startRevision) {
           pendingSync = false;
           log("sync: есть pending — запускаю ещё раз");
@@ -1240,7 +1296,10 @@
     days.forEach(function (day) {
       var h = document.createElement("th");
       if (isWeekend(day)) h.classList.add("weekend");
-      if (isToday(day)) h.classList.add("today");
+      if (isToday(day)) {
+        h.classList.add("today");
+        h.classList.add("today-column");
+      }
 
       var dn = document.createElement("span");
       dn.className = "date-number";
@@ -1311,6 +1370,7 @@
         var absent = entry && entry.absent;
 
         if (isWeekend(day)) cell.classList.add("weekend");
+        if (isToday(day)) cell.classList.add("today-column");
 
         var btn = document.createElement("button");
         btn.type = "button";
@@ -1324,7 +1384,6 @@
           btn.title = "Присутствует. Нажмите, чтобы отметить отсутствие.";
         }
 
-        // Индикатор несохранённого изменения
         if (state.revision > state.lastSyncedRevision && syncConfig.enabled) {
           btn.classList.add("pending");
         }
@@ -1482,7 +1541,6 @@
     dom.searchInput.focus();
   });
 
-  // Sync UI
   dom.toggleSyncConfigButton.addEventListener("click", function () {
     dom.syncConfig.classList.toggle("open");
     if (dom.syncConfig.classList.contains("open")) {
@@ -1594,10 +1652,6 @@
     }
   });
 
-  /* ============================================================
-     Горячие клавиши
-     ============================================================ */
-
   document.addEventListener("keydown", function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === "f") {
       e.preventDefault();
@@ -1611,10 +1665,6 @@
       dom.searchInput.blur();
     }
   });
-
-  /* ============================================================
-     Сетевые события
-     ============================================================ */
 
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") {
@@ -1659,4 +1709,4 @@
   }
   </script>
 </body>
-</html>
+            </html>
