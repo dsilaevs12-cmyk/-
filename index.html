@@ -146,7 +146,6 @@
     .search-block input[type="search"] { flex: 1; min-width: 200px; max-width: 420px; }
     .search-results-info { color: var(--muted); font-size: 13px; margin-left: auto; }
 
-    /* Синхронизация */
     .sync-panel {
       background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
       border: 1px solid #bfdbfe;
@@ -164,11 +163,7 @@
       flex-wrap: wrap;
     }
 
-    .sync-header h2 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 700;
-    }
+    .sync-header h2 { margin: 0; font-size: 16px; font-weight: 700; }
 
     .sync-status {
       display: inline-flex;
@@ -227,6 +222,7 @@
     }
 
     .help-text a { color: var(--primary); }
+    .help-text code { background: rgba(0, 0, 0, 0.06); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
 
     .sync-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
@@ -398,7 +394,6 @@
     <h1>Электронный дневник посещаемости</h1>
     <p class="subtitle">Отмечайте только тех учеников, которые отсутствуют.</p>
 
-    <!-- Панель синхронизации -->
     <section class="panel sync-panel">
       <div class="sync-header">
         <h2>☁️ Синхронизация через GitHub</h2>
@@ -414,45 +409,28 @@
       </p>
 
       <div class="sync-actions">
-        <button id="toggleSyncConfigButton" class="secondary" type="button">
-          ⚙️ Настроить
-        </button>
-        <button id="syncNowButton" class="success" type="button" disabled>
-          🔄 Синхронизировать сейчас
-        </button>
+        <button id="toggleSyncConfigButton" class="secondary" type="button">⚙️ Настроить</button>
+        <button id="syncNowButton" class="success" type="button" disabled>🔄 Синхронизировать сейчас</button>
       </div>
 
       <div id="syncConfig" class="sync-config">
         <div class="field-group">
           <label for="githubToken">GitHub Token (Personal Access Token)</label>
-          <input
-            id="githubToken"
-            type="password"
-            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-            autocomplete="off"
-            spellcheck="false"
-          />
+          <input id="githubToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false" />
           <p class="help-text">
             Создайте токен на
-            <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">
-              github.com/settings/tokens/new
-            </a>
+            <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">github.com/settings/tokens/new</a>
             с правами <strong>gist</strong>. Токен хранится только в вашем браузере.
           </p>
         </div>
 
         <div class="field-group">
           <label for="gistId">ID Gist</label>
-          <input
-            id="gistId"
-            type="text"
-            placeholder="abc123def456..."
-            autocomplete="off"
-            spellcheck="false"
-          />
+          <input id="gistId" type="text" placeholder="abc123def456..." autocomplete="off" spellcheck="false" />
           <p class="help-text">
             Создайте <a href="https://gist.github.com/" target="_blank" rel="noopener">новый Gist</a>
-            с файлом <code>attendance.json</code>. ID — последняя часть URL гиста.
+            с файлом <code>attendance.json</code> и содержимым <code>{}</code>.
+            ID — последняя часть URL гиста.
           </p>
         </div>
 
@@ -511,15 +489,21 @@
   var STORAGE_KEY = "attendance_diary_data";
   var SYNC_CONFIG_KEY = "attendance_sync_config";
   var GIST_FILENAME = "attendance.json";
-  var SYNC_DEBOUNCE_MS = 2000; // автосинхронизация через 2 сек после изменения
+  var SYNC_DEBOUNCE_MS = 1500;
+  var TOMBSTONE_TTL_MS = 1000 * 60 * 60 * 24 * 90; // 90 дней
 
   /* ============================================================
      Состояние
+     ------------------------------------------------------------
+     Схема данных (v2):
+       student: { id, name, updatedAt, deleted }
+       attendance[key]: { absent: bool, updatedAt }
+       key = studentId + "_" + YYYY-MM-DD
      ============================================================ */
 
   var state = {
-    students: [],
-    attendance: {},
+    students: [],     // массив с tombstones (deleted: true)
+    attendance: {},   // объект, значения — { absent, updatedAt }
     selectedMonth: getMonthString(new Date()),
     searchQuery: ""
   };
@@ -529,7 +513,8 @@
     token: "",
     gistId: "",
     lastSync: 0,
-    lastSyncStatus: "off" // off | ok | error | busy
+    lastSyncStatus: "off",
+    lastError: ""
   };
 
   var syncTimer = null;
@@ -555,7 +540,6 @@
     searchResultsInfo: document.getElementById("searchResultsInfo"),
     noSearchResults: document.getElementById("noSearchResults"),
     toast: document.getElementById("toast"),
-    // Синхронизация
     syncStatus: document.getElementById("syncStatus"),
     syncStatusText: document.getElementById("syncStatusText"),
     toggleSyncConfigButton: document.getElementById("toggleSyncConfigButton"),
@@ -567,10 +551,6 @@
     disableSyncButton: document.getElementById("disableSyncButton"),
     syncNowButton: document.getElementById("syncNowButton")
   };
-
-  /* ============================================================
-     Справочники
-     ============================================================ */
 
   var monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
   var weekdayNames = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
@@ -606,7 +586,7 @@
     dom.toast.textContent = msg;
     dom.toast.className = "toast show" + (type ? " " + type : "");
     if (showToast._t) clearTimeout(showToast._t);
-    showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 2600);
+    showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 2800);
   }
 
   function getStorage() {
@@ -620,14 +600,55 @@
   var storage = getStorage();
 
   /* ============================================================
-     Локальное сохранение
+     Миграция из v1 в v2
+     ============================================================ */
+
+  function migrateV1toV2(data) {
+    var result = { students: [], attendance: {} };
+
+    // Студенты
+    if (Array.isArray(data.students)) {
+      data.students.forEach(function (s) {
+        if (s && typeof s.id === "string" && typeof s.name === "string") {
+          result.students.push({
+            id: s.id,
+            name: s.name,
+            updatedAt: Number(s.updatedAt) || 0,
+            deleted: Boolean(s.deleted)
+          });
+        }
+      });
+    }
+
+    // Посещаемость: старый формат { key: true } → { key: { absent, updatedAt } }
+    if (data.attendance && typeof data.attendance === "object" && !Array.isArray(data.attendance)) {
+      Object.keys(data.attendance).forEach(function (k) {
+        var v = data.attendance[k];
+        if (v === true) {
+          result.attendance[k] = { absent: true, updatedAt: 0 };
+        } else if (v === false) {
+          result.attendance[k] = { absent: false, updatedAt: 0 };
+        } else if (v && typeof v === "object") {
+          result.attendance[k] = {
+            absent: Boolean(v.absent),
+            updatedAt: Number(v.updatedAt) || 0
+          };
+        }
+      });
+    }
+
+    return result;
+  }
+
+  /* ============================================================
+     Локальное хранилище
      ============================================================ */
 
   function saveLocal() {
     if (!storage) return;
     try {
       storage.setItem(STORAGE_KEY, JSON.stringify({
-        version: 1,
+        version: 2,
         students: state.students,
         attendance: state.attendance,
         updatedAt: Date.now()
@@ -639,12 +660,12 @@
     if (!storage) return;
     var raw = storage.getItem(STORAGE_KEY);
     if (!raw) return;
+
     try {
       var p = JSON.parse(raw);
-      state.students = Array.isArray(p.students) ? p.students.filter(function (s) {
-        return s && typeof s.id === "string" && typeof s.name === "string";
-      }) : [];
-      state.attendance = (p.attendance && typeof p.attendance === "object" && !Array.isArray(p.attendance)) ? p.attendance : {};
+      var v2 = migrateV1toV2(p);
+      state.students = v2.students;
+      state.attendance = v2.attendance;
     } catch (e) { console.error(e); }
   }
 
@@ -689,18 +710,35 @@
     };
   }
 
+  function describeGithubError(status, errMsg) {
+    if (status === 401) return "Неверный токен (401)";
+    if (status === 403) return "Нет прав gist или лимит (403)";
+    if (status === 404) return "Gist не найден (404)";
+    if (status === 422) return "Ошибка данных (422)";
+    return "GitHub " + status + (errMsg ? ": " + errMsg : "");
+  }
+
   function setSyncStatus(status, text) {
     syncConfig.lastSyncStatus = status;
     dom.syncStatus.className = "sync-status " + status;
     dom.syncStatusText.textContent = text;
+    if (syncConfig.lastError) {
+      dom.syncStatus.title = "Последняя ошибка: " + syncConfig.lastError;
+    } else {
+      dom.syncStatus.removeAttribute("title");
+    }
   }
 
   function updateSyncUI() {
     if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
       var when = syncConfig.lastSync
-        ? new Date(syncConfig.lastSync).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+        ? new Date(syncConfig.lastSync).toLocaleString("ru-RU", {
+            day: "2-digit", month: "2-digit",
+            hour: "2-digit", minute: "2-digit"
+          })
         : "ещё не было";
-      setSyncStatus(syncConfig.lastSyncStatus === "error" ? "error" : "on", "Синхр.: " + when);
+      var st = syncConfig.lastSyncStatus === "error" ? "error" : "on";
+      setSyncStatus(st, "Синхр.: " + when);
       dom.syncNowButton.disabled = false;
     } else {
       setSyncStatus("off", "Не настроена");
@@ -708,7 +746,6 @@
     }
   }
 
-  // Загрузка данных из Gist
   function fetchFromGist() {
     return fetch("https://api.github.com/gists/" + syncConfig.gistId, {
       method: "GET",
@@ -717,33 +754,28 @@
     }).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (err) {
-          throw new Error("GitHub " + r.status + ": " + (err.message || "ошибка"));
+          throw new Error(describeGithubError(r.status, err.message));
         });
       }
       return r.json();
     }).then(function (gist) {
       var file = gist.files && gist.files[GIST_FILENAME];
       if (!file) {
-        // Файла нет — создадим пустой
-        return { students: [], attendance: {} };
+        return { version: 2, students: [], attendance: {} };
       }
-      // Если контент обрезан (truncated), тянем raw_url
       if (file.truncated && file.raw_url) {
-        return fetch(file.raw_url, { cache: "no-store" }).then(function (r) { return r.json(); });
+        return fetch(file.raw_url, { cache: "no-store" })
+          .then(function (r) { return r.json(); })
+          .catch(function () { return { version: 2, students: [], attendance: {} }; });
       }
       try { return JSON.parse(file.content); }
-      catch (e) { return { students: [], attendance: {} }; }
+      catch (e) { return { version: 2, students: [], attendance: {} }; }
     });
   }
 
-  // Отправка данных в Gist
   function pushToGist(data) {
-    var body = {
-      files: {}
-    };
-    body.files[GIST_FILENAME] = {
-      content: JSON.stringify(data, null, 2)
-    };
+    var body = { files: {} };
+    body.files[GIST_FILENAME] = { content: JSON.stringify(data, null, 2) };
 
     return fetch("https://api.github.com/gists/" + syncConfig.gistId, {
       method: "PATCH",
@@ -752,7 +784,7 @@
     }).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (err) {
-          throw new Error("GitHub " + r.status + ": " + (err.message || "ошибка"));
+          throw new Error(describeGithubError(r.status, err.message));
         });
       }
       return r.json();
@@ -760,66 +792,126 @@
   }
 
   /* ============================================================
-     Логика синхронизации
+     Last-Write-Wins merge
+     ------------------------------------------------------------
+     Для каждого элемента берём версию с большим updatedAt.
+     Удаления обрабатываются через tombstones (deleted: true).
      ============================================================ */
 
-  function mergeData(remote) {
-    // Простое слияние: берём union по students (по id),
-    // attendance — union (если хоть где-то true — true)
-    var localById = {};
-    state.students.forEach(function (s) { localById[s.id] = s; });
+  function mergeStudents(local, remote) {
+    var byId = {};
 
-    var merged = state.students.slice();
-    var remoteStudents = Array.isArray(remote.students) ? remote.students : [];
+    local.forEach(function (s) {
+      if (!s || !s.id) return;
+      byId[s.id] = s;
+    });
 
-    remoteStudents.forEach(function (s) {
-      if (s && typeof s.id === "string" && typeof s.name === "string" && !localById[s.id]) {
-        merged.push(s);
-        localById[s.id] = s;
+    remote.forEach(function (rs) {
+      if (!rs || !rs.id) return;
+      var ls = byId[rs.id];
+      if (!ls) {
+        byId[rs.id] = rs;
+      } else if ((rs.updatedAt || 0) > (ls.updatedAt || 0)) {
+        byId[rs.id] = rs;
       }
     });
 
-    var mergedAttendance = {};
-    Object.keys(state.attendance).forEach(function (k) {
-      if (state.attendance[k]) mergedAttendance[k] = true;
-    });
-    var remoteAtt = (remote.attendance && typeof remote.attendance === "object") ? remote.attendance : {};
-    Object.keys(remoteAtt).forEach(function (k) {
-      if (remoteAtt[k]) mergedAttendance[k] = true;
+    return Object.keys(byId).map(function (id) { return byId[id]; });
+  }
+
+  function mergeAttendance(local, remote) {
+    var result = {};
+    var allKeys = {};
+
+    Object.keys(local).forEach(function (k) { allKeys[k] = true; });
+    Object.keys(remote).forEach(function (k) { allKeys[k] = true; });
+
+    Object.keys(allKeys).forEach(function (k) {
+      var le = local[k];
+      var re = remote[k];
+
+      if (!le) { result[k] = re; return; }
+      if (!re) { result[k] = le; return; }
+
+      var lTime = Number(le.updatedAt) || 0;
+      var rTime = Number(re.updatedAt) || 0;
+
+      if (rTime > lTime) result[k] = re;
+      else result[k] = le;
     });
 
-    return { students: merged, attendance: mergedAttendance };
+    return result;
   }
+
+  function mergeData(localData, remoteData) {
+    var merged = {
+      version: 2,
+      students: mergeStudents(localData.students || [], remoteData.students || []),
+      attendance: mergeAttendance(localData.attendance || {}, remoteData.attendance || {}),
+      updatedAt: Date.now()
+    };
+    return merged;
+  }
+
+  /* ============================================================
+     Очистка старых tombstones (> 90 дней)
+     ============================================================ */
+
+  function pruneTombstones(students) {
+    var cutoff = Date.now() - TOMBSTONE_TTL_MS;
+    return students.filter(function (s) {
+      if (!s.deleted) return true;
+      return (s.updatedAt || 0) > cutoff;
+    });
+  }
+
+  /* ============================================================
+     Синхронизация — оркестрация
+     ============================================================ */
 
   function syncNow(reason) {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
     if (isSyncing) return;
+    if (!navigator.onLine) {
+      setSyncStatus("off", "Нет сети");
+      return;
+    }
 
     isSyncing = true;
+    syncConfig.lastError = "";
     setSyncStatus("busy", "Синхронизация...");
     dom.syncNowButton.disabled = true;
 
-    // Сначала получаем удалённые данные
+    // Чистим локальные tombstones от старых
+    state.students = pruneTombstones(state.students);
+
+    var localData = {
+      version: 2,
+      students: state.students,
+      attendance: state.attendance
+    };
+
     fetchFromGist()
-      .then(function (remote) {
-        var merged = mergeData(remote);
+      .then(function (remoteRaw) {
+        var remoteData = migrateV1toV2(remoteRaw);
+        var merged = mergeData(localData, remoteData);
+
         state.students = merged.students;
         state.attendance = merged.attendance;
         saveLocal();
         render();
 
-        // Затем отправляем объединённые данные обратно
-        var payload = {
-          version: 1,
+        return pushToGist({
+          version: 2,
           students: state.students,
           attendance: state.attendance,
           updatedAt: Date.now()
-        };
-        return pushToGist(payload);
+        });
       })
       .then(function () {
         syncConfig.lastSync = Date.now();
         syncConfig.lastSyncStatus = "ok";
+        syncConfig.lastError = "";
         saveSyncConfig();
         isSyncing = false;
         updateSyncUI();
@@ -828,24 +920,35 @@
       .catch(function (err) {
         console.error("Sync error:", err);
         syncConfig.lastSyncStatus = "error";
+        syncConfig.lastError = err.message || String(err);
         isSyncing = false;
         updateSyncUI();
-        showToast("Ошибка синхронизации: " + err.message, "error");
+        if (reason === "manual") {
+          showToast("Ошибка: " + syncConfig.lastError, "error");
+        }
       });
   }
 
-  // Автосинхронизация с debounce
   function scheduleSync() {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
     if (syncTimer) clearTimeout(syncTimer);
-    syncTimer = setTimeout(function () {
-      syncNow("auto");
-    }, SYNC_DEBOUNCE_MS);
+    syncTimer = setTimeout(function () { syncNow("auto"); }, SYNC_DEBOUNCE_MS);
   }
 
   /* ============================================================
      Действия с учениками
      ============================================================ */
+
+  function findStudentIndex(id) {
+    for (var i = 0; i < state.students.length; i++) {
+      if (state.students[i].id === id) return i;
+    }
+    return -1;
+  }
+
+  function getVisibleStudents() {
+    return state.students.filter(function (s) { return !s.deleted; });
+  }
 
   function addStudent() {
     var name = dom.studentNameInput.value.trim();
@@ -854,7 +957,12 @@
       dom.studentNameInput.focus();
       return;
     }
-    state.students.push({ id: generateId(), name: name });
+    state.students.push({
+      id: generateId(),
+      name: name,
+      updatedAt: Date.now(),
+      deleted: false
+    });
     dom.studentNameInput.value = "";
     saveLocal();
     render();
@@ -864,28 +972,48 @@
   }
 
   function removeStudent(studentId) {
-    var student = null;
-    for (var i = 0; i < state.students.length; i++) {
-      if (state.students[i].id === studentId) { student = state.students[i]; break; }
-    }
-    if (!student) return;
+    var idx = findStudentIndex(studentId);
+    if (idx < 0) return;
+    var student = state.students[idx];
+    if (student.deleted) return;
+
     if (!window.confirm('Удалить ученика «' + student.name + '»?\nВсе отметки также будут удалены.')) return;
 
-    state.students = state.students.filter(function (s) { return s.id !== studentId; });
+    // Tombstone — оставляем запись с deleted: true и свежим updatedAt
+    state.students[idx] = {
+      id: student.id,
+      name: student.name,
+      updatedAt: Date.now(),
+      deleted: true
+    };
+
+    // Мягкая очистка отметок: ставим updatedAt, absent = false
+    // (не удаляем сразу, чтобы sync мог распространить «снятие»)
     var prefix = studentId + "_";
+    var now = Date.now();
     Object.keys(state.attendance).forEach(function (k) {
-      if (k.indexOf(prefix) === 0) delete state.attendance[k];
+      if (k.indexOf(prefix) === 0) {
+        state.attendance[k] = { absent: false, updatedAt: now };
+      }
     });
+
     saveLocal();
     render();
     scheduleSync();
-    showToast("Ученик удалён");
+    showToast("Ученик удалён", "success");
   }
 
   function toggleAbsence(studentId, dateKey) {
     var key = studentId + "_" + dateKey;
-    if (state.attendance[key]) delete state.attendance[key];
-    else state.attendance[key] = true;
+    var current = state.attendance[key];
+    var currentlyAbsent = current && current.absent;
+
+    // Переключаем: absent → present или present → absent
+    state.attendance[key] = {
+      absent: !currentlyAbsent,
+      updatedAt: Date.now()
+    };
+
     saveLocal();
     render();
     scheduleSync();
@@ -903,9 +1031,10 @@
      ============================================================ */
 
   function getFilteredStudents() {
+    var visible = getVisibleStudents();
     var q = state.searchQuery.trim().toLowerCase();
-    if (!q) return state.students;
-    return state.students.filter(function (s) {
+    if (!q) return visible;
+    return visible.filter(function (s) {
       return s.name.toLowerCase().indexOf(q) !== -1;
     });
   }
@@ -952,8 +1081,9 @@
 
   function renderBody(days) {
     var filtered = getFilteredStudents();
+    var visible = getVisibleStudents();
 
-    if (state.students.length === 0) {
+    if (visible.length === 0) {
       dom.emptyMessage.style.display = "block";
       dom.noSearchResults.style.display = "none";
       dom.tableBody.innerHTML = "";
@@ -971,7 +1101,7 @@
     var frag = document.createDocumentFragment();
 
     filtered.forEach(function (student) {
-      var idx = state.students.indexOf(student);
+      var idx = visible.indexOf(student);
       var row = document.createElement("tr");
 
       var nameCell = document.createElement("td");
@@ -992,7 +1122,8 @@
         var cell = document.createElement("td");
         var dk = formatDateKey(day);
         var ak = student.id + "_" + dk;
-        var absent = Boolean(state.attendance[ak]);
+        var entry = state.attendance[ak];
+        var absent = entry && entry.absent;
 
         if (isWeekend(day)) cell.classList.add("weekend");
 
@@ -1002,14 +1133,14 @@
         if (absent) {
           btn.classList.add("absent");
           btn.textContent = "Н";
-          btn.title = "Отсутствует";
+          btn.title = "Отсутствует. Нажмите, чтобы снять отметку.";
         } else {
           btn.textContent = "—";
-          btn.title = "Присутствует";
+          btn.title = "Присутствует. Нажмите, чтобы отметить отсутствие.";
         }
 
-        (function (sid, d) {
-          btn.addEventListener("click", function () { toggleAbsence(sid, d); });
+        (function (sid, dk) {
+          btn.addEventListener("click", function () { toggleAbsence(sid, dk); });
         })(student.id, dk);
 
         cell.appendChild(btn);
@@ -1036,7 +1167,7 @@
 
   function renderSearchInfo() {
     var q = state.searchQuery.trim();
-    var total = state.students.length;
+    var total = getVisibleStudents().length;
     var filtered = getFilteredStudents().length;
 
     if (!q) {
@@ -1061,7 +1192,7 @@
   }
 
   /* ============================================================
-     Обработчики событий
+     Обработчики
      ============================================================ */
 
   dom.addStudentButton.addEventListener("click", addStudent);
@@ -1109,6 +1240,10 @@
     var token = dom.githubToken.value.trim();
     var gistId = dom.gistId.value.trim();
 
+    // Поддержка случая, когда пользователь вставил полную ссылку
+    var m = gistId.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]+)/i);
+    if (m) gistId = m[1];
+
     if (!token || !gistId) {
       showToast("Заполните оба поля", "warning");
       return;
@@ -1118,18 +1253,21 @@
     syncConfig.gistId = gistId;
     syncConfig.enabled = true;
     syncConfig.lastSyncStatus = "off";
+    syncConfig.lastError = "";
     saveSyncConfig();
     updateSyncUI();
     dom.syncConfig.classList.remove("open");
     showToast("Настройки сохранены. Синхронизация...", "success");
-
-    // Первая синхронизация
     syncNow("manual");
   });
 
   dom.testConnectionButton.addEventListener("click", function () {
     var token = dom.githubToken.value.trim();
     var gistId = dom.gistId.value.trim();
+
+    var m = gistId.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]+)/i);
+    if (m) gistId = m[1];
+
     if (!token || !gistId) { showToast("Заполните оба поля", "warning"); return; }
 
     var prevToken = syncConfig.token;
@@ -1147,7 +1285,7 @@
         setSyncStatus("ok", "Связь есть");
       } else {
         return r.json().catch(function () { return {}; }).then(function (e) {
-          throw new Error(r.status + " " + (e.message || ""));
+          throw new Error(describeGithubError(r.status, e.message));
         });
       }
     }).catch(function (err) {
@@ -1166,6 +1304,7 @@
     syncConfig.gistId = "";
     syncConfig.lastSync = 0;
     syncConfig.lastSyncStatus = "off";
+    syncConfig.lastError = "";
     saveSyncConfig();
     updateSyncUI();
     dom.githubToken.value = "";
@@ -1174,9 +1313,7 @@
     showToast("Синхронизация отключена");
   });
 
-  dom.syncNowButton.addEventListener("click", function () {
-    syncNow("manual");
-  });
+  dom.syncNowButton.addEventListener("click", function () { syncNow("manual"); });
 
   /* ============================================================
      Горячие клавиши
@@ -1197,12 +1334,11 @@
   });
 
   /* ============================================================
-     Автосинхронизация при возврате на страницу
+     Сетевые события
      ============================================================ */
 
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") {
-      // Если страница снова активна и прошло больше 30 секунд с последней синхронизации
       if (syncConfig.enabled && Date.now() - syncConfig.lastSync > 30000) {
         syncNow("auto");
       }
@@ -1210,7 +1346,10 @@
   });
 
   window.addEventListener("online", function () {
-    if (syncConfig.enabled) syncNow("auto");
+    if (syncConfig.enabled) {
+      showToast("Сеть восстановлена. Синхронизация...", "success");
+      syncNow("auto");
+    }
   });
 
   window.addEventListener("beforeunload", function () { saveLocal(); });
@@ -1226,7 +1365,6 @@
     updateSyncUI();
     render();
 
-    // При старте — подтянуть свежие данные с GitHub
     if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
       setTimeout(function () { syncNow("auto"); }, 500);
     }
@@ -1239,4 +1377,4 @@
   }
   </script>
 </body>
-</html>
+  </html>
