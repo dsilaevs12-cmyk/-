@@ -38,7 +38,7 @@
         --weekend: #1e293b;
         --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
       }
-      input[type="text"], input[type="month"], input[type="search"], input[type="password"] {
+      input[type="text"], input[type="month"], input[type="search"], input[type="password"], textarea {
         background: #0f172a !important;
         color: var(--text);
       }
@@ -49,6 +49,8 @@
       button.secondary { background: #334155; color: var(--text); }
       button.secondary:hover { background: #475569; }
       .debug-pre { background: #0f172a !important; color: #cbd5e1 !important; }
+      .modal-content { background: #1e293b; color: var(--text); }
+      .pin-value { background: #0f172a !important; color: #93c5fd !important; }
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -87,7 +89,7 @@
 
     .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
-    input, button, select { font: inherit; -webkit-appearance: none; appearance: none; }
+    input, button, select, textarea { font: inherit; -webkit-appearance: none; appearance: none; }
 
     input[type="text"], input[type="month"], input[type="search"], input[type="password"] {
       min-height: 42px;
@@ -101,7 +103,22 @@
       width: 100%;
     }
 
-    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+    textarea {
+      min-height: 72px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      outline: none;
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+      resize: vertical;
+      width: 100%;
+      word-break: break-all;
+    }
+
+    input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
     input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
 
     button {
@@ -254,6 +271,143 @@
       margin-top: 8px;
     }
 
+    /* ============================================================
+       Модальные окна
+       ============================================================ */
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      z-index: 2000;
+      padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 22px;
+      max-width: 540px;
+      width: 100%;
+      margin-top: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+    }
+
+    .modal-content h3 {
+      margin: 0 0 12px;
+      font-size: 19px;
+      word-wrap: break-word;
+    }
+
+    .modal-content p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .pin-display {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border: 1px solid #93c5fd;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 12px 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .pin-display {
+        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        border-color: #3b82f6;
+      }
+    }
+
+    .pin-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .pin-value {
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 6px;
+      color: var(--primary-dark);
+      background: #ffffff;
+      padding: 4px 12px;
+      border-radius: 8px;
+      text-align: center;
+      flex: 1;
+      user-select: all;
+      cursor: pointer;
+    }
+
+    .pin-value:hover {
+      background: #f0f7ff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .pin-value { background: #0f172a; color: #93c5fd; }
+      .pin-value:hover { background: #1e293b; }
+    }
+
+    .connection-string-block {
+      margin-top: 12px;
+    }
+
+    .connection-string-block label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .info-banner {
+      padding: 10px 12px;
+      background: rgba(37, 99, 235, 0.1);
+      border-left: 3px solid var(--primary);
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text);
+      margin: 12px 0;
+    }
+
+    .info-banner code {
+      background: rgba(0, 0, 0, 0.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      word-break: break-all;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .info-banner code { background: rgba(255, 255, 255, 0.1); }
+    }
+
     .table-wrapper {
       overflow-x: auto;
       background: var(--card);
@@ -328,7 +482,6 @@
       outline-offset: -2px;
     }
 
-    /* Голубая подсветка всей колонки текущего дня */
     th.today-column {
       background: #dbeafe !important;
       color: var(--primary-dark);
@@ -353,20 +506,9 @@
         background: #1e3a5f !important;
         color: #93c5fd;
       }
-
-      td.today-column {
-        background: #1e3a5f;
-      }
-
-      td.today-column .attendance-button {
-        background: #0f172a;
-        border: 1px solid #3b82f6;
-      }
-
-      td.today-column .attendance-button.absent {
-        background: var(--absent);
-        border: 2px solid var(--absent-border);
-      }
+      td.today-column { background: #1e3a5f; }
+      td.today-column .attendance-button { background: #0f172a; border: 1px solid #3b82f6; }
+      td.today-column .attendance-button.absent { background: var(--absent); border: 2px solid var(--absent-border); }
     }
 
     .attendance-button {
@@ -391,7 +533,6 @@
       border: 2px solid var(--absent-border);
     }
 
-    /* Индикатор несохранённого изменения */
     .attendance-button.pending::after {
       content: "";
       position: absolute;
@@ -435,10 +576,7 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      .legend-box-today {
-        background: #1e3a5f;
-        border: 1px solid #3b82f6;
-      }
+      .legend-box-today { background: #1e3a5f; border: 1px solid #3b82f6; }
     }
 
     .toast {
@@ -454,7 +592,7 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       opacity: 0;
       transition: transform 0.3s, opacity 0.3s;
-      z-index: 1000;
+      z-index: 3000;
       pointer-events: none;
       max-width: calc(100vw - 48px);
       text-align: center;
@@ -481,6 +619,10 @@
       .attendance-button { width: 34px; height: 34px; min-height: 34px; }
       .sync-status { margin-left: 0; }
       .sync-actions { flex-direction: column; }
+      .modal-content { padding: 16px; margin-top: 12px; }
+      .modal-actions { flex-direction: column; }
+      .pin-value { font-size: 26px; letter-spacing: 4px; }
+      .pin-display { flex-direction: column; align-items: stretch; }
     }
 
     @media (hover: none) and (pointer: coarse) {
@@ -513,6 +655,11 @@
       <div class="sync-actions">
         <button id="toggleSyncConfigButton" class="secondary" type="button">⚙️ Настроить</button>
         <button id="syncNowButton" class="success" type="button" disabled>🔄 Синхронизировать</button>
+        <button id="shareButton" type="button">📱 Подключить устройство</button>
+        <button id="importButton" class="secondary" type="button">📥 Ввести код</button>
+      </div>
+
+      <div class="sync-actions" style="margin-top: 8px;">
         <button id="forcePushButton" class="warning" type="button" disabled>⬆️ Отправить мои данные</button>
         <button id="forcePullButton" class="danger" type="button" disabled>⬇️ Взять с сервера</button>
         <button id="debugButton" class="secondary" type="button">🐛 Отладка</button>
@@ -589,6 +736,70 @@
     </section>
   </main>
 
+  <!-- Модальное окно "Передать на устройство" -->
+  <div id="shareModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>📱 Подключить другое устройство</h3>
+      <p>
+        Отправьте <strong>строку подключения</strong> на второе устройство
+        любым способом (Telegram, Email, СМС). Там откройте это же приложение,
+        нажмите <strong>«📥 Ввести код»</strong> и вставьте строку.
+      </p>
+
+      <div class="pin-display">
+        <span class="pin-label">Код:</span>
+        <div id="sharePin" class="pin-value" title="Нажмите чтобы скопировать код">----</div>
+      </div>
+
+      <div class="connection-string-block">
+        <label for="shareConnectionString">Строка подключения:</label>
+        <textarea id="shareConnectionString" readonly></textarea>
+      </div>
+
+      <div class="info-banner">
+        ⚠️ В строке содержатся ваш <strong>токен</strong> и <strong>ID Gist</strong>.
+        Передавайте её только на свои устройства. PIN <code id="sharePinInline">----</code>
+        — просто метка, для подключения нужна вся строка.
+      </div>
+
+      <div class="modal-actions">
+        <button id="copyConnectionButton" type="button">📋 Копировать строку</button>
+        <button id="shareNativeButton" class="secondary" type="button">📤 Поделиться</button>
+        <button id="closeShareModalButton" class="secondary" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно "Ввести код" -->
+  <div id="importModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>📥 Ввести код подключения</h3>
+      <p>
+        Вставьте строку подключения, полученную с другого устройства.
+      </p>
+
+      <div class="field-group">
+        <label for="importString">Строка подключения:</label>
+        <textarea id="importString" placeholder="ATD-XXXX-..." autocomplete="off" spellcheck="false"></textarea>
+      </div>
+
+      <div id="importPinDisplay" class="pin-display" style="display: none;">
+        <span class="pin-label">Код:</span>
+        <div id="importPinValue" class="pin-value">----</div>
+      </div>
+
+      <div class="info-banner">
+        После подключения текущие локальные данные будут объединены с серверными.
+        Ваши отметки не потеряются.
+      </div>
+
+      <div class="modal-actions">
+        <button id="applyImportButton" class="success" type="button">✅ Подключить</button>
+        <button id="closeImportModalButton" class="secondary" type="button">Отмена</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -606,6 +817,13 @@
   var TOMBSTONE_TTL_MS = 1000 * 60 * 60 * 24 * 90;
   var SYNC_RETRY_DELAY_MS = 300;
 
+  // Префикс для строки подключения
+  var CONNECTION_PREFIX = "ATD-";
+
+  // Алфавит для PIN (без похожих символов: 0/O, 1/I/L)
+  var PIN_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  var PIN_LENGTH = 4;
+
   /* ============================================================
      Состояние
      ============================================================ */
@@ -616,7 +834,8 @@
     selectedMonth: getMonthString(new Date()),
     searchQuery: "",
     revision: 0,
-    lastSyncedRevision: 0
+    lastSyncedRevision: 0,
+    sharePin: "" // текущий сгенерированный PIN
   };
 
   var syncConfig = {
@@ -670,7 +889,23 @@
     debugBlock: document.getElementById("debugBlock"),
     debugPre: document.getElementById("debugPre"),
     refreshDebugButton: document.getElementById("refreshDebugButton"),
-    copyDebugButton: document.getElementById("copyDebugButton")
+    copyDebugButton: document.getElementById("copyDebugButton"),
+    // Share / Import
+    shareButton: document.getElementById("shareButton"),
+    importButton: document.getElementById("importButton"),
+    shareModal: document.getElementById("shareModal"),
+    sharePin: document.getElementById("sharePin"),
+    sharePinInline: document.getElementById("sharePinInline"),
+    shareConnectionString: document.getElementById("shareConnectionString"),
+    copyConnectionButton: document.getElementById("copyConnectionButton"),
+    shareNativeButton: document.getElementById("shareNativeButton"),
+    closeShareModalButton: document.getElementById("closeShareModalButton"),
+    importModal: document.getElementById("importModal"),
+    importString: document.getElementById("importString"),
+    importPinDisplay: document.getElementById("importPinDisplay"),
+    importPinValue: document.getElementById("importPinValue"),
+    applyImportButton: document.getElementById("applyImportButton"),
+    closeImportModalButton: document.getElementById("closeImportModalButton")
   };
 
   var monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
@@ -707,7 +942,7 @@
     dom.toast.textContent = msg;
     dom.toast.className = "toast show" + (type ? " " + type : "");
     if (showToast._t) clearTimeout(showToast._t);
-    showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 3000);
+    showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 3200);
   }
   function log() {
     if (window.console && console.log) {
@@ -735,6 +970,69 @@
       storage.setItem(DEVICE_ID_KEY, id);
     }
     return id;
+  }
+
+  /* ============================================================
+     Генерация и парсинг кода подключения
+     ============================================================ */
+
+  function generatePin() {
+    var pin = "";
+    for (var i = 0; i < PIN_LENGTH; i++) {
+      pin += PIN_ALPHABET.charAt(Math.floor(Math.random() * PIN_ALPHABET.length));
+    }
+    return pin;
+  }
+
+  function base64UrlEncode(str) {
+    try {
+      var b64 = btoa(unescape(encodeURIComponent(str)));
+      return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function base64UrlDecode(str) {
+    try {
+      var b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+      while (b64.length % 4) b64 += "=";
+      return decodeURIComponent(escape(atob(b64)));
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function buildConnectionString(pin, token, gistId) {
+    // Формат: ATD-XXXX-<base64url(token|gistId)>
+    var payload = token + "|" + gistId;
+    var encoded = base64UrlEncode(payload);
+    return CONNECTION_PREFIX + pin + "-" + encoded;
+  }
+
+  function parseConnectionString(str) {
+    var s = (str || "").trim().replace(/\s+/g, "");
+    if (s.indexOf(CONNECTION_PREFIX) !== 0) return null;
+
+    var rest = s.slice(CONNECTION_PREFIX.length);
+    var dashIdx = rest.indexOf("-");
+    if (dashIdx < 1) return null;
+
+    var pin = rest.slice(0, dashIdx);
+    var encoded = rest.slice(dashIdx + 1);
+    if (!pin || !encoded) return null;
+
+    var decoded = base64UrlDecode(encoded);
+    if (!decoded) return null;
+
+    var sep = decoded.indexOf("|");
+    if (sep < 1) return null;
+
+    return {
+      pin: pin,
+      token: decoded.slice(0, sep),
+      gistId: decoded.slice(sep + 1)
+    };
   }
 
   /* ============================================================
@@ -888,6 +1186,7 @@
     dom.syncNowButton.disabled = !configured;
     dom.forcePushButton.disabled = !configured;
     dom.forcePullButton.disabled = !configured;
+    dom.shareButton.disabled = !configured;
   }
 
   function fetchFromGist() {
@@ -1049,9 +1348,6 @@
             "attendance=" + Object.keys(remoteData.attendance || {}).length);
 
         var merged = mergeData(localSnapshot, remoteData);
-        log("sync: merged has",
-            "students=" + merged.students.length,
-            "attendance=" + Object.keys(merged.attendance).length);
 
         if (state.revision !== startRevision) {
           log("sync: local изменён во время fetch — сливаю повторно");
@@ -1082,7 +1378,6 @@
         syncConfig.lastError = "";
         saveSyncConfig();
         state.lastSyncedRevision = state.revision;
-        log("sync: done ok");
 
         isSyncing = false;
         updateSyncUI();
@@ -1091,7 +1386,6 @@
 
         if (pendingSync || state.revision !== startRevision) {
           pendingSync = false;
-          log("sync: есть pending — запускаю ещё раз");
           setTimeout(function () { syncNow("auto"); }, SYNC_RETRY_DELAY_MS);
         }
       })
@@ -1251,8 +1545,6 @@
       absent: !currentlyAbsent,
       updatedAt: Date.now()
     };
-
-    log("toggle:", key, "→", !currentlyAbsent);
 
     markChanged();
     saveLocal();
@@ -1441,6 +1733,151 @@
   }
 
   /* ============================================================
+     Модальные окна — Share / Import
+     ============================================================ */
+
+  function openShareModal() {
+    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) {
+      showToast("Сначала настройте синхронизацию", "warning");
+      return;
+    }
+
+    state.sharePin = generatePin();
+    var str = buildConnectionString(state.sharePin, syncConfig.token, syncConfig.gistId);
+
+    dom.sharePin.textContent = state.sharePin;
+    dom.sharePinInline.textContent = state.sharePin;
+    dom.shareConnectionString.value = str;
+
+    dom.shareModal.classList.add("open");
+  }
+
+  function closeShareModal() {
+    dom.shareModal.classList.remove("open");
+  }
+
+  function openImportModal() {
+    dom.importString.value = "";
+    dom.importPinDisplay.style.display = "none";
+    dom.importPinValue.textContent = "----";
+    dom.importModal.classList.add("open");
+    setTimeout(function () { dom.importString.focus(); }, 100);
+  }
+
+  function closeImportModal() {
+    dom.importModal.classList.remove("open");
+  }
+
+  function copyToClipboard(text, successMessage) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () {
+        showToast(successMessage || "Скопировано", "success");
+      }).catch(function () {
+        return fallbackCopy(text, successMessage);
+      });
+    }
+    return fallbackCopy(text, successMessage);
+  }
+
+  function fallbackCopy(text, successMessage) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showToast(successMessage || "Скопировано", "success");
+    } catch (e) {
+      showToast("Не удалось скопировать", "error");
+    }
+    document.body.removeChild(ta);
+  }
+
+  function handleCopyConnection() {
+    var str = dom.shareConnectionString.value;
+    if (!str) return;
+    copyToClipboard(str, "Строка подключения скопирована");
+  }
+
+  function handleShareNative() {
+    var str = dom.shareConnectionString.value;
+    if (!str) return;
+
+    var shareText = "Код подключения: " + state.sharePin + "\n\n" +
+                    "Откройте приложение «Электронный дневник» на другом устройстве, " +
+                    "нажмите «📥 Ввести код» и вставьте строку ниже:\n\n" + str;
+
+    if (navigator.share) {
+      navigator.share({
+        title: "Подключение к дневнику посещаемости",
+        text: shareText
+      }).then(function () {
+        log("share: ok");
+      }).catch(function (err) {
+        if (err && err.name !== "AbortError") {
+          log("share: err", err);
+        }
+      });
+    } else {
+      copyToClipboard(shareText, "Текст для отправки скопирован");
+    }
+  }
+
+  function applyImport() {
+    var raw = dom.importString.value;
+    var parsed = parseConnectionString(raw);
+
+    if (!parsed) {
+      showToast("Неверный формат строки подключения", "error");
+      return;
+    }
+
+    if (!parsed.token || !parsed.gistId) {
+      showToast("Строка повреждена — нет токена или ID Gist", "error");
+      return;
+    }
+
+    // Проверим связь перед сохранением
+    var confirmMsg = "Подключить это устройство?\n\n" +
+                     "Код: " + parsed.pin + "\n" +
+                     "Gist ID: " + parsed.gistId + "\n\n" +
+                     "Текущие локальные данные будут объединены с серверными.";
+
+    if (!window.confirm(confirmMsg)) return;
+
+    // Применяем настройки
+    syncConfig.token = parsed.token;
+    syncConfig.gistId = parsed.gistId;
+    syncConfig.enabled = true;
+    syncConfig.lastSyncStatus = "off";
+    syncConfig.lastError = "";
+    saveSyncConfig();
+    updateSyncUI();
+    closeImportModal();
+
+    showToast("Код принят. Подключаюсь...", "success");
+
+    // Запускаем синхронизацию
+    setTimeout(function () { syncNow("manual"); }, 200);
+  }
+
+  // Автоматическое распознавание PIN при вставке строки
+  function handleImportInput() {
+    var raw = dom.importString.value;
+    var parsed = parseConnectionString(raw);
+
+    if (parsed && parsed.pin) {
+      dom.importPinDisplay.style.display = "flex";
+      dom.importPinValue.textContent = parsed.pin;
+    } else {
+      dom.importPinDisplay.style.display = "none";
+      dom.importPinValue.textContent = "----";
+    }
+  }
+
+  /* ============================================================
      Отладка
      ============================================================ */
 
@@ -1489,13 +1926,7 @@
           visibleStudents: remoteData.students.filter(function (s) { return !s.deleted; }).length,
           deletedStudents: remoteData.students.filter(function (s) { return s.deleted; }).length,
           attendanceKeys: Object.keys(remoteData.attendance).length,
-          absentCount: Object.keys(remoteData.attendance).filter(function (k) { return remoteData.attendance[k].absent; }).length,
-          students: remoteData.students.map(function (s) {
-            return { id: s.id.slice(0, 8), name: s.name, updatedAt: s.updatedAt, deleted: s.deleted };
-          }),
-          attendanceSample: Object.keys(remoteData.attendance).slice(0, 10).map(function (k) {
-            return { key: k, absent: remoteData.attendance[k].absent, updatedAt: remoteData.attendance[k].updatedAt };
-          })
+          absentCount: Object.keys(remoteData.attendance).filter(function (k) { return remoteData.attendance[k].absent; }).length
         };
         var cur = dom.debugPre.textContent.replace("\n\n--- ЗАГРУЗКА С GITHUB ---\nЗагрузка...", "");
         dom.debugPre.textContent = cur + "\n\n--- GITHUB ---\n" + JSON.stringify(remoteInfo, null, 2);
@@ -1629,27 +2060,38 @@
   dom.forcePushButton.addEventListener("click", forcePush);
   dom.forcePullButton.addEventListener("click", forcePull);
 
+  // Share / Import
+  dom.shareButton.addEventListener("click", openShareModal);
+  dom.importButton.addEventListener("click", openImportModal);
+  dom.copyConnectionButton.addEventListener("click", handleCopyConnection);
+  dom.shareNativeButton.addEventListener("click", handleShareNative);
+  dom.closeShareModalButton.addEventListener("click", closeShareModal);
+  dom.closeImportModalButton.addEventListener("click", closeImportModal);
+  dom.applyImportButton.addEventListener("click", applyImport);
+  dom.importString.addEventListener("input", handleImportInput);
+  dom.importString.addEventListener("paste", function () {
+    setTimeout(handleImportInput, 10);
+  });
+
+  // Клик по PIN — копируем строку подключения
+  dom.sharePin.addEventListener("click", handleCopyConnection);
+
+  // Закрытие по клику вне контента
+  dom.shareModal.addEventListener("click", function (e) {
+    if (e.target === dom.shareModal) closeShareModal();
+  });
+  dom.importModal.addEventListener("click", function (e) {
+    if (e.target === dom.importModal) closeImportModal();
+  });
+
+  // Debug
   dom.debugButton.addEventListener("click", function () {
     dom.debugBlock.classList.toggle("open");
     if (dom.debugBlock.classList.contains("open")) renderDebug();
   });
   dom.refreshDebugButton.addEventListener("click", renderDebug);
   dom.copyDebugButton.addEventListener("click", function () {
-    var text = dom.debugPre.textContent;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        showToast("Скопировано", "success");
-      }).catch(function () {
-        showToast("Не удалось скопировать", "error");
-      });
-    } else {
-      var ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand("copy"); showToast("Скопировано", "success"); } catch (e) { showToast("Не удалось", "error"); }
-      document.body.removeChild(ta);
-    }
+    copyToClipboard(dom.debugPre.textContent, "Отладочная информация скопирована");
   });
 
   document.addEventListener("keydown", function (e) {
@@ -1658,11 +2100,21 @@
       dom.searchInput.focus();
       dom.searchInput.select();
     }
-    if (e.key === "Escape" && document.activeElement === dom.searchInput) {
-      dom.searchInput.value = "";
-      state.searchQuery = "";
-      render();
-      dom.searchInput.blur();
+    if (e.key === "Escape") {
+      if (dom.shareModal.classList.contains("open")) {
+        closeShareModal();
+        return;
+      }
+      if (dom.importModal.classList.contains("open")) {
+        closeImportModal();
+        return;
+      }
+      if (document.activeElement === dom.searchInput) {
+        dom.searchInput.value = "";
+        state.searchQuery = "";
+        render();
+        dom.searchInput.blur();
+      }
     }
   });
 
@@ -1697,6 +2149,31 @@
     updateSyncUI();
     render();
 
+    // Автоматически принять код из URL: ?connect=ATD-XXXX-...
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var connectCode = params.get("connect");
+      if (connectCode) {
+        var parsed = parseConnectionString(connectCode);
+        if (parsed && parsed.token && parsed.gistId) {
+          syncConfig.token = parsed.token;
+          syncConfig.gistId = parsed.gistId;
+          syncConfig.enabled = true;
+          syncConfig.lastSyncStatus = "off";
+          syncConfig.lastError = "";
+          saveSyncConfig();
+          updateSyncUI();
+          showToast("Код из ссылки принят: " + parsed.pin, "success");
+          // Очищаем URL от кода (для безопасности)
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, "", window.location.pathname);
+          }
+          setTimeout(function () { syncNow("manual"); }, 300);
+          return;
+        }
+      }
+    } catch (e) { log("URL parse error", e); }
+
     if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
       setTimeout(function () { syncNow("auto"); }, 500);
     }
@@ -1709,4 +2186,4 @@
   }
   </script>
 </body>
-            </html>
+          </html>
