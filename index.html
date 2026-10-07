@@ -99,7 +99,7 @@
     }
 
     textarea {
-      min-height: 72px;
+      min-height: 60px;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 8px 12px;
@@ -205,31 +205,30 @@
 
     .sync-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
-    .pin-section {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(37, 99, 235, 0.25);
-      border-radius: 10px;
-      margin-top: 10px;
+    /* Отдельная секция PIN */
+    .pin-box {
+      margin-top: 14px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 2px solid rgba(37, 99, 235, 0.3);
+      border-radius: 12px;
     }
     @media (prefers-color-scheme: dark) {
-      .pin-section { background: rgba(0, 0, 0, 0.25); border-color: rgba(59, 130, 246, 0.4); }
+      .pin-box { background: rgba(0, 0, 0, 0.3); border-color: rgba(59, 130, 246, 0.5); }
     }
-    .pin-section .pin-section-label {
+    .pin-box-title {
       font-weight: 700;
-      font-size: 14px;
+      font-size: 15px;
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
-    .pin-section .pin-section-hint {
+    .pin-box-desc {
       font-size: 12px;
       color: var(--muted);
-      margin: 0;
+      margin: 0 0 10px;
+      line-height: 1.5;
     }
 
     .debug-block {
@@ -298,12 +297,12 @@
     .pin-label { font-size: 13px; color: var(--muted); font-weight: 600; flex-shrink: 0; }
     .pin-value {
       font-family: ui-monospace, Menlo, Monaco, monospace;
-      font-size: 34px;
+      font-size: 38px;
       font-weight: 800;
-      letter-spacing: 8px;
+      letter-spacing: 10px;
       color: var(--primary-dark);
       background: #ffffff;
-      padding: 6px 14px;
+      padding: 6px 18px;
       border-radius: 8px;
       text-align: center;
       flex: 1;
@@ -314,16 +313,16 @@
 
     .pin-input-value {
       font-family: ui-monospace, Menlo, Monaco, monospace;
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 800;
-      letter-spacing: 12px;
+      letter-spacing: 16px;
       text-align: center;
       text-transform: uppercase;
       width: 100%;
-      min-height: 60px;
+      min-height: 70px;
       border: 2px solid var(--primary);
       border-radius: 10px;
-      padding: 8px 14px;
+      padding: 8px 16px;
       background: var(--card);
       color: var(--text);
       outline: none;
@@ -342,6 +341,14 @@
     .info-banner.warn {
       background: rgba(245, 158, 11, 0.12);
       border-left-color: var(--warning);
+    }
+    .info-banner.error {
+      background: rgba(239, 68, 68, 0.12);
+      border-left-color: var(--error);
+    }
+    .info-banner.ok {
+      background: rgba(16, 185, 129, 0.12);
+      border-left-color: var(--success);
     }
     .info-banner code {
       background: rgba(0, 0, 0, 0.08);
@@ -499,9 +506,9 @@
       .sync-status { margin-left: 0; }
       .modal-content { padding: 16px; margin-top: 12px; }
       .modal-actions { flex-direction: column; }
-      .pin-value { font-size: 26px; letter-spacing: 4px; }
+      .pin-value { font-size: 30px; letter-spacing: 6px; }
       .pin-display { flex-direction: column; align-items: stretch; }
-      .pin-input-value { font-size: 26px; letter-spacing: 8px; }
+      .pin-input-value { font-size: 28px; letter-spacing: 10px; }
     }
   </style>
 </head>
@@ -528,22 +535,9 @@
       <div class="sync-actions">
         <button id="toggleSyncConfigButton" class="secondary" type="button">⚙️ Настроить</button>
         <button id="syncNowButton" class="success" type="button" disabled>🔄 Синхронизировать</button>
-        <button id="forcePushButton" class="warning" type="button" disabled>⬆️ Отправить мои данные</button>
-        <button id="forcePullButton" class="danger" type="button" disabled>⬇️ Взять с сервера</button>
+        <button id="forcePushButton" class="warning" type="button" disabled>⬆️ Отправить</button>
+        <button id="forcePullButton" class="danger" type="button" disabled>⬇️ Взять</button>
         <button id="debugButton" class="secondary" type="button">🐛 Отладка</button>
-      </div>
-
-      <!-- Секция PIN-подключения -->
-      <div class="pin-section" id="pinSection">
-        <div style="flex: 1; min-width: 200px;">
-          <div class="pin-section-label">🔑 Подключение по PIN</div>
-          <p class="pin-section-hint" id="pinHint">
-            Обмен данными через публичный relay-гист. Сгенерируйте PIN на этом
-            устройстве и введите его на новом — настройки применятся сами.
-          </p>
-        </div>
-        <button id="showPinButton" type="button">📱 Показать PIN</button>
-        <button id="enterPinButton" class="secondary" type="button">⌨️ Ввести PIN</button>
       </div>
 
       <div id="syncConfig" class="sync-config">
@@ -566,6 +560,21 @@
           <button id="testConnectionButton" class="secondary" type="button">🔌 Проверить связь</button>
           <button id="disableSyncButton" class="danger" type="button">❌ Отключить</button>
         </div>
+      </div>
+
+      <!-- Секция PIN -->
+      <div class="pin-box">
+        <div class="pin-box-title">🔑 Подключение по 4-символьному PIN</div>
+        <div class="pin-box-desc" id="pinBoxDesc">
+          Обмен данными через ваш личный публичный relay-гист.
+          Сгенерируйте PIN здесь и введите его на новом устройстве.
+        </div>
+        <div class="sync-actions">
+          <button id="createRelayButton" class="secondary" type="button">🆕 Создать relay</button>
+          <button id="showPinButton" type="button" disabled>📱 Показать PIN</button>
+          <button id="enterPinButton" class="secondary" type="button">⌨️ Ввести PIN</button>
+        </div>
+        <div id="relayStatus" class="info-banner ok" style="display:none; margin-bottom:0;"></div>
       </div>
 
       <div id="debugBlock" class="debug-block">
@@ -617,8 +626,7 @@
   <div id="pinShowModal" class="modal-overlay">
     <div class="modal-content">
       <h3>📱 PIN для подключения</h3>
-      <p>Введите этот PIN на другом устройстве в разделе «🔑 Ввести PIN» —
-         там автоматически появятся все настройки.</p>
+      <p>Введите этот PIN на другом устройстве в разделе «⌨️ Ввести PIN».</p>
 
       <div class="pin-display">
         <span class="pin-label">PIN:</span>
@@ -627,16 +635,18 @@
 
       <div class="info-banner">
         PIN действителен <span id="pinCountdown" class="countdown">10:00</span>.
-        Передайте его любым способом (Telegram, голосом). После ввода на новом устройстве
-        можно забыть.
       </div>
 
       <div class="info-banner warn">
-        🔒 PIN защищает данные шифрованием. Никому не показывайте, кроме своих устройств.
+        🔒 <strong>Первый раз</strong> на новом устройстве также потребуется
+        <strong>ID relay</strong> (получите его один раз кнопкой «📋 Скопировать ID relay»).
+        После первого ввода ID сохранится, и дальше достаточно только PIN.
       </div>
 
       <div class="modal-actions">
         <button id="copyPinButton" type="button">📋 Копировать PIN</button>
+        <button id="copyRelayIdButton" class="secondary" type="button">📋 Скопировать ID relay</button>
+        <button id="shareBothButton" class="secondary" type="button">📤 Поделиться</button>
         <button id="closePinShowButton" class="secondary" type="button">Закрыть</button>
       </div>
     </div>
@@ -650,6 +660,14 @@
 
       <input id="pinEnterInput" class="pin-input-value" type="text" maxlength="4"
              autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="----" />
+
+      <div id="relayIdBlock" style="display:none; margin-top: 14px;">
+        <div class="field-group">
+          <label for="relayIdInput">ID relay (одноразово, показывается на первом устройстве)</label>
+          <input id="relayIdInput" type="text" placeholder="a1b2c3d4..." autocomplete="off" spellcheck="false" />
+          <p class="help-text">Этот ID сохранится, и в дальнейшем понадобится только PIN.</p>
+        </div>
+      </div>
 
       <div id="pinEnterStatus" class="info-banner" style="display:none;"></div>
 
@@ -665,33 +683,20 @@
   <script>
   "use strict";
 
-  /* ============================================================
-     ⚠️ НАСТРОЙКИ RELAY — заполните ОДИН РАЗ
-     ============================================================ */
-
-  // Публичный Gist для обмена PIN-ами. Создайте gist с файлом pairing.json = {}
-  var RELAY_GIST_ID = "";
-
-  // Токен того же аккаунта с правом gist (можно тот же, что для синхронизации)
-  var RELAY_TOKEN = "";
-
-  /* ============================================================
-     Константы
-     ============================================================ */
-
   var STORAGE_KEY = "attendance_diary_data";
   var SYNC_CONFIG_KEY = "attendance_sync_config";
+  var RELAY_CONFIG_KEY = "attendance_relay_config";
   var DEVICE_ID_KEY = "attendance_device_id";
   var GIST_FILENAME = "attendance.json";
   var RELAY_FILENAME = "pairing.json";
   var SYNC_DEBOUNCE_MS = 1200;
   var TOMBSTONE_TTL_MS = 1000 * 60 * 60 * 24 * 90;
   var SYNC_RETRY_DELAY_MS = 300;
-  var PIN_TTL_MS = 10 * 60 * 1000; // 10 минут
-  var PIN_POLL_INTERVAL_MS = 2500; // опрос relay при поиске PIN
-  var PIN_POLL_TIMEOUT_MS = 2 * 60 * 1000; // 2 минуты ожидания
+  var PIN_TTL_MS = 10 * 60 * 1000;
+  var PIN_POLL_INTERVAL_MS = 2500;
+  var PIN_POLL_TIMEOUT_MS = 3 * 60 * 1000;
 
-  var PIN_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // без 0/O/1/I/L
+  var PIN_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   var PIN_LENGTH = 4;
   var PIN_MAGIC = "ATD1|";
 
@@ -717,11 +722,15 @@
     lastError: ""
   };
 
+  // Relay — гist для обмена PIN
+  var relayConfig = {
+    gistId: ""
+  };
+
   var syncTimer = null;
   var isSyncing = false;
   var pendingSync = false;
   var deviceId = "";
-
   var activePin = { code: "", expiresAt: 0, timer: null };
 
   /* ============================================================
@@ -761,17 +770,25 @@
     debugPre: document.getElementById("debugPre"),
     refreshDebugButton: document.getElementById("refreshDebugButton"),
     copyDebugButton: document.getElementById("copyDebugButton"),
-    pinSection: document.getElementById("pinSection"),
-    pinHint: document.getElementById("pinHint"),
+    // PIN
+    pinBoxDesc: document.getElementById("pinBoxDesc"),
+    createRelayButton: document.getElementById("createRelayButton"),
     showPinButton: document.getElementById("showPinButton"),
     enterPinButton: document.getElementById("enterPinButton"),
+    relayStatus: document.getElementById("relayStatus"),
+    // Modal show PIN
     pinShowModal: document.getElementById("pinShowModal"),
     pinShowValue: document.getElementById("pinShowValue"),
     pinCountdown: document.getElementById("pinCountdown"),
     copyPinButton: document.getElementById("copyPinButton"),
+    copyRelayIdButton: document.getElementById("copyRelayIdButton"),
+    shareBothButton: document.getElementById("shareBothButton"),
     closePinShowButton: document.getElementById("closePinShowButton"),
+    // Modal enter PIN
     pinEnterModal: document.getElementById("pinEnterModal"),
     pinEnterInput: document.getElementById("pinEnterInput"),
+    relayIdBlock: document.getElementById("relayIdBlock"),
+    relayIdInput: document.getElementById("relayIdInput"),
     pinEnterStatus: document.getElementById("pinEnterStatus"),
     applyPinButton: document.getElementById("applyPinButton"),
     closePinEnterButton: document.getElementById("closePinEnterButton")
@@ -842,17 +859,20 @@
   }
 
   /* ============================================================
-     Криптография PIN (простой XOR с PIN-keystream)
-     ------------------------------------------------------------
-     Достаточно для 10-минутного окна, не для долгосрочной защиты.
+     Шифрование PIN
      ============================================================ */
 
   function derivePinKey(pin) {
-    // Детерминированная генерация 32 байт из PIN
     var h = 2166136261;
     for (var i = 0; i < pin.length; i++) {
       h ^= pin.charCodeAt(i);
       h = (h * 16777619) >>> 0;
+    }
+    // Многораундовое хеширование для сложности брутфорса
+    for (var r = 0; r < 1000; r++) {
+      h ^= h << 13; h >>>= 0;
+      h ^= h >>> 17;
+      h ^= h << 5;  h >>>= 0;
     }
     var key = [];
     for (var j = 0; j < 32; j++) {
@@ -887,49 +907,70 @@
         out += String.fromCharCode(raw.charCodeAt(i) ^ key[i % key.length]);
       }
       return decodeURIComponent(escape(out));
-    } catch (e) {
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   /* ============================================================
      Relay — публичный Gist для обмена PIN
      ============================================================ */
 
-  function relayConfigured() {
-    return RELAY_GIST_ID && RELAY_TOKEN;
+  function loadRelayConfig() {
+    if (!storage) return;
+    var raw = storage.getItem(RELAY_CONFIG_KEY);
+    if (!raw) return;
+    try {
+      var p = JSON.parse(raw);
+      relayConfig.gistId = String(p.gistId || "");
+    } catch (e) {}
   }
 
+  function saveRelayConfig() {
+    if (!storage) return;
+    try {
+      storage.setItem(RELAY_CONFIG_KEY, JSON.stringify({ gistId: relayConfig.gistId }));
+    } catch (e) {}
+  }
+
+  function relayConfigured() { return Boolean(relayConfig.gistId); }
+
+  // Чтение — без авторизации (публичный gist)
   function relayRead() {
-    return fetch(cacheBust("https://api.github.com/gists/" + RELAY_GIST_ID), {
+    return fetch(cacheBust("https://api.github.com/gists/" + relayConfig.gistId), {
       headers: { "Accept": "application/vnd.github+json" },
       cache: "no-store"
     }).then(function(r){
-      if (!r.ok) throw new Error("Relay read: " + r.status);
+      if (!r.ok) {
+        if (r.status === 404) throw new Error("Relay не найден (404)");
+        if (r.status === 403) throw new Error("Лимит GitHub API (403). Попробуйте через минуту.");
+        throw new Error("Ошибка relay: " + r.status);
+      }
       return r.json();
     }).then(function(gist){
       var file = gist.files && gist.files[RELAY_FILENAME];
       if (!file) return {};
+      if (file.truncated && file.raw_url) {
+        return fetch(cacheBust(file.raw_url), { cache: "no-store" })
+          .then(function(r){ return r.json(); }).catch(function(){ return {}; });
+      }
       try { return JSON.parse(file.content) || {}; }
       catch (e) { return {}; }
     });
   }
 
+  // Запись — с токеном
   function relayWrite(data) {
     var body = { files: {} };
     body.files[RELAY_FILENAME] = { content: JSON.stringify(data, null, 2) };
-    return fetch("https://api.github.com/gists/" + RELAY_GIST_ID, {
+    return fetch("https://api.github.com/gists/" + relayConfig.gistId, {
       method: "PATCH",
-      headers: {
-        "Authorization": "token " + RELAY_TOKEN,
-        "Accept": "application/vnd.github+json",
-        "Content-Type": "application/json"
-      },
+      headers: Object.assign({ "Content-Type": "application/json" }, githubHeaders()),
       body: JSON.stringify(body)
     }).then(function(r){
-      if (!r.ok) return r.json().catch(function(){return{};}).then(function(e){
-        throw new Error("Relay write " + r.status + ": " + (e.message || ""));
-      });
+      if (!r.ok) {
+        return r.json().catch(function(){return{};}).then(function(e){
+          throw new Error(describeGithubError(r.status, e.message));
+        });
+      }
       return r.json();
     });
   }
@@ -944,7 +985,46 @@
   }
 
   /* ============================================================
-     Генерация PIN и публикация
+     Создание relay-гиста (через токен пользователя)
+     ============================================================ */
+
+  function createRelayGist() {
+    if (!syncConfig.token) {
+      showToast("Сначала сохраните токен в настройках синхронизации", "warning");
+      return Promise.reject(new Error("no token"));
+    }
+
+    var payload = {
+      description: "Attendance Diary — PIN relay (public, safe)",
+      public: true,
+      files: {}
+    };
+    payload.files[RELAY_FILENAME] = { content: "{}" };
+
+    return fetch("https://api.github.com/gists", {
+      method: "POST",
+      headers: {
+        "Authorization": "token " + syncConfig.token,
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    }).then(function(r){
+      if (!r.ok) {
+        return r.json().catch(function(){return{};}).then(function(e){
+          throw new Error(describeGithubError(r.status, e.message));
+        });
+      }
+      return r.json();
+    }).then(function(gist){
+      relayConfig.gistId = gist.id;
+      saveRelayConfig();
+      return gist.id;
+    });
+  }
+
+  /* ============================================================
+     Генерация/публикация PIN
      ============================================================ */
 
   function generateRandomPin() {
@@ -961,28 +1041,23 @@
       return Promise.reject(new Error("no sync"));
     }
     if (!relayConfigured()) {
-      showToast("Relay не настроен. См. комментарии в начале <script>", "error");
+      showToast("Сначала создайте relay (кнопка «Создать relay»)", "warning");
       return Promise.reject(new Error("no relay"));
     }
 
     return relayRead().then(function(data){
       data = relayCleanup(data);
 
-      // Ищем уникальный PIN (5 попыток)
       var pin, attempts = 0;
       do {
         pin = generateRandomPin();
         attempts++;
-        if (attempts > 50) throw new Error("Не удалось подобрать уникальный PIN");
+        if (attempts > 100) throw new Error("Не удалось подобрать PIN");
       } while (data[pin]);
 
-      var payload = JSON.stringify({
-        token: syncConfig.token,
-        gistId: syncConfig.gistId
-      });
+      var payload = JSON.stringify({ token: syncConfig.token, gistId: syncConfig.gistId });
       var encrypted = encryptWithPin(pin, PIN_MAGIC + payload);
       var expires = Date.now() + PIN_TTL_MS;
-
       data[pin] = { encrypted: encrypted, expires: expires };
 
       return relayWrite(data).then(function(){
@@ -992,17 +1067,13 @@
   }
 
   function fetchPinData(pin) {
-    if (!relayConfigured()) {
-      return Promise.reject(new Error("Relay не настроен"));
-    }
+    if (!relayConfigured()) return Promise.reject(new Error("Relay не настроен"));
     return relayRead().then(function(data){
       var entry = data[pin];
       if (!entry) return null;
       if (entry.expires && entry.expires < Date.now()) return null;
-
       var plain = decryptWithPin(pin, entry.encrypted);
       if (!plain || plain.indexOf(PIN_MAGIC) !== 0) return null;
-
       try {
         var cfg = JSON.parse(plain.slice(PIN_MAGIC.length));
         if (!cfg.token || !cfg.gistId) return null;
@@ -1012,7 +1083,7 @@
   }
 
   /* ============================================================
-     Миграция и локальное хранилище
+     Миграция / storage
      ============================================================ */
 
   function migrateV1toV2(data) {
@@ -1034,10 +1105,7 @@
         if (v === true) result.attendance[k] = { absent: true, updatedAt: 0 };
         else if (v === false) result.attendance[k] = { absent: false, updatedAt: 0 };
         else if (v && typeof v === "object") {
-          result.attendance[k] = {
-            absent: Boolean(v.absent),
-            updatedAt: Number(v.updatedAt) || 0
-          };
+          result.attendance[k] = { absent: Boolean(v.absent), updatedAt: Number(v.updatedAt) || 0 };
         }
       });
     }
@@ -1048,12 +1116,9 @@
     if (!storage) return;
     try {
       storage.setItem(STORAGE_KEY, JSON.stringify({
-        version: 2,
-        students: state.students,
-        attendance: state.attendance,
-        updatedAt: Date.now()
+        version: 2, students: state.students, attendance: state.attendance, updatedAt: Date.now()
       }));
-    } catch (e) { console.error(e); }
+    } catch (e) {}
   }
 
   function loadLocal() {
@@ -1065,7 +1130,7 @@
       var v2 = migrateV1toV2(p);
       state.students = v2.students;
       state.attendance = v2.attendance;
-    } catch (e) { console.error(e); }
+    } catch (e) {}
   }
 
   function loadSyncConfig() {
@@ -1078,7 +1143,7 @@
       syncConfig.token = String(p.token || "");
       syncConfig.gistId = String(p.gistId || "");
       syncConfig.lastSync = Number(p.lastSync) || 0;
-    } catch (e) { console.error(e); }
+    } catch (e) {}
   }
 
   function saveSyncConfig() {
@@ -1090,11 +1155,11 @@
         gistId: syncConfig.gistId,
         lastSync: syncConfig.lastSync
       }));
-    } catch (e) { console.error(e); }
+    } catch (e) {}
   }
 
   /* ============================================================
-     GitHub API для синхронизации
+     GitHub API (sync)
      ============================================================ */
 
   function githubHeaders() {
@@ -1134,16 +1199,25 @@
     dom.syncNowButton.disabled = !configured;
     dom.forcePushButton.disabled = !configured;
     dom.forcePullButton.disabled = !configured;
-    dom.showPinButton.disabled = !configured || !relayConfigured();
 
-    if (!relayConfigured()) {
-      dom.pinHint.innerHTML = '⚠️ PIN-подключение недоступно: не настроен relay-гист. ' +
-        'Впишите <code>RELAY_GIST_ID</code> и <code>RELAY_TOKEN</code> в начале ' +
-        '&lt;script&gt; файла.';
+    // Relay UI
+    var hasRelay = relayConfigured();
+    if (hasRelay) {
+      dom.relayStatus.style.display = "block";
+      dom.relayStatus.textContent = "✅ Relay готов (ID: " + relayConfig.gistId + ")";
+      dom.createRelayButton.textContent = "🔄 Пересоздать relay";
+      dom.showPinButton.disabled = !configured;
+      dom.pinBoxDesc.textContent =
+        "Сгенерируйте PIN здесь и введите его на новом устройстве. " +
+        "Первый раз на новом устройстве потребуется ID relay — он показан выше.";
     } else {
-      dom.pinHint.textContent =
-        'Обмен данными через публичный relay-гист. Сгенерируйте PIN на этом ' +
-        'устройстве и введите его на новом — настройки применятся сами.';
+      dom.relayStatus.style.display = "none";
+      dom.createRelayButton.textContent = "🆕 Создать relay";
+      dom.showPinButton.disabled = true;
+      dom.pinBoxDesc.textContent =
+        "Для PIN-подключения нужен публичный relay-гист. " +
+        "Нажмите «🆕 Создать relay» — он создастся автоматически " +
+        "(нужен сохранённый токен синхронизации).";
     }
   }
 
@@ -1185,7 +1259,7 @@
   }
 
   /* ============================================================
-     Merge LWW
+     Merge
      ============================================================ */
 
   function mergeStudents(local, remote) {
@@ -1232,7 +1306,7 @@
   }
 
   /* ============================================================
-     Синхронизация
+     Sync
      ============================================================ */
 
   function markChanged() { state.revision++; }
@@ -1258,24 +1332,18 @@
     fetchFromGist().then(function(remoteRaw){
       var remoteData = migrateV1toV2(remoteRaw);
       var merged = mergeData(snapshot, remoteData);
-
       if (state.revision !== startRev) {
-        var merged2 = mergeData({ students: state.students, attendance: state.attendance }, merged);
-        state.students = merged2.students;
-        state.attendance = merged2.attendance;
+        var m2 = mergeData({ students: state.students, attendance: state.attendance }, merged);
+        state.students = m2.students;
+        state.attendance = m2.attendance;
       } else {
         state.students = merged.students;
         state.attendance = merged.attendance;
       }
-
       saveLocal();
       render();
-
       return pushToGist({
-        version: 2,
-        students: state.students,
-        attendance: state.attendance,
-        updatedAt: Date.now()
+        version: 2, students: state.students, attendance: state.attendance, updatedAt: Date.now()
       });
     }).then(function(){
       syncConfig.lastSync = Date.now();
@@ -1291,7 +1359,6 @@
         setTimeout(function(){ syncNow("auto"); }, SYNC_RETRY_DELAY_MS);
       }
     }).catch(function(err){
-      console.error("[Diary] sync error:", err);
       syncConfig.lastSyncStatus = "error";
       syncConfig.lastError = err.message || String(err);
       isSyncing = false;
@@ -1310,23 +1377,18 @@
     syncTimer = setTimeout(function(){ syncTimer = null; syncNow("auto"); }, SYNC_DEBOUNCE_MS);
   }
 
-  /* ============================================================
-     Force push/pull
-     ============================================================ */
-
   function forcePush() {
-    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
-    if (!confirm("Отправить локальные данные в GitHub, перезаписав серверную копию?")) return;
+    if (!syncConfig.enabled) return;
+    if (!confirm("Отправить локальные данные, перезаписав серверную копию?")) return;
     setSyncStatus("busy", "Отправка...");
-    pushToGist({
-      version: 2, students: state.students, attendance: state.attendance, updatedAt: Date.now()
-    }).then(function(){
+    pushToGist({ version: 2, students: state.students, attendance: state.attendance, updatedAt: Date.now() })
+    .then(function(){
       syncConfig.lastSync = Date.now();
       syncConfig.lastSyncStatus = "ok";
       syncConfig.lastError = "";
       saveSyncConfig();
       updateSyncUI();
-      showToast("Данные отправлены", "success");
+      showToast("Отправлено", "success");
     }).catch(function(err){
       syncConfig.lastSyncStatus = "error";
       syncConfig.lastError = err.message;
@@ -1336,13 +1398,13 @@
   }
 
   function forcePull() {
-    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
+    if (!syncConfig.enabled) return;
     if (!confirm("Заменить локальные данные данными с сервера?")) return;
     setSyncStatus("busy", "Загрузка...");
     fetchFromGist().then(function(remoteRaw){
-      var remoteData = migrateV1toV2(remoteRaw);
-      state.students = remoteData.students;
-      state.attendance = remoteData.attendance;
+      var d = migrateV1toV2(remoteRaw);
+      state.students = d.students;
+      state.attendance = d.attendance;
       saveLocal();
       render();
       syncConfig.lastSync = Date.now();
@@ -1350,7 +1412,7 @@
       syncConfig.lastError = "";
       saveSyncConfig();
       updateSyncUI();
-      showToast("Данные загружены", "success");
+      showToast("Загружено", "success");
     }).catch(function(err){
       syncConfig.lastSyncStatus = "error";
       syncConfig.lastError = err.message;
@@ -1369,13 +1431,11 @@
     }
     return -1;
   }
-  function getVisibleStudents() {
-    return state.students.filter(function(s){ return !s.deleted; });
-  }
+  function getVisibleStudents() { return state.students.filter(function(s){ return !s.deleted; }); }
 
   function addStudent() {
     var name = dom.studentNameInput.value.trim();
-    if (!name) { showToast("Введите имя ученика", "warning"); dom.studentNameInput.focus(); return; }
+    if (!name) { showToast("Введите имя", "warning"); dom.studentNameInput.focus(); return; }
     state.students.push({ id: generateId(), name: name, updatedAt: Date.now(), deleted: false });
     dom.studentNameInput.value = "";
     markChanged();
@@ -1383,7 +1443,7 @@
     render();
     scheduleSync();
     dom.studentNameInput.focus();
-    showToast("Ученик «" + name + "» добавлен", "success");
+    showToast("Добавлен: " + name, "success");
   }
 
   function removeStudent(studentId) {
@@ -1391,12 +1451,9 @@
     if (idx < 0) return;
     var student = state.students[idx];
     if (student.deleted) return;
-    if (!confirm('Удалить ученика «' + student.name + '»?\nВсе отметки также будут удалены.')) return;
+    if (!confirm('Удалить «' + student.name + '»?\nВсе отметки также будут удалены.')) return;
 
-    state.students[idx] = {
-      id: student.id, name: student.name, updatedAt: Date.now(), deleted: true
-    };
-
+    state.students[idx] = { id: student.id, name: student.name, updatedAt: Date.now(), deleted: true };
     var prefix = studentId + "_", now = Date.now();
     Object.keys(state.attendance).forEach(function(k){
       if (k.indexOf(prefix) === 0) state.attendance[k] = { absent: false, updatedAt: now };
@@ -1406,7 +1463,7 @@
     saveLocal();
     render();
     scheduleSync();
-    showToast("Ученик удалён", "success");
+    showToast("Удалён", "success");
   }
 
   function toggleAbsence(studentId, dateKey) {
@@ -1426,10 +1483,6 @@
     state.selectedMonth = getMonthString(d);
     render();
   }
-
-  /* ============================================================
-     Фильтр
-     ============================================================ */
 
   function getFilteredStudents() {
     var visible = getVisibleStudents();
@@ -1482,7 +1535,6 @@
       return;
     }
     dom.emptyMessage.style.display = "none";
-
     if (filtered.length === 0) {
       dom.noSearchResults.style.display = "block";
       dom.tableBody.innerHTML = "";
@@ -1491,7 +1543,6 @@
     dom.noSearchResults.style.display = "none";
 
     var frag = document.createDocumentFragment();
-
     filtered.forEach(function(student){
       var idx = visible.indexOf(student);
       var row = document.createElement("tr");
@@ -1510,28 +1561,16 @@
         var ak = student.id + "_" + dk;
         var entry = state.attendance[ak];
         var absent = entry && entry.absent;
-
         if (isWeekend(day)) cell.classList.add("weekend");
         if (isToday(day)) cell.classList.add("today-column");
 
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "attendance-button";
-        if (absent) {
-          btn.classList.add("absent"); btn.textContent = "Н";
-          btn.title = "Отсутствует. Нажмите, чтобы снять отметку.";
-        } else {
-          btn.textContent = "—";
-          btn.title = "Присутствует. Нажмите, чтобы отметить отсутствие.";
-        }
-        if (state.revision > state.lastSyncedRevision && syncConfig.enabled) {
-          btn.classList.add("pending");
-        }
-
-        (function(sid, dk){
-          btn.addEventListener("click", function(){ toggleAbsence(sid, dk); });
-        })(student.id, dk);
-
+        if (absent) { btn.classList.add("absent"); btn.textContent = "Н"; btn.title = "Отсутствует"; }
+        else { btn.textContent = "—"; btn.title = "Присутствует"; }
+        if (state.revision > state.lastSyncedRevision && syncConfig.enabled) btn.classList.add("pending");
+        (function(sid, dk){ btn.addEventListener("click", function(){ toggleAbsence(sid, dk); }); })(student.id, dk);
         cell.appendChild(btn);
         row.appendChild(cell);
       });
@@ -1544,7 +1583,6 @@
       row.appendChild(ac);
       frag.appendChild(row);
     });
-
     dom.tableBody.innerHTML = "";
     dom.tableBody.appendChild(frag);
   }
@@ -1567,29 +1605,17 @@
     renderSearchInfo();
   }
 
-  /* ============================================================
-     Debug
-     ============================================================ */
-
   function renderDebug() {
-    var localRaw = storage ? storage.getItem(STORAGE_KEY) : null;
-    var info = {
+    dom.debugPre.textContent = JSON.stringify({
       deviceId: deviceId,
       revision: state.revision,
-      lastSyncedRevision: state.lastSyncedRevision,
-      isSyncing: isSyncing,
-      pendingSync: pendingSync,
       syncEnabled: syncConfig.enabled,
-      syncStatus: syncConfig.lastSyncStatus,
-      lastError: syncConfig.lastError,
       relayConfigured: relayConfigured(),
-      local: {
-        studentsCount: state.students.length,
-        visibleStudents: getVisibleStudents().length,
-        attendanceKeys: Object.keys(state.attendance).length
-      }
-    };
-    dom.debugPre.textContent = JSON.stringify(info, null, 2);
+      relayId: relayConfig.gistId || null,
+      students: state.students.length,
+      visible: getVisibleStudents().length,
+      attendanceKeys: Object.keys(state.attendance).length
+    }, null, 2);
   }
 
   /* ============================================================
@@ -1645,7 +1671,7 @@
     saveSyncConfig();
     updateSyncUI();
     dom.syncConfig.classList.remove("open");
-    showToast("Настройки сохранены", "success");
+    showToast("Сохранено", "success");
     syncNow("manual");
   });
 
@@ -1659,7 +1685,7 @@
     fetch(cacheBust("https://api.github.com/gists/" + gistId), {
       headers: githubHeaders(), cache: "no-store"
     }).then(function(r){
-      if (r.ok) { showToast("Связь установлена ✓", "success"); setSyncStatus("ok", "Связь есть"); }
+      if (r.ok) { showToast("Связь есть ✓", "success"); setSyncStatus("ok", "Связь есть"); }
       else return r.json().catch(function(){return{};}).then(function(e){
         throw new Error(describeGithubError(r.status, e.message));
       });
@@ -1670,19 +1696,18 @@
   });
 
   dom.disableSyncButton.addEventListener("click", function(){
-    if (!confirm("Отключить синхронизацию? Данные останутся на устройстве.")) return;
+    if (!confirm("Отключить синхронизацию?")) return;
     syncConfig.enabled = false;
     syncConfig.token = "";
     syncConfig.gistId = "";
     syncConfig.lastSync = 0;
     syncConfig.lastSyncStatus = "off";
-    syncConfig.lastError = "";
     saveSyncConfig();
     updateSyncUI();
     dom.githubToken.value = "";
     dom.gistId.value = "";
     dom.syncConfig.classList.remove("open");
-    showToast("Синхронизация отключена");
+    showToast("Отключено");
   });
 
   dom.syncNowButton.addEventListener("click", function(){ syncNow("manual"); });
@@ -1695,6 +1720,30 @@
   dom.refreshDebugButton.addEventListener("click", renderDebug);
   dom.copyDebugButton.addEventListener("click", function(){
     copyToClipboard(dom.debugPre.textContent, "Скопировано");
+  });
+
+  /* ============================================================
+     Relay — создание
+     ============================================================ */
+
+  dom.createRelayButton.addEventListener("click", function(){
+    if (!syncConfig.token) {
+      showToast("Сначала сохраните токен (⚙️ Настроить)", "warning");
+      return;
+    }
+    if (relayConfigured() && !confirm("Уже есть relay. Пересоздать? Старые PIN станут недействительны.")) return;
+
+    dom.createRelayButton.disabled = true;
+    dom.createRelayButton.textContent = "Создаю...";
+    createRelayGist().then(function(id){
+      showToast("Relay создан! Теперь работает PIN-подключение.", "success");
+      updateSyncUI();
+    }).catch(function(err){
+      showToast("Ошибка: " + err.message, "error");
+    }).then(function(){
+      dom.createRelayButton.disabled = false;
+      updateSyncUI();
+    });
   });
 
   /* ============================================================
@@ -1728,7 +1777,6 @@
       activePin.timer = setInterval(updatePinCountdown, 500);
       updatePinCountdown();
     }).catch(function(err){
-      console.error(err);
       dom.pinShowModal.classList.remove("open");
       showToast("Не удалось создать PIN: " + err.message, "error");
     }).then(function(){
@@ -1737,21 +1785,33 @@
   });
 
   dom.copyPinButton.addEventListener("click", function(){
-    if (!activePin.code) return;
-    copyToClipboard(activePin.code, "PIN скопирован: " + activePin.code);
+    if (activePin.code) copyToClipboard(activePin.code, "PIN скопирован");
   });
-
+  dom.copyRelayIdButton.addEventListener("click", function(){
+    if (relayConfig.gistId) copyToClipboard(relayConfig.gistId, "ID relay скопирован");
+  });
+  dom.shareBothButton.addEventListener("click", function(){
+    if (!activePin.code) return;
+    var text = "🔑 Подключение к дневнику посещаемости\n\n" +
+               "PIN: " + activePin.code + "\n" +
+               "ID relay: " + relayConfig.gistId + "\n\n" +
+               "Откройте приложение → «⌨️ Ввести PIN» → вставьте оба значения.\n" +
+               "ID relay нужен только один раз.";
+    if (navigator.share) {
+      navigator.share({ title: "Подключение", text: text }).catch(function(){});
+    } else {
+      copyToClipboard(text, "Скопировано для отправки");
+    }
+  });
   dom.pinShowValue.addEventListener("click", function(){
     if (activePin.code) copyToClipboard(activePin.code, "PIN скопирован");
   });
-
   dom.closePinShowButton.addEventListener("click", function(){
     dom.pinShowModal.classList.remove("open");
     if (activePin.timer) { clearInterval(activePin.timer); activePin.timer = null; }
     activePin.code = "";
     activePin.expiresAt = 0;
   });
-
   dom.pinShowModal.addEventListener("click", function(e){
     if (e.target === dom.pinShowModal) dom.closePinShowButton.click();
   });
@@ -1768,11 +1828,10 @@
     pinPollStart = 0;
   }
 
-  function setPinStatus(text, isError) {
+  function setPinStatus(text, kind) {
     dom.pinEnterStatus.style.display = text ? "block" : "none";
     dom.pinEnterStatus.textContent = text || "";
-    dom.pinEnterStatus.style.borderLeftColor = isError ? "var(--error)" : "";
-    dom.pinEnterStatus.style.background = isError ? "rgba(239,68,68,0.1)" : "";
+    dom.pinEnterStatus.className = "info-banner" + (kind ? " " + kind : "");
   }
 
   function applyPinConfig(cfg, pin) {
@@ -1794,10 +1853,9 @@
       if (cfg) {
         applyPinConfig(cfg, pin);
       } else {
-        // Продолжаем ждать
         pinPollTimer = setTimeout(function(){
           if (Date.now() - pinPollStart > PIN_POLL_TIMEOUT_MS) {
-            setPinStatus("⏱ Время ожидания истекло. Попробуйте снова.", true);
+            setPinStatus("⏱ Время ожидания истекло. Проверьте PIN и ID relay.", "error");
             stopPinPolling();
             dom.applyPinButton.disabled = false;
             return;
@@ -1806,27 +1864,22 @@
         }, PIN_POLL_INTERVAL_MS);
       }
     }).catch(function(err){
-      console.error(err);
-      setPinStatus("Ошибка: " + err.message, true);
+      setPinStatus("Ошибка: " + err.message, "error");
       stopPinPolling();
       dom.applyPinButton.disabled = false;
     });
   }
 
-  function startPollingPin(pin) {
-    stopPinPolling();
-    pinPollStart = Date.now();
-    setPinStatus("⏳ Ожидаю данные с другого устройства...", false);
-    tryFetchPin(pin);
-  }
-
   dom.enterPinButton.addEventListener("click", function(){
-    if (!relayConfigured()) {
-      showToast("PIN-подключение недоступно: не настроен relay", "error");
-      return;
-    }
     dom.pinEnterInput.value = "";
-    setPinStatus("", false);
+    setPinStatus("", null);
+    // Показываем поле relay ID, если его нет в storage
+    if (!relayConfigured()) {
+      dom.relayIdBlock.style.display = "block";
+      dom.relayIdInput.value = "";
+    } else {
+      dom.relayIdBlock.style.display = "none";
+    }
     dom.pinEnterModal.classList.add("open");
     setTimeout(function(){ dom.pinEnterInput.focus(); }, 100);
   });
@@ -1834,28 +1887,37 @@
   dom.pinEnterInput.addEventListener("input", function(e){
     var v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, PIN_LENGTH);
     e.target.value = v;
-    if (v.length === PIN_LENGTH) setTimeout(function(){ dom.applyPinButton.click(); }, 150);
+    if (v.length === PIN_LENGTH && relayConfigured()) {
+      setTimeout(function(){ dom.applyPinButton.click(); }, 150);
+    }
   });
 
   dom.applyPinButton.addEventListener("click", function(){
     var pin = dom.pinEnterInput.value.trim().toUpperCase();
-    if (pin.length !== PIN_LENGTH) {
-      setPinStatus("Введите 4 символа", true);
-      return;
-    }
-    dom.applyPinButton.disabled = true;
-    setPinStatus("⏳ Проверяю PIN " + pin + "...", false);
+    if (pin.length !== PIN_LENGTH) { setPinStatus("Введите 4 символа", "error"); return; }
 
-    // Первая проверка
+    // Если relay ID ещё не сохранён — сохраняем из поля
+    if (!relayConfigured()) {
+      var rid = extractGistId(dom.relayIdInput.value);
+      if (!rid) { setPinStatus("Введите ID relay (одноразово)", "error"); return; }
+      relayConfig.gistId = rid;
+      saveRelayConfig();
+      updateSyncUI();
+    }
+
+    dom.applyPinButton.disabled = true;
+    setPinStatus("⏳ Проверяю PIN " + pin + "...", "warn");
+
     fetchPinData(pin).then(function(cfg){
       if (cfg) {
         applyPinConfig(cfg, pin);
       } else {
-        // Не нашли — начинаем опрос (вдруг первое устройство ещё не выложило)
-        startPollingPin(pin);
+        pinPollStart = Date.now();
+        setPinStatus("⏳ Ожидаю данные с первого устройства...", "warn");
+        tryFetchPin(pin);
       }
     }).catch(function(err){
-      setPinStatus("Ошибка: " + err.message, true);
+      setPinStatus("Ошибка: " + err.message, "error");
       dom.applyPinButton.disabled = false;
     });
   });
@@ -1865,13 +1927,12 @@
     dom.applyPinButton.disabled = false;
     dom.pinEnterModal.classList.remove("open");
   });
-
   dom.pinEnterModal.addEventListener("click", function(e){
     if (e.target === dom.pinEnterModal) dom.closePinEnterButton.click();
   });
 
   /* ============================================================
-     Горячие клавиши / сеть / инициализация
+     Клавиши / сеть / init
      ============================================================ */
 
   document.addEventListener("keydown", function(e){
@@ -1881,9 +1942,6 @@
     if (e.key === "Escape") {
       if (dom.pinShowModal.classList.contains("open")) { dom.closePinShowButton.click(); return; }
       if (dom.pinEnterModal.classList.contains("open")) { dom.closePinEnterButton.click(); return; }
-      if (document.activeElement === dom.searchInput) {
-        dom.searchInput.value = ""; state.searchQuery = ""; render(); dom.searchInput.blur();
-      }
     }
   });
 
@@ -1903,24 +1961,30 @@
     deviceId = getDeviceId();
     loadLocal();
     loadSyncConfig();
+    loadRelayConfig();
     dom.monthPicker.value = state.selectedMonth;
     updateSyncUI();
     render();
 
-    // URL ?pin=XXXX → автоподключение
+    // Поддержка URL ?relay=X&pin=Y
     try {
       var params = new URLSearchParams(window.location.search);
+      var urlRelay = params.get("relay");
       var urlPin = (params.get("pin") || "").toUpperCase();
+      if (urlRelay) {
+        relayConfig.gistId = extractGistId(urlRelay);
+        saveRelayConfig();
+      }
       if (urlPin && urlPin.length === PIN_LENGTH && relayConfigured()) {
         if (window.history && window.history.replaceState) {
           window.history.replaceState({}, "", window.location.pathname);
         }
         dom.pinEnterInput.value = urlPin;
         dom.pinEnterModal.classList.add("open");
-        dom.applyPinButton.click();
+        setTimeout(function(){ dom.applyPinButton.click(); }, 200);
         return;
       }
-    } catch (e) { log("url parse", e); }
+    } catch (e) {}
 
     if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
       setTimeout(function(){ syncNow("auto"); }, 500);
