@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Электронный дневник посещаемости</title>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --background: #f3f6fb;
+      --card: #ffffff;
+      --border: #dbe3ef;
+      --text: #172033;
+      --muted: #64748b;
+      --absent: #fee2e2;
+      --absent-border: #ef4444;
+      --weekend: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input,
+    button {
+      font: inherit;
+    }
+
+    input[type="text"],
+    input[type="month"],
+    input[type="search"] {
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 12px;
+      outline: none;
+      background: white;
+    }
+
+    input[type="text"]:focus,
+    input[type="month"]:focus,
+    input[type="search"]:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 15px;
+      color: white;
+      background: var(--primary);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      color: var(--text);
+      background: #e8eef8;
+    }
+
+    button.secondary:hover {
+      background: #dce6f5;
+    }
+
+    button.danger {
+      color: #991b1b;
+      background: #fee2e2;
+    }
+
+    button.danger:hover {
+      background: #fecaca;
+    }
+
+    .month-title {
+      margin-top: 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .search-block {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .search-block label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .search-block input[type="search"] {
+      flex: 1;
+      min-width: 220px;
+      max-width: 420px;
+    }
+
+    .search-results-info {
+      color: var(--muted);
+      font-size: 13px;
+      margin-left: auto;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    table {
+      width: 100%;
+      min-width: 950px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      padding: 8px;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #edf3fc;
+      color: var(--text);
+      font-size: 12px;
+      min-width: 54px;
+    }
+
+    th.student-column {
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      min-width: 220px;
+      text-align: left;
+    }
+
+    td.student-name {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      min-width: 220px;
+      text-align: left;
+      background: white;
+      font-weight: 600;
+    }
+
+    .student-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .student-number {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      color: white;
+      background: var(--primary);
+      font-size: 13px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .date-number {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .weekday {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: normal;
+    }
+
+    .weekend {
+      background: var(--weekend);
+    }
+
+    .today {
+      outline: 2px solid var(--primary);
+      outline-offset: -2px;
+    }
+
+    .attendance-button {
+      width: 36px;
+      height: 36px;
+      min-height: 36px;
+      padding: 0;
+      border-radius: 7px;
+      color: #64748b;
+      background: #f1f5f9;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .attendance-button:hover {
+      background: #e2e8f0;
+    }
+
+    .attendance-button.absent {
+      color: #991b1b;
+      background: var(--absent);
+      border: 2px solid var(--absent-border);
+    }
+
+    .empty {
+      padding: 35px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .legend-box {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: var(--absent);
+      border: 2px solid var(--absent-border);
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .controls > * {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .search-block input[type="search"] {
+        max-width: 100%;
+      }
+
+      .search-results-info {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Электронный дневник посещаемости</h1>
+
+    <p class="subtitle">
+      Отмечайте только тех учеников, которые отсутствуют.
+    </p>
+
+    <section class="panel">
+      <div class="controls">
+        <input
+          id="studentName"
+          type="text"
+          placeholder="Введите имя ученика"
+          autocomplete="off"
+        />
+
+        <button id="addStudentButton">
+          Добавить ученика
+        </button>
+
+        <input id="monthPicker" type="month" />
+
+        <button id="previousMonthButton" class="secondary">
+          ← Предыдущий месяц
+        </button>
+
+        <button id="todayButton" class="secondary">
+          Текущий месяц
+        </button>
+
+        <button id="nextMonthButton" class="secondary">
+          Следующий месяц →
+        </button>
+      </div>
+
+      <div class="search-block">
+        <label for="searchInput">🔍 Поиск по фамилии:</label>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Введите фамилию или часть имени..."
+          autocomplete="off"
+        />
+        <button id="clearSearchButton" class="secondary">
+          Сбросить
+        </button>
+        <span id="searchResultsInfo" class="search-results-info"></span>
+      </div>
+
+      <div id="monthTitle" class="month-title"></div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-box"></span>
+          <span>Ученик отсутствует</span>
+        </div>
+
+        <div class="legend-item">
+          <span>Нажмите на ячейку, чтобы изменить статус</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-wrapper">
+      <table>
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+
+      <div id="emptyMessage" class="empty">
+        Пока нет учеников. Добавьте первого ученика выше.
+      </div>
+
+      <div id="noSearchResults" class="empty" style="display: none;">
+        По вашему запросу ничего не найдено.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "attendance_diary_data";
+
+    const state = {
+      students: [],
+      attendance: {},
+      selectedMonth: getMonthString(new Date()),
+      searchQuery: ""
+    };
+
+    const studentNameInput = document.getElementById("studentName");
+    const addStudentButton = document.getElementById("addStudentButton");
+    const monthPicker = document.getElementById("monthPicker");
+    const previousMonthButton = document.getElementById(
+      "previousMonthButton"
+    );
+    const nextMonthButton = document.getElementById(
+      "nextMonthButton"
+    );
+    const todayButton = document.getElementById("todayButton");
+    const monthTitle = document.getElementById("monthTitle");
+    const tableHead = document.getElementById("tableHead");
+    const tableBody = document.getElementById("tableBody");
+    const emptyMessage = document.getElementById("emptyMessage");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchButton = document.getElementById(
+      "clearSearchButton"
+    );
+    const searchResultsInfo = document.getElementById(
+      "searchResultsInfo"
+    );
+    const noSearchResults = document.getElementById(
+      "noSearchResults"
+    );
+
+    const monthNames = [
+      "Январь",
+      "Февраль",
+      "Март",
+      "Апрель",
+      "Май",
+      "Июнь",
+      "Июль",
+      "Август",
+      "Сентябрь",
+      "Октябрь",
+      "Ноябрь",
+      "Декабрь"
+    ];
+
+    const weekdayNames = [
+      "Вс",
+      "Пн",
+      "Вт",
+      "Ср",
+      "Чт",
+      "Пт",
+      "Сб"
+    ];
+
+    function getMonthString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+
+      return `${year}-${month}`;
+    }
+
+    function parseMonth(monthString) {
+      const [year, month] = monthString.split("-").map(Number);
+
+      return new Date(year, month - 1, 1);
+    }
+
+    function formatDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
+    function getDaysInMonth(monthString) {
+      const date = parseMonth(monthString);
+
+      const daysCount = new Date(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        0
+      ).getDate();
+
+      const days = [];
+
+      for (let day = 1; day <= daysCount; day++) {
+        days.push(
+          new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            day
+          )
+        );
+      }
+
+      return days;
+    }
+
+    function saveData() {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          students: state.students,
+          attendance: state.attendance
+        })
+      );
+    }
+
+    function loadData() {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+
+      if (!savedData) {
+        return;
+      }
+
+      try {
+        const parsedData = JSON.parse(savedData);
+
+        state.students = Array.isArray(parsedData.students)
+          ? parsedData.students
+          : [];
+
+        state.attendance =
+          parsedData.attendance &&
+          typeof parsedData.attendance === "object"
+            ? parsedData.attendance
+            : {};
+      } catch (error) {
+        console.error("Не удалось загрузить данные:", error);
+      }
+    }
+
+    function addStudent() {
+      const name = studentNameInput.value.trim();
+
+      if (!name) {
+        alert("Введите имя ученика.");
+        studentNameInput.focus();
+        return;
+      }
+
+      const student = {
+        id:
+          typeof crypto !== "undefined" &&
+          typeof crypto.randomUUID === "function"
+            ? crypto.randomUUID()
+            : String(Date.now()),
+
+        name
+      };
+
+      state.students.push(student);
+      studentNameInput.value = "";
+
+      saveData();
+      render();
+
+      studentNameInput.focus();
+    }
+
+    function removeStudent(studentId) {
+      const student = state.students.find(
+        item => item.id === studentId
+      );
+
+      if (!student) {
+        return;
+      }
+
+      const confirmed = confirm(
+        `Удалить ученика «${student.name}»?`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      state.students = state.students.filter(
+        item => item.id !== studentId
+      );
+
+      for (const key of Object.keys(state.attendance)) {
+        if (key.startsWith(`${studentId}_`)) {
+          delete state.attendance[key];
+        }
+      }
+
+      saveData();
+      render();
+    }
+
+    function toggleAbsence(studentId, dateKey) {
+      const attendanceKey = `${studentId}_${dateKey}`;
+
+      if (state.attendance[attendanceKey]) {
+        delete state.attendance[attendanceKey];
+      } else {
+        state.attendance[attendanceKey] = true;
+      }
+
+      saveData();
+      render();
+    }
+
+    function changeMonth(offset) {
+      const date = parseMonth(state.selectedMonth);
+
+      date.setMonth(date.getMonth() + offset);
+
+      state.selectedMonth = getMonthString(date);
+      monthPicker.value = state.selectedMonth;
+
+      render();
+    }
+
+    function getFilteredStudents() {
+      const query = state.searchQuery.trim().toLowerCase();
+
+      if (!query) {
+        return state.students;
+      }
+
+      return state.students.filter(student =>
+        student.name.toLowerCase().includes(query)
+      );
+    }
+
+    function renderHeader(days) {
+      tableHead.innerHTML = "";
+
+      const row = document.createElement("tr");
+
+      const studentHeader = document.createElement("th");
+      studentHeader.className = "student-column";
+      studentHeader.textContent = "№ | Ученик";
+
+      row.appendChild(studentHeader);
+
+      days.forEach(day => {
+        const header = document.createElement("th");
+        const dateKey = formatDateKey(day);
+
+        if (day.getDay() === 0 || day.getDay() === 6) {
+          header.classList.add("weekend");
+        }
+
+        if (dateKey === formatDateKey(new Date())) {
+          header.classList.add("today");
+        }
+
+        header.innerHTML = `
+          <span class="date-number">${day.getDate()}</span>
+          <span class="weekday">${weekdayNames[day.getDay()]}</span>
+        `;
+
+        row.appendChild(header);
+      });
+
+      const actionHeader = document.createElement("th");
+      actionHeader.textContent = "Действия";
+
+      row.appendChild(actionHeader);
+      tableHead.appendChild(row);
+    }
+
+    function renderBody(days) {
+      tableBody.innerHTML = "";
+
+      const filteredStudents = getFilteredStudents();
+
+      // Если учеников нет вообще
+      if (state.students.length === 0) {
+        emptyMessage.style.display = "block";
+        noSearchResults.style.display = "none";
+        return;
+      }
+
+      emptyMessage.style.display = "none";
+
+      // Если поиск не дал результатов
+      if (filteredStudents.length === 0) {
+        noSearchResults.style.display = "block";
+        return;
+      }
+
+      noSearchResults.style.display = "none";
+
+      filteredStudents.forEach(student => {
+        // Находим реальный индекс ученика в полном списке
+        const originalIndex = state.students.indexOf(student);
+
+        const row = document.createElement("tr");
+
+        const nameCell = document.createElement("td");
+        nameCell.className = "student-name";
+
+        const studentNumber = document.createElement("span");
+        studentNumber.className = "student-number";
+        studentNumber.textContent = `${originalIndex + 1}.`;
+
+        const studentName = document.createElement("span");
+        studentName.textContent = student.name;
+
+        nameCell.appendChild(studentNumber);
+        nameCell.appendChild(studentName);
+
+        row.appendChild(nameCell);
+
+        days.forEach(day => {
+          const cell = document.createElement("td");
+          const dateKey = formatDateKey(day);
+          const attendanceKey = `${student.id}_${dateKey}`;
+          const isAbsent = Boolean(
+            state.attendance[attendanceKey]
+          );
+
+          if (day.getDay() === 0 || day.getDay() === 6) {
+            cell.classList.add("weekend");
+          }
+
+          const button = document.createElement("button");
+          button.className = "attendance-button";
+
+          if (isAbsent) {
+            button.classList.add("absent");
+            button.textContent = "Н";
+            button.title =
+              "Отсутствует. Нажмите, чтобы снять отметку.";
+          } else {
+            button.textContent = "—";
+            button.title =
+              "Присутствует. Нажмите, чтобы отметить отсутствие.";
+          }
+
+          button.addEventListener("click", () => {
+            toggleAbsence(student.id, dateKey);
+          });
+
+          cell.appendChild(button);
+          row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "danger";
+        removeButton.textContent = "Удалить";
+
+        removeButton.addEventListener("click", () => {
+          removeStudent(student.id);
+        });
+
+        actionCell.appendChild(removeButton);
+        row.appendChild(actionCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderSearchInfo() {
+      const query = state.searchQuery.trim();
+      const total = state.students.length;
+      const filtered = getFilteredStudents().length;
+
+      if (!query) {
+        searchResultsInfo.textContent =
+          total > 0 ? `Всего учеников: ${total}` : "";
+        return;
+      }
+
+      searchResultsInfo.textContent =
+        `Найдено: ${filtered} из ${total}`;
+    }
+
+    function render() {
+      const selectedDate = parseMonth(state.selectedMonth);
+      const days = getDaysInMonth(state.selectedMonth);
+
+      monthPicker.value = state.selectedMonth;
+
+      monthTitle.textContent =
+        `${monthNames[selectedDate.getMonth()]} ` +
+        `${selectedDate.getFullYear()}`;
+
+      renderHeader(days);
+      renderBody(days);
+      renderSearchInfo();
+    }
+
+    addStudentButton.addEventListener("click", addStudent);
+
+    studentNameInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        addStudent();
+      }
+    });
+
+    monthPicker.addEventListener("change", event => {
+      state.selectedMonth = event.target.value;
+      render();
+    });
+
+    previousMonthButton.addEventListener("click", () => {
+      changeMonth(-1);
+    });
+
+    nextMonthButton.addEventListener("click", () => {
+      changeMonth(1);
+    });
+
+    todayButton.addEventListener("click", () => {
+      state.selectedMonth = getMonthString(new Date());
+      render();
+    });
+
+    searchInput.addEventListener("input", event => {
+      state.searchQuery = event.target.value;
+      render();
+    });
+
+    clearSearchButton.addEventListener("click", () => {
+      searchInput.value = "";
+      state.searchQuery = "";
+      render();
+      searchInput.focus();
+    });
+
+    loadData();
+    render();
+  </script>
+</body>
+          </html>
