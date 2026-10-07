@@ -30,6 +30,8 @@
       --warning: #f59e0b;
       --error: #ef4444;
       --placeholder: #94a3b8;
+      --row-hover: #eef4ff;
+      --row-hover-border: #bfdbfe;
 
       --space-xs: clamp(6px, 0.6vw, 10px);
       --space-sm: clamp(10px, 1vw, 14px);
@@ -68,6 +70,8 @@
         --today-border: #3b82f6;
         --shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
         --placeholder: #64748b;
+        --row-hover: #273549;
+        --row-hover-border: #3b82f6;
       }
     }
 
@@ -98,7 +102,6 @@
       padding-bottom: max(var(--space-lg), env(safe-area-inset-bottom));
     }
 
-    /* ============ ШАПКА ============ */
     .page-header {
       display: flex;
       align-items: flex-start;
@@ -107,10 +110,7 @@
       margin-bottom: var(--space-md);
     }
 
-    .page-header-text {
-      min-width: 0;
-      flex: 1 1 auto;
-    }
+    .page-header-text { min-width: 0; flex: 1 1 auto; }
 
     h1 {
       margin: 0 0 var(--space-xs);
@@ -127,7 +127,7 @@
       font-size: var(--fs-sm);
     }
 
-    /* ============ БЕЙДЖ BETA ============ */
+    /* ============ БЕЙДЖ BETA (кликабельный) ============ */
     .beta-badge {
       display: inline-flex;
       align-items: center;
@@ -148,7 +148,20 @@
       position: relative;
       overflow: hidden;
       user-select: none;
+      cursor: pointer;
+      border: 0;
+      font-family: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
+
+    .beta-badge:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 6px 20px rgba(239, 68, 68, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .beta-badge:active { transform: translateY(0); }
 
     .beta-badge::before {
       content: "";
@@ -157,12 +170,7 @@
       left: -50%;
       width: 200%;
       height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.35) 50%,
-        transparent 100%
-      );
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
       animation: betaShine 3.5s ease-in-out infinite;
       pointer-events: none;
     }
@@ -192,44 +200,75 @@
     @media (prefers-color-scheme: dark) {
       .beta-badge {
         background: linear-gradient(135deg, #fbbf24 0%, #f43f5e 50%, #ec4899 100%);
-        box-shadow:
-          0 4px 18px rgba(244, 63, 94, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 18px rgba(244, 63, 94, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
       }
     }
 
-    @media (max-width: 700px) {
-      .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-xs);
-      }
+    /* ============ НОВОСТНОЙ БАННЕР ============ */
+    .news-banner {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: var(--space-md);
+      display: none;
+      align-items: flex-start;
+      gap: 12px;
+      color: #78350f;
+      font-weight: 500;
+      box-shadow: 0 4px 14px rgba(251, 191, 36, 0.2);
+    }
 
-      .beta-badge {
-        align-self: flex-start;
-        font-size: 10.5px;
-        padding: 5px 12px 5px 7px;
+    .news-banner.visible { display: flex; }
+
+    @media (prefers-color-scheme: dark) {
+      .news-banner {
+        background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+        border-color: #b45309;
+        color: #fef3c7;
+        box-shadow: 0 4px 18px rgba(120, 53, 15, 0.5);
       }
     }
 
-    @media (max-width: 480px) {
-      .beta-badge {
-        font-size: 10px;
-        letter-spacing: 0.05em;
-        padding: 4px 10px 4px 6px;
-      }
-      .beta-badge-dot {
-        width: 6px;
-        height: 6px;
-      }
+    .news-content {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      flex: 1;
+      min-width: 0;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .beta-badge::before,
-      .beta-badge-dot {
-        animation: none;
-      }
+    .news-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+      line-height: 1.1;
     }
+
+    .news-banner .news-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      font-size: var(--fs-sm);
+    }
+
+    .news-close {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      font-size: 24px;
+      line-height: 1;
+      padding: 0 4px;
+      min-height: 24px;
+      width: 24px;
+      cursor: pointer;
+      opacity: 0.55;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+      align-self: flex-start;
+      margin-top: -2px;
+    }
+
+    .news-close:hover { opacity: 1; background: transparent; }
 
     /* ============ ОСТАЛЬНОЕ ============ */
 
@@ -249,7 +288,7 @@
       align-items: center;
     }
 
-    input, button, select {
+    input, button, select, textarea {
       font: inherit;
       -webkit-appearance: none;
       appearance: none;
@@ -269,9 +308,20 @@
       transition: border-color 0.15s, box-shadow 0.15s;
     }
 
+    select {
+      min-height: clamp(38px, 3vw + 22px, 46px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 var(--space-sm);
+      outline: none;
+      background: var(--card);
+      color: var(--text-strong);
+      cursor: pointer;
+    }
+
     input::placeholder { color: var(--placeholder); opacity: 1; }
 
-    input:focus {
+    input:focus, select:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
     }
@@ -413,12 +463,14 @@
     .sync-status.off { color: #475569; }
     .sync-status.busy { color: #b45309; }
     .sync-status.error { color: #b91c1c; }
+    .sync-status.paused { color: #64748b; }
 
     @media (prefers-color-scheme: dark) {
       .sync-status.on { color: #6ee7b7; }
       .sync-status.off { color: #cbd5e1; }
       .sync-status.busy { color: #fcd34d; }
       .sync-status.error { color: #fca5a5; }
+      .sync-status.paused { color: #94a3b8; }
     }
 
     .status-dot {
@@ -496,6 +548,31 @@
 
     .sync-actions button { flex: 0 1 auto; }
 
+    .interval-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-top: var(--space-xs);
+    }
+
+    .interval-row label {
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .interval-row label { color: #bfdbfe; }
+    }
+
+    .interval-row select {
+      min-height: 34px;
+      font-size: var(--fs-sm);
+      padding: 0 10px;
+      width: auto;
+    }
+
     .debug-block {
       display: none;
       margin-top: var(--space-md);
@@ -553,6 +630,7 @@
       padding: var(--row-pad) 4px;
       color: var(--text);
       line-height: 1.2;
+      transition: background-color 0.15s ease;
     }
 
     th:last-child, td:last-child { border-right: 0; }
@@ -601,6 +679,46 @@
       min-width: clamp(130px, 14vw, 220px);
       max-width: clamp(180px, 20vw, 300px);
       vertical-align: middle;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      tbody tr { transition: background-color 0.15s ease; }
+      tbody tr:hover td { background-color: var(--row-hover); }
+      tbody tr:hover td.student-name-cell { background-color: var(--row-hover); }
+      tbody tr:hover td.student-name-cell { box-shadow: inset -2px 0 0 var(--row-hover-border); }
+      tbody tr:hover td { border-top-color: var(--row-hover-border); border-bottom-color: var(--row-hover-border); }
+      tbody tr:hover td:first-child { border-left: 2px solid var(--row-hover-border); }
+      tbody tr:hover td:last-child { border-right: 2px solid var(--row-hover-border); }
+      tbody tr:hover .attendance-button:not(.absent) {
+        background: #ffffff;
+        border: 1px solid var(--row-hover-border);
+      }
+      @media (prefers-color-scheme: dark) {
+        tbody tr:hover .attendance-button:not(.absent) {
+          background: #0f172a;
+          border: 1px solid #3b82f6;
+        }
+      }
+      tbody tr:hover td.student-name-cell .student-number {
+        transform: scale(1.05);
+        transition: transform 0.15s ease;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      tbody tr:hover td.today-column { background-color: var(--today-bg); }
+      tbody tr:hover td.today-column .attendance-button:not(.absent) {
+        background: #ffffff;
+        border: 1.5px solid var(--today-border);
+      }
+      @media (prefers-color-scheme: dark) {
+        tbody tr:hover td.today-column { background-color: var(--today-bg); }
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      tbody tr:hover td.weekend:not(.today-column) { background-color: var(--row-hover); }
     }
 
     .student-name-flex {
@@ -631,6 +749,7 @@
       font-size: var(--fs-xs);
       font-weight: 700;
       flex-shrink: 0;
+      transition: transform 0.15s ease;
     }
 
     .date-number {
@@ -706,6 +825,7 @@
       line-height: 1;
       touch-action: manipulation;
       position: relative;
+      transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
     }
 
     .attendance-button:hover { background: #e2e8f0; }
@@ -800,6 +920,230 @@
     .toast.error { background: #b91c1c; }
     .toast.warning { background: #b45309; color: #ffffff; }
 
+    /* ============================================================
+       МОДАЛЬНЫЕ ОКНА (пароль, dev-панель)
+       ============================================================ */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      margin: auto;
+    }
+
+    .modal.modal-dev { max-width: 560px; }
+
+    .modal h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      color: var(--text-strong);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .modal-actions button { flex: 0 1 auto; }
+
+    .dev-section {
+      margin-bottom: 16px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(37, 99, 235, 0.03);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .dev-section { background: rgba(59, 130, 246, 0.06); }
+    }
+
+    .dev-section > label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-strong);
+      font-size: 14px;
+    }
+
+    .dev-section .help-text {
+      margin: 0 0 10px;
+      color: var(--muted-strong);
+      font-size: 12px;
+    }
+
+    .dev-section input[type="text"],
+    .dev-section input[type="password"],
+    .dev-section textarea {
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text-strong);
+      font: inherit;
+      font-size: 14px;
+      min-height: 40px;
+    }
+
+    .dev-section textarea {
+      min-height: 90px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    .dev-section .row-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .dev-section .row-actions button { flex: 0 1 auto; }
+
+    .dev-password-reveal {
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+      background: rgba(0, 0, 0, 0.06);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .dev-password-reveal { background: rgba(255, 255, 255, 0.08); }
+    }
+
+    /* ============================================================
+       ЭКРАН ТЕХ.РАБОТ
+       ============================================================ */
+    .maintenance-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      z-index: 9000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #ffffff;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .maintenance-overlay.open { display: flex; }
+
+    @media (prefers-color-scheme: dark) {
+      .maintenance-overlay {
+        background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+      }
+    }
+
+    .maintenance-content {
+      max-width: 520px;
+      padding: 40px 20px;
+    }
+
+    .maintenance-icon {
+      font-size: 72px;
+      margin-bottom: 20px;
+      animation: maintBounce 2.5s ease-in-out infinite;
+    }
+
+    @keyframes maintBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .maintenance-content h2 {
+      font-size: clamp(22px, 4vw, 32px);
+      margin: 0 0 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .maintenance-content p {
+      font-size: clamp(14px, 1.5vw, 17px);
+      line-height: 1.6;
+      color: #cbd5e1;
+      margin: 0 0 28px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .maintenance-dev-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 12px;
+      padding: 0 14px;
+      min-height: 34px;
+      font-weight: 600;
+      display: inline-flex;
+      width: auto;
+      opacity: 0.7;
+      transition: opacity 0.15s, background 0.15s;
+    }
+
+    .maintenance-dev-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      opacity: 1;
+    }
+
+    /* Индикатор "режим тех.работ" для устройства-включителя */
+    .maintenance-active-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      margin-left: 10px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .maintenance-active-badge {
+        background: rgba(239, 68, 68, 0.25);
+        color: #fca5a5;
+      }
+    }
+
+    /* ============ АДАПТИВНОСТЬ ============ */
     @media (min-width: 1800px) {
       :root { --space-lg: 32px; }
       .container { max-width: 1700px; }
@@ -834,6 +1178,13 @@
       .sync-actions { flex-direction: column; }
       .sync-actions button { width: 100%; }
       .table-wrapper { border-radius: 10px; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: var(--space-xs); }
+      .beta-badge { align-self: flex-start; }
+      .modal { padding: 18px; }
+      .modal-actions { flex-direction: column-reverse; }
+      .modal-actions button { width: 100%; }
+      .dev-section .row-actions { flex-direction: column; }
+      .dev-section .row-actions button { width: 100%; }
     }
 
     @media (max-width: 480px) {
@@ -847,6 +1198,8 @@
       th, td { padding: 4px 3px; }
       .weekday { display: none; }
       .date-number { margin-bottom: 0; }
+      .news-icon { font-size: 18px; }
+      .maintenance-icon { font-size: 56px; }
     }
 
     @media (max-width: 360px) {
@@ -871,6 +1224,10 @@
       button.danger:hover { background: var(--absent); }
       .attendance-button:hover { background: #f1f5f9; }
       td.today-column .attendance-button:not(.absent):hover { background: #ffffff; }
+      .beta-badge:hover {
+        transform: none;
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+      }
 
       @media (prefers-color-scheme: dark) {
         button.secondary:hover { background: #334155; }
@@ -879,8 +1236,18 @@
       }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .beta-badge::before,
+      .beta-badge-dot,
+      .maintenance-icon {
+        animation: none;
+      }
+      * { transition-duration: 0.01ms !important; }
+    }
+
     @media print {
-      .panel, button, .toast, .beta-badge { display: none !important; }
+      .panel, button, .toast, .beta-badge, .news-banner,
+      .modal-backdrop, .maintenance-overlay { display: none !important; }
       .table-wrapper { border: 1px solid #000; box-shadow: none; max-height: none; }
       body { background: #ffffff; color: #000000; }
       h1 { color: #000; }
@@ -894,14 +1261,27 @@
   <main class="container">
     <header class="page-header">
       <div class="page-header-text">
-        <h1>Электронный дневник посещаемости</h1>
+        <h1>
+          Электронный дневник посещаемости
+          <span id="maintenanceActiveBadge" class="maintenance-active-badge" style="display: none;">
+            🚧 Тех.работы
+          </span>
+        </h1>
         <p class="subtitle">Отмечайте только тех учеников, которые отсутствуют.</p>
       </div>
-      <span class="beta-badge" title="Это бета-версия. Возможны ошибки.">
+      <button id="versionButton" class="beta-badge" type="button" title="Нажмите, чтобы войти в режим разработчика">
         <span class="beta-badge-dot"></span>
         Beta&nbsp;·&nbsp;v1
-      </span>
+      </button>
     </header>
+
+    <div id="newsBanner" class="news-banner" role="status">
+      <div class="news-content">
+        <span class="news-icon">📢</span>
+        <span class="news-text" id="newsText"></span>
+      </div>
+      <button id="newsCloseButton" class="news-close" type="button" aria-label="Закрыть">×</button>
+    </div>
 
     <section class="panel sync-panel">
       <div class="sync-header">
@@ -923,6 +1303,16 @@
         <button id="forcePushButton" class="warning" type="button" disabled>⬆️ Отправить мои данные</button>
         <button id="forcePullButton" class="danger" type="button" disabled>⬇️ Взять с сервера</button>
         <button id="debugButton" class="secondary" type="button">🐛 Отладка</button>
+      </div>
+
+      <div class="interval-row">
+        <label for="intervalSelect">⏱ Частота автосинхронизации:</label>
+        <select id="intervalSelect">
+          <option value="5000">Мгновенно (5 сек)</option>
+          <option value="15000">Быстро (15 сек)</option>
+          <option value="30000">Обычно (30 сек)</option>
+          <option value="0">Только вручную</option>
+        </select>
       </div>
 
       <div id="syncConfig" class="sync-config">
@@ -994,6 +1384,91 @@
     </section>
   </main>
 
+  <!-- ================= МОДАЛЬНОЕ ОКНО: ПАРОЛЬ ================= -->
+  <div id="devPasswordModal" class="modal-backdrop">
+    <div class="modal">
+      <h3>🔒 Вход в режим разработчика</h3>
+      <p class="help-text" style="color: var(--muted-strong); font-size: 13px; margin: 0 0 12px;">
+        Введите пароль разработчика для доступа к служебным функциям.
+      </p>
+      <input id="devPasswordInput" type="password" placeholder="Пароль" autocomplete="off" spellcheck="false" inputmode="numeric" />
+      <div class="modal-actions">
+        <button id="devPasswordCancel" class="secondary" type="button">Отмена</button>
+        <button id="devPasswordSubmit" type="button">Войти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= МОДАЛЬНОЕ ОКНО: DEV-ПАНЕЛЬ ================= -->
+  <div id="devPanelModal" class="modal-backdrop">
+    <div class="modal modal-dev">
+      <h3>⚙️ Режим разработчика</h3>
+
+      <div class="dev-section">
+        <label>🔑 Пароль разработчика</label>
+        <p class="help-text">
+          Текущий: <span id="devCurrentPassword" class="dev-password-reveal">••••••</span>
+          <button id="devToggleReveal" class="secondary" type="button" style="min-height: 26px; padding: 0 8px; font-size: 11px; margin-left: 6px; width: auto;">Показать</button>
+        </p>
+        <input id="devNewPasswordInput" type="text" placeholder="Новый пароль" autocomplete="off" spellcheck="false" />
+        <div class="row-actions">
+          <button id="devChangePasswordButton" type="button">💾 Изменить пароль</button>
+        </div>
+      </div>
+
+      <div class="dev-section">
+        <label>🚧 Режим технических работ</label>
+        <p class="help-text">
+          При включении все устройства, кроме этого, увидят незакрывающийся
+          экран тех.работ. Отключить можно будет только отсюда.
+        </p>
+        <button id="devToggleMaintenanceButton" type="button">Включить</button>
+      </div>
+
+      <div class="dev-section">
+        <label>💬 Сообщение на экране тех.работ</label>
+        <p class="help-text">
+          Этот текст увидят пользователи при включённых тех.работах.
+        </p>
+        <textarea id="devMaintenanceMessageInput" placeholder="Текст для экрана тех.работ..."></textarea>
+        <div class="row-actions">
+          <button id="devSaveMaintenanceMessageButton" class="secondary" type="button">💾 Сохранить</button>
+          <button id="devResetMaintenanceMessageButton" class="secondary" type="button">↺ По умолчанию</button>
+        </div>
+      </div>
+
+      <div class="dev-section">
+        <label>📢 Новость на главной странице</label>
+        <p class="help-text">
+          Показывается всем пользователям в жёлтом баннере сверху.
+          Оставьте пустым — баннер скроется.
+        </p>
+        <textarea id="devNewsInput" placeholder="Текст новости..."></textarea>
+        <div class="row-actions">
+          <button id="devSaveNewsButton" class="secondary" type="button">💾 Сохранить</button>
+          <button id="devClearNewsButton" class="danger" type="button">🗑 Очистить</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="devLogoutButton" class="danger" type="button">Выйти из режима</button>
+        <button id="devCloseButton" class="secondary" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ЭКРАН ТЕХ.РАБОТ ================= -->
+  <div id="maintenanceOverlay" class="maintenance-overlay">
+    <div class="maintenance-content">
+      <div class="maintenance-icon">🚧</div>
+      <h2>Ведутся технические работы</h2>
+      <p id="maintenanceMessageText">Сайт временно недоступен. Приносим извинения за неудобства.</p>
+      <button id="maintenanceDevAccessButton" class="maintenance-dev-btn" type="button">
+        🔒 Режим разработчика
+      </button>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -1002,18 +1477,36 @@
   var STORAGE_KEY = "attendance_diary_data";
   var SYNC_CONFIG_KEY = "attendance_sync_config";
   var DEVICE_ID_KEY = "attendance_device_id";
+  var INTERVAL_KEY = "attendance_poll_interval";
+  var DEV_UNLOCKED_KEY = "attendance_dev_unlocked";
+  var NEWS_DISMISS_KEY = "attendance_news_dismissed";
   var GIST_FILENAME = "attendance.json";
-  var SYNC_DEBOUNCE_MS = 1200;
+
+  var DEFAULT_POLL_INTERVAL_MS = 5000;
+  var PUSH_DEBOUNCE_MS = 1500;
   var TOMBSTONE_TTL_MS = 1000 * 60 * 60 * 24 * 90;
-  var SYNC_RETRY_DELAY_MS = 300;
+  var RETRY_DELAY_MS = 300;
+  var BACKOFF_STEPS_MS = [5000, 10000, 20000, 30000];
+
+  var DEFAULT_DEV_PASSWORD = "020912";
+  var DEFAULT_MAINTENANCE_MSG = "Сайт временно недоступен. Приносим извинения за неудобства. Попробуйте позже.";
 
   var state = {
     students: [],
     attendance: {},
+    settings: {
+      maintenance: false,
+      maintenanceMessage: DEFAULT_MAINTENANCE_MSG,
+      maintenanceBy: "",
+      news: "",
+      devPassword: DEFAULT_DEV_PASSWORD,
+      updatedAt: 0
+    },
     selectedMonth: getMonthString(new Date()),
     searchQuery: "",
     revision: 0,
-    lastSyncedRevision: 0
+    lastSyncedRevision: 0,
+    devUnlocked: false
   };
 
   var syncConfig = {
@@ -1025,9 +1518,19 @@
     lastError: ""
   };
 
-  var syncTimer = null;
-  var isSyncing = false;
-  var pendingSync = false;
+  var syncRuntime = {
+    pushTimer: null,
+    pollTimer: null,
+    isSyncing: false,
+    pendingSync: false,
+    etag: null,
+    pollIntervalMs: DEFAULT_POLL_INTERVAL_MS,
+    consecutiveErrors: 0,
+    lastPullAt: 0,
+    lastPushedAt: 0,
+    hasPendingChanges: false
+  };
+
   var deviceId = "";
 
   var dom = {
@@ -1062,11 +1565,52 @@
     debugBlock: document.getElementById("debugBlock"),
     debugPre: document.getElementById("debugPre"),
     refreshDebugButton: document.getElementById("refreshDebugButton"),
-    copyDebugButton: document.getElementById("copyDebugButton")
+    copyDebugButton: document.getElementById("copyDebugButton"),
+    intervalSelect: document.getElementById("intervalSelect"),
+
+    // Dev mode
+    versionButton: document.getElementById("versionButton"),
+    maintenanceActiveBadge: document.getElementById("maintenanceActiveBadge"),
+
+    // News
+    newsBanner: document.getElementById("newsBanner"),
+    newsText: document.getElementById("newsText"),
+    newsCloseButton: document.getElementById("newsCloseButton"),
+
+    // Password modal
+    devPasswordModal: document.getElementById("devPasswordModal"),
+    devPasswordInput: document.getElementById("devPasswordInput"),
+    devPasswordCancel: document.getElementById("devPasswordCancel"),
+    devPasswordSubmit: document.getElementById("devPasswordSubmit"),
+
+    // Dev panel modal
+    devPanelModal: document.getElementById("devPanelModal"),
+    devCurrentPassword: document.getElementById("devCurrentPassword"),
+    devToggleReveal: document.getElementById("devToggleReveal"),
+    devNewPasswordInput: document.getElementById("devNewPasswordInput"),
+    devChangePasswordButton: document.getElementById("devChangePasswordButton"),
+    devToggleMaintenanceButton: document.getElementById("devToggleMaintenanceButton"),
+    devMaintenanceMessageInput: document.getElementById("devMaintenanceMessageInput"),
+    devSaveMaintenanceMessageButton: document.getElementById("devSaveMaintenanceMessageButton"),
+    devResetMaintenanceMessageButton: document.getElementById("devResetMaintenanceMessageButton"),
+    devNewsInput: document.getElementById("devNewsInput"),
+    devSaveNewsButton: document.getElementById("devSaveNewsButton"),
+    devClearNewsButton: document.getElementById("devClearNewsButton"),
+    devLogoutButton: document.getElementById("devLogoutButton"),
+    devCloseButton: document.getElementById("devCloseButton"),
+
+    // Maintenance overlay
+    maintenanceOverlay: document.getElementById("maintenanceOverlay"),
+    maintenanceMessageText: document.getElementById("maintenanceMessageText"),
+    maintenanceDevAccessButton: document.getElementById("maintenanceDevAccessButton")
   };
 
   var monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
   var weekdayNames = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+
+  /* ============================================================
+     Утилиты
+     ============================================================ */
 
   function getMonthString(date) {
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
@@ -1108,6 +1652,16 @@
   }
   var storage = getStorage();
 
+  function getSessionStorage() {
+    try {
+      var k = "__test_s__";
+      window.sessionStorage.setItem(k, "1");
+      window.sessionStorage.removeItem(k);
+      return window.sessionStorage;
+    } catch (e) { return null; }
+  }
+  var sessStorage = getSessionStorage();
+
   function getDeviceId() {
     if (!storage) return "unknown";
     var id = storage.getItem(DEVICE_ID_KEY);
@@ -1118,8 +1672,34 @@
     return id;
   }
 
-  function migrateV1toV2(data) {
-    var result = { students: [], attendance: {} };
+  function cloneSettings(s) {
+    if (!s || typeof s !== "object") s = {};
+    return {
+      maintenance: Boolean(s.maintenance),
+      maintenanceMessage: typeof s.maintenanceMessage === "string" && s.maintenanceMessage
+        ? s.maintenanceMessage
+        : DEFAULT_MAINTENANCE_MSG,
+      maintenanceBy: typeof s.maintenanceBy === "string" ? s.maintenanceBy : "",
+      news: typeof s.news === "string" ? s.news : "",
+      devPassword: typeof s.devPassword === "string" && s.devPassword
+        ? s.devPassword
+        : DEFAULT_DEV_PASSWORD,
+      updatedAt: Number(s.updatedAt) || 0
+    };
+  }
+
+  /* ============================================================
+     Миграция и хранилище
+     ============================================================ */
+
+  function migrateData(data) {
+    var result = {
+      students: [],
+      attendance: {},
+      settings: cloneSettings(null)
+    };
+
+    if (!data || typeof data !== "object") return result;
 
     if (Array.isArray(data.students)) {
       data.students.forEach(function (s) {
@@ -1148,16 +1728,24 @@
       });
     }
 
+    if (data.settings && typeof data.settings === "object") {
+      result.settings = cloneSettings(data.settings);
+    }
+
     return result;
   }
+
+  // Обратная совместимость с прежним названием
+  var migrateV1toV2 = migrateData;
 
   function saveLocal() {
     if (!storage) return;
     try {
       storage.setItem(STORAGE_KEY, JSON.stringify({
-        version: 2,
+        version: 3,
         students: state.students,
         attendance: state.attendance,
+        settings: state.settings,
         updatedAt: Date.now()
       }));
     } catch (e) { console.error(e); }
@@ -1169,9 +1757,10 @@
     if (!raw) return;
     try {
       var p = JSON.parse(raw);
-      var v2 = migrateV1toV2(p);
-      state.students = v2.students;
-      state.attendance = v2.attendance;
+      var m = migrateData(p);
+      state.students = m.students;
+      state.attendance = m.attendance;
+      state.settings = m.settings;
     } catch (e) { console.error(e); }
   }
 
@@ -1200,6 +1789,36 @@
     } catch (e) { console.error(e); }
   }
 
+  function loadInterval() {
+    if (!storage) return;
+    var raw = storage.getItem(INTERVAL_KEY);
+    if (raw === null) return;
+    var v = Number(raw);
+    if (!isNaN(v) && v >= 0) syncRuntime.pollIntervalMs = v;
+  }
+
+  function saveInterval() {
+    if (!storage) return;
+    try { storage.setItem(INTERVAL_KEY, String(syncRuntime.pollIntervalMs)); } catch (e) {}
+  }
+
+  function loadDevUnlocked() {
+    if (!storage) return;
+    state.devUnlocked = storage.getItem(DEV_UNLOCKED_KEY) === "1";
+  }
+
+  function saveDevUnlocked() {
+    if (!storage) return;
+    try {
+      if (state.devUnlocked) storage.setItem(DEV_UNLOCKED_KEY, "1");
+      else storage.removeItem(DEV_UNLOCKED_KEY);
+    } catch (e) {}
+  }
+
+  /* ============================================================
+     GitHub API
+     ============================================================ */
+
   function githubHeaders() {
     return {
       "Authorization": "token " + syncConfig.token,
@@ -1208,16 +1827,15 @@
     };
   }
 
-  function cacheBust(url) {
-    var sep = url.indexOf("?") === -1 ? "?" : "&";
-    return url + sep + "_t=" + Date.now();
-  }
-
   function describeGithubError(status, errMsg) {
     if (status === 401) return "Неверный токен (401)";
     if (status === 403) return "Нет прав gist или лимит (403)";
     if (status === 404) return "Gist не найден (404)";
     if (status === 422) return "Ошибка данных (422)";
+    if (status === 500) return "GitHub сбоит (500). Попробуйте позже.";
+    if (status === 502) return "GitHub недоступен (502). Попробуйте позже.";
+    if (status === 503) return "GitHub перегружен (503). Подождите.";
+    if (status === 504) return "GitHub не ответил (504). Попробуйте позже.";
     return "GitHub " + status + (errMsg ? ": " + errMsg : "");
   }
 
@@ -1229,54 +1847,77 @@
     else dom.syncStatus.removeAttribute("title");
   }
 
+  function formatTime(ts) {
+    if (!ts) return "ещё не было";
+    return new Date(ts).toLocaleString("ru-RU", {
+      day: "2-digit", month: "2-digit",
+      hour: "2-digit", minute: "2-digit",
+      second: "2-digit"
+    });
+  }
+
   function updateSyncUI() {
     var configured = syncConfig.enabled && syncConfig.token && syncConfig.gistId;
+
     if (configured) {
-      var when = syncConfig.lastSync
-        ? new Date(syncConfig.lastSync).toLocaleString("ru-RU", {
-            day: "2-digit", month: "2-digit",
-            hour: "2-digit", minute: "2-digit"
-          })
-        : "ещё не было";
-      var st = syncConfig.lastSyncStatus === "error" ? "error" : "on";
-      setSyncStatus(st, "Синхр.: " + when);
+      if (syncRuntime.isSyncing) setSyncStatus("busy", "Синхронизация...");
+      else if (syncConfig.lastSyncStatus === "error") {
+        var errText = syncRuntime.consecutiveErrors > 1
+          ? "Ошибка (" + syncRuntime.consecutiveErrors + "). Повтор..."
+          : "Ошибка синхронизации";
+        setSyncStatus("error", errText);
+      } else if (syncConfig.lastSync) {
+        setSyncStatus("on", "Синхр.: " + formatTime(syncConfig.lastSync));
+      } else {
+        setSyncStatus("on", "Готово к синхронизации");
+      }
     } else {
       setSyncStatus("off", "Не настроена");
     }
+
     dom.syncNowButton.disabled = !configured;
     dom.forcePushButton.disabled = !configured;
     dom.forcePullButton.disabled = !configured;
   }
 
   function fetchFromGist() {
-    return fetch(cacheBust("https://api.github.com/gists/" + syncConfig.gistId), {
+    var headers = githubHeaders();
+    if (syncRuntime.etag) headers["If-None-Match"] = syncRuntime.etag;
+
+    return fetch("https://api.github.com/gists/" + syncConfig.gistId, {
       method: "GET",
-      headers: githubHeaders(),
+      headers: headers,
       cache: "no-store"
     }).then(function (r) {
+      if (r.status === 304) return { notModified: true };
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (err) {
-          throw new Error(describeGithubError(r.status, err.message));
+          var e = new Error(describeGithubError(r.status, err.message));
+          e.status = r.status;
+          throw e;
         });
       }
-      return r.json();
-    }).then(function (gist) {
-      var file = gist.files && gist.files[GIST_FILENAME];
-      if (!file) return { version: 2, students: [], attendance: {} };
-      if (file.truncated && file.raw_url) {
-        return fetch(cacheBust(file.raw_url), { cache: "no-store" })
-          .then(function (r) { return r.json(); })
-          .catch(function () { return { version: 2, students: [], attendance: {} }; });
-      }
-      try { return JSON.parse(file.content); }
-      catch (e) { return { version: 2, students: [], attendance: {} }; }
+      var etag = r.headers.get("ETag");
+      return r.json().then(function (gist) {
+        var file = gist.files && gist.files[GIST_FILENAME];
+        if (!file) return { data: { version: 3, students: [], attendance: {}, settings: cloneSettings(null) }, etag: etag };
+        if (file.truncated && file.raw_url) {
+          return fetch(file.raw_url, { cache: "no-store" })
+            .then(function (rr) { return rr.json(); })
+            .catch(function () { return { version: 3, students: [], attendance: {}, settings: cloneSettings(null) }; })
+            .then(function (data) { return { data: data, etag: etag }; });
+        }
+        try { return { data: JSON.parse(file.content), etag: etag }; }
+        catch (e) { return { data: { version: 3, students: [], attendance: {}, settings: cloneSettings(null) }, etag: etag }; }
+      });
     });
   }
 
   function pushToGist(data) {
     var body = { files: {} };
     body.files[GIST_FILENAME] = { content: JSON.stringify(data, null, 2) };
-    return fetch(cacheBust("https://api.github.com/gists/" + syncConfig.gistId), {
+
+    return fetch("https://api.github.com/gists/" + syncConfig.gistId, {
       method: "PATCH",
       headers: Object.assign({ "Content-Type": "application/json" }, githubHeaders()),
       body: JSON.stringify(body),
@@ -1284,12 +1925,29 @@
     }).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (err) {
-          throw new Error(describeGithubError(r.status, err.message));
+          var e = new Error(describeGithubError(r.status, err.message));
+          e.status = r.status;
+          throw e;
         });
       }
+      syncRuntime.etag = null;
       return r.json();
     });
   }
+
+  function buildPayload() {
+    return {
+      version: 3,
+      students: state.students,
+      attendance: state.attendance,
+      settings: state.settings,
+      updatedAt: Date.now()
+    };
+  }
+
+  /* ============================================================
+     Merge
+     ============================================================ */
 
   function mergeStudents(local, remote) {
     var byId = {};
@@ -1321,11 +1979,19 @@
     return result;
   }
 
+  function mergeSettings(local, remote) {
+    var l = cloneSettings(local);
+    var r = cloneSettings(remote);
+    if (r.updatedAt > l.updatedAt) return r;
+    return l;
+  }
+
   function mergeData(localData, remoteData) {
     return {
-      version: 2,
+      version: 3,
       students: mergeStudents(localData.students || [], remoteData.students || []),
       attendance: mergeAttendance(localData.attendance || {}, remoteData.attendance || {}),
+      settings: mergeSettings(localData.settings || {}, remoteData.settings || {}),
       updatedAt: Date.now()
     };
   }
@@ -1338,138 +2004,258 @@
     });
   }
 
-  function markChanged() { state.revision++; }
+  function isDataEqual(a, b) {
+    try { return JSON.stringify(a) === JSON.stringify(b); }
+    catch (e) { return false; }
+  }
 
-  function syncNow(reason) {
+  function markChanged() {
+    state.revision++;
+    syncRuntime.hasPendingChanges = true;
+  }
+
+  function applyMergedToState(merged) {
+    state.students = merged.students;
+    state.attendance = merged.attendance;
+    state.settings = merged.settings;
+  }
+
+  /* ============================================================
+     Синхронизация
+     ============================================================ */
+
+  function scheduleSync() {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
-    if (isSyncing) { pendingSync = true; return; }
-    if (!navigator.onLine) { setSyncStatus("off", "Нет сети"); return; }
+    if (syncRuntime.pushTimer) clearTimeout(syncRuntime.pushTimer);
+    syncRuntime.pushTimer = setTimeout(function () {
+      syncRuntime.pushTimer = null;
+      fullSync("auto");
+    }, PUSH_DEBOUNCE_MS);
+  }
 
-    isSyncing = true;
+  function fullSync(reason) {
+    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
+    if (syncRuntime.isSyncing) { syncRuntime.pendingSync = true; return; }
+    if (!navigator.onLine) { setSyncStatus("paused", "Нет сети"); return; }
+
+    syncRuntime.isSyncing = true;
     syncConfig.lastError = "";
-    setSyncStatus("busy", "Синхронизация...");
+    updateSyncUI();
 
     var startRevision = state.revision;
     state.students = pruneTombstones(state.students);
 
     var localSnapshot = {
-      version: 2,
+      version: 3,
       students: JSON.parse(JSON.stringify(state.students)),
-      attendance: JSON.parse(JSON.stringify(state.attendance))
+      attendance: JSON.parse(JSON.stringify(state.attendance)),
+      settings: JSON.parse(JSON.stringify(state.settings))
     };
 
     fetchFromGist()
-      .then(function (remoteRaw) {
-        var remoteData = migrateV1toV2(remoteRaw);
+      .then(function (res) {
+        if (res.notModified) {
+          if (state.revision !== startRevision || syncRuntime.hasPendingChanges) {
+            return pushToGist(buildPayload());
+          }
+          return null;
+        }
+
+        var remoteData = migrateData(res.data);
+        syncRuntime.etag = res.etag;
+
         var merged = mergeData(localSnapshot, remoteData);
 
         if (state.revision !== startRevision) {
           var merged2 = mergeData({
             students: state.students,
-            attendance: state.attendance
+            attendance: state.attendance,
+            settings: state.settings
           }, merged);
-          state.students = merged2.students;
-          state.attendance = merged2.attendance;
+          applyMergedToState(merged2);
         } else {
-          state.students = merged.students;
-          state.attendance = merged.attendance;
+          applyMergedToState(merged);
         }
 
         saveLocal();
         render();
 
-        return pushToGist({
-          version: 2,
+        return pushToGist(buildPayload());
+      })
+      .then(function () { onSyncSuccess(reason); })
+      .catch(function (err) { onSyncError(err, reason); });
+  }
+
+  function onSyncSuccess(reason) {
+    syncRuntime.isSyncing = false;
+    syncRuntime.consecutiveErrors = 0;
+    syncRuntime.hasPendingChanges = false;
+    syncConfig.lastSync = Date.now();
+    syncConfig.lastSyncStatus = "ok";
+    syncConfig.lastError = "";
+    state.lastSyncedRevision = state.revision;
+    saveSyncConfig();
+    updateSyncUI();
+
+    if (reason === "manual") showToast("Синхронизация выполнена", "success");
+
+    if (syncRuntime.pendingSync) {
+      syncRuntime.pendingSync = false;
+      setTimeout(function () { fullSync("auto"); }, RETRY_DELAY_MS);
+    }
+  }
+
+  function onSyncError(err, reason) {
+    console.error("[Diary] sync error:", err);
+    syncRuntime.isSyncing = false;
+    syncRuntime.consecutiveErrors++;
+    syncConfig.lastSyncStatus = "error";
+    syncConfig.lastError = err.message || String(err);
+    updateSyncUI();
+
+    if (err.status === 401 || err.status === 403) {
+      stopPolling();
+      showToast("Токен не работает — настройте заново", "error");
+      return;
+    }
+
+    if (reason === "manual") showToast("Ошибка: " + syncConfig.lastError, "error");
+
+    if (syncRuntime.consecutiveErrors >= 3) scheduleBackoffResync();
+  }
+
+  function scheduleBackoffResync() {
+    var step = Math.min(syncRuntime.consecutiveErrors - 2, BACKOFF_STEPS_MS.length - 1);
+    var delay = BACKOFF_STEPS_MS[Math.max(0, step)];
+    setTimeout(function () {
+      if (syncConfig.enabled && navigator.onLine) fullSync("auto");
+    }, delay);
+  }
+
+  function pollOnce() {
+    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
+    if (syncRuntime.isSyncing) return;
+    if (document.hidden) return;
+    if (!navigator.onLine) { setSyncStatus("paused", "Нет сети"); return; }
+
+    syncRuntime.isSyncing = true;
+    var startRev = state.revision;
+
+    fetchFromGist()
+      .then(function (res) {
+        if (res.notModified) return null;
+
+        var remoteData = migrateData(res.data);
+        syncRuntime.etag = res.etag;
+
+        var localSnapshot = {
           students: state.students,
           attendance: state.attendance,
-          updatedAt: Date.now()
-        });
+          settings: state.settings
+        };
+        var merged = mergeData(localSnapshot, remoteData);
+
+        var studentsChanged = !isDataEqual(merged.students, state.students);
+        var attendanceChanged = !isDataEqual(merged.attendance, state.attendance);
+        var settingsChanged = !isDataEqual(merged.settings, state.settings);
+
+        if (studentsChanged || attendanceChanged || settingsChanged) {
+          applyMergedToState(merged);
+          saveLocal();
+          render();
+        }
+
+        if (state.revision !== startRev) {
+          syncRuntime.pendingSync = true;
+        }
       })
       .then(function () {
-        syncConfig.lastSync = Date.now();
-        syncConfig.lastSyncStatus = "ok";
-        syncConfig.lastError = "";
-        saveSyncConfig();
-        state.lastSyncedRevision = state.revision;
-        isSyncing = false;
-        updateSyncUI();
-        if (reason === "manual") showToast("Синхронизация выполнена", "success");
-        if (pendingSync || state.revision !== startRevision) {
-          pendingSync = false;
-          setTimeout(function () { syncNow("auto"); }, SYNC_RETRY_DELAY_MS);
+        syncRuntime.isSyncing = false;
+        syncRuntime.consecutiveErrors = 0;
+        syncRuntime.lastPullAt = Date.now();
+        if (syncRuntime.pendingSync) {
+          syncRuntime.pendingSync = false;
+          scheduleSync();
         }
       })
       .catch(function (err) {
-        console.error("[Diary] sync error:", err);
-        syncConfig.lastSyncStatus = "error";
-        syncConfig.lastError = err.message || String(err);
-        isSyncing = false;
-        updateSyncUI();
-        if (reason === "manual") showToast("Ошибка: " + syncConfig.lastError, "error");
-        if (pendingSync) {
-          pendingSync = false;
-          setTimeout(function () { syncNow("auto"); }, SYNC_RETRY_DELAY_MS * 3);
+        syncRuntime.isSyncing = false;
+        syncRuntime.consecutiveErrors++;
+        console.error("[Diary] poll error:", err);
+        if (err.status === 401 || err.status === 403) {
+          stopPolling();
+          syncConfig.lastSyncStatus = "error";
+          syncConfig.lastError = err.message;
+          updateSyncUI();
         }
       });
   }
 
-  function scheduleSync() {
+  function startPolling() {
+    stopPolling();
+    if (syncRuntime.pollIntervalMs <= 0) return;
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
-    if (syncTimer) clearTimeout(syncTimer);
-    syncTimer = setTimeout(function () {
-      syncTimer = null;
-      syncNow("auto");
-    }, SYNC_DEBOUNCE_MS);
+    syncRuntime.pollTimer = setInterval(function () { pollOnce(); }, syncRuntime.pollIntervalMs);
+  }
+
+  function stopPolling() {
+    if (syncRuntime.pollTimer) {
+      clearInterval(syncRuntime.pollTimer);
+      syncRuntime.pollTimer = null;
+    }
+  }
+
+  function restartPolling() {
+    stopPolling();
+    if (syncRuntime.pollIntervalMs > 0 && syncConfig.enabled) startPolling();
   }
 
   function forcePush() {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
     if (!confirm("Отправить локальные данные в GitHub, перезаписав серверную копию?\n\nВсе изменения с других устройств, ещё не синхронизированные сюда, будут потеряны.")) return;
 
-    setSyncStatus("busy", "Отправка...");
-    pushToGist({
-      version: 2,
-      students: state.students,
-      attendance: state.attendance,
-      updatedAt: Date.now()
-    }).then(function () {
-      syncConfig.lastSync = Date.now();
-      syncConfig.lastSyncStatus = "ok";
-      syncConfig.lastError = "";
-      saveSyncConfig();
-      updateSyncUI();
-      showToast("Данные отправлены на сервер", "success");
-    }).catch(function (err) {
-      syncConfig.lastSyncStatus = "error";
-      syncConfig.lastError = err.message;
-      updateSyncUI();
-      showToast("Ошибка: " + err.message, "error");
-    });
+    syncRuntime.isSyncing = true;
+    updateSyncUI();
+    pushToGist(buildPayload())
+      .then(function () { onSyncSuccess("manual"); showToast("Данные отправлены на сервер", "success"); })
+      .catch(function (err) { onSyncError(err, "manual"); });
   }
 
   function forcePull() {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
     if (!confirm("Заменить локальные данные данными с сервера?\n\nВсе несинхронизированные локальные изменения будут потеряны.")) return;
 
-    setSyncStatus("busy", "Загрузка...");
-    fetchFromGist().then(function (remoteRaw) {
-      var remoteData = migrateV1toV2(remoteRaw);
+    syncRuntime.isSyncing = true;
+    updateSyncUI();
+    syncRuntime.etag = null;
+
+    fetchFromGist().then(function (res) {
+      if (res.notModified) return;
+      var remoteData = migrateData(res.data);
+      syncRuntime.etag = res.etag;
       state.students = remoteData.students;
       state.attendance = remoteData.attendance;
+      state.settings = remoteData.settings;
       saveLocal();
       render();
-      syncConfig.lastSync = Date.now();
-      syncConfig.lastSyncStatus = "ok";
-      syncConfig.lastError = "";
-      saveSyncConfig();
-      updateSyncUI();
+      onSyncSuccess("manual");
       showToast("Данные загружены с сервера", "success");
-    }).catch(function (err) {
-      syncConfig.lastSyncStatus = "error";
-      syncConfig.lastError = err.message;
-      updateSyncUI();
-      showToast("Ошибка: " + err.message, "error");
-    });
+    }).catch(function (err) { onSyncError(err, "manual"); });
+  }
+
+  /* ============================================================
+     Действия с учениками и настройками
+     ============================================================ */
+
+  function updateSettings(patch) {
+    for (var k in patch) {
+      if (patch.hasOwnProperty(k)) state.settings[k] = patch[k];
+    }
+    state.settings.updatedAt = Date.now();
+    markChanged();
+    saveLocal();
+    render();
+    scheduleSync();
   }
 
   function findStudentIndex(id) {
@@ -1485,11 +2271,7 @@
 
   function addStudent() {
     var name = dom.studentNameInput.value.trim();
-    if (!name) {
-      showToast("Введите имя ученика", "warning");
-      dom.studentNameInput.focus();
-      return;
-    }
+    if (!name) { showToast("Введите имя ученика", "warning"); dom.studentNameInput.focus(); return; }
     state.students.push({
       id: generateId(),
       name: name,
@@ -1561,6 +2343,10 @@
       return s.name.toLowerCase().indexOf(q) !== -1;
     });
   }
+
+  /* ============================================================
+     Отрисовка
+     ============================================================ */
 
   function renderHeader(days) {
     var frag = document.createDocumentFragment();
@@ -1664,9 +2450,7 @@
           btn.title = "Присутствует";
         }
 
-        if (state.revision > state.lastSyncedRevision && syncConfig.enabled) {
-          btn.classList.add("pending");
-        }
+        if (syncRuntime.hasPendingChanges && syncConfig.enabled) btn.classList.add("pending");
 
         (function (sid, dk) {
           btn.addEventListener("click", function () { toggleAbsence(sid, dk); });
@@ -1698,27 +2482,64 @@
     var q = state.searchQuery.trim();
     var total = getVisibleStudents().length;
     var filtered = getFilteredStudents().length;
-    if (!q) {
-      dom.searchResultsInfo.textContent = total > 0 ? "Всего учеников: " + total : "";
+    if (!q) { dom.searchResultsInfo.textContent = total > 0 ? "Всего учеников: " + total : ""; return; }
+    dom.searchResultsInfo.textContent = "Найдено: " + filtered + " из " + total;
+  }
+
+  // ==== НОВОСТИ ====
+  function renderNews() {
+    var news = (state.settings.news || "").trim();
+    if (!news) {
+      dom.newsBanner.classList.remove("visible");
       return;
     }
-    dom.searchResultsInfo.textContent = "Найдено: " + filtered + " из " + total;
+    var dismissed = sessStorage ? sessStorage.getItem(NEWS_DISMISS_KEY) : null;
+    if (dismissed === news) {
+      dom.newsBanner.classList.remove("visible");
+      return;
+    }
+    dom.newsText.textContent = news;
+    dom.newsBanner.classList.add("visible");
+  }
+
+  // ==== ТЕХ.РАБОТЫ ====
+  function shouldShowMaintenance() {
+    if (!state.settings.maintenance) return false;
+    if (state.settings.maintenanceBy && state.settings.maintenanceBy === deviceId) return false;
+    if (state.devUnlocked) return false;
+    return true;
+  }
+
+  function renderMaintenance() {
+    if (shouldShowMaintenance()) {
+      dom.maintenanceMessageText.textContent =
+        state.settings.maintenanceMessage || DEFAULT_MAINTENANCE_MSG;
+      dom.maintenanceOverlay.classList.add("open");
+    } else {
+      dom.maintenanceOverlay.classList.remove("open");
+    }
+
+    // Индикатор для устройства-включителя
+    if (state.settings.maintenance && state.settings.maintenanceBy === deviceId) {
+      dom.maintenanceActiveBadge.style.display = "inline-flex";
+    } else {
+      dom.maintenanceActiveBadge.style.display = "none";
+    }
   }
 
   function render() {
     var d = parseMonth(state.selectedMonth);
     var days = getDaysInMonth(state.selectedMonth);
-    if (dom.monthPicker.value !== state.selectedMonth) {
-      dom.monthPicker.value = state.selectedMonth;
-    }
+    if (dom.monthPicker.value !== state.selectedMonth) dom.monthPicker.value = state.selectedMonth;
     dom.monthTitle.textContent = monthNames[d.getMonth()] + " " + d.getFullYear();
     renderHeader(days);
     renderBody(days);
     renderSearchInfo();
+    renderNews();
+    renderMaintenance();
   }
 
   function renderDebug() {
-    var localRaw = storage ? storage.getItem(STORAGE_KEY) : null;
     var syncRaw = storage ? storage.getItem(SYNC_CONFIG_KEY) : null;
     var sync = syncRaw ? JSON.parse(syncRaw) : null;
 
@@ -1726,13 +2547,26 @@
       deviceId: deviceId,
       revision: state.revision,
       lastSyncedRevision: state.lastSyncedRevision,
-      isSyncing: isSyncing,
-      pendingSync: pendingSync,
+      hasPendingChanges: syncRuntime.hasPendingChanges,
+      isSyncing: syncRuntime.isSyncing,
+      pendingSync: syncRuntime.pendingSync,
+      pollIntervalMs: syncRuntime.pollIntervalMs,
+      consecutiveErrors: syncRuntime.consecutiveErrors,
+      lastPullAt: syncRuntime.lastPullAt ? new Date(syncRuntime.lastPullAt).toISOString() : null,
+      hasEtag: Boolean(syncRuntime.etag),
       syncEnabled: syncConfig.enabled,
       syncStatus: syncConfig.lastSyncStatus,
       lastError: syncConfig.lastError,
       lastSync: syncConfig.lastSync ? new Date(syncConfig.lastSync).toISOString() : null,
       gistId: syncConfig.gistId || null,
+      devUnlocked: state.devUnlocked,
+      settings: {
+        maintenance: state.settings.maintenance,
+        maintenanceBy: state.settings.maintenanceBy,
+        hasNews: Boolean(state.settings.news),
+        devPasswordSet: state.settings.devPassword !== DEFAULT_DEV_PASSWORD,
+        updatedAt: state.settings.updatedAt
+      },
       local: {
         studentsCount: state.students.length,
         visibleStudents: getVisibleStudents().length,
@@ -1744,25 +2578,75 @@
     };
 
     dom.debugPre.textContent = JSON.stringify(info, null, 2);
+  }
 
-    if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
-      dom.debugPre.textContent += "\n\n--- ЗАГРУЗКА С GITHUB ---\nЗагрузка...";
-      fetchFromGist().then(function (remoteRaw) {
-        var remoteData = migrateV1toV2(remoteRaw);
-        var remoteInfo = {
-          studentsCount: remoteData.students.length,
-          visibleStudents: remoteData.students.filter(function (s) { return !s.deleted; }).length,
-          deletedStudents: remoteData.students.filter(function (s) { return s.deleted; }).length,
-          attendanceKeys: Object.keys(remoteData.attendance).length,
-          absentCount: Object.keys(remoteData.attendance).filter(function (k) { return remoteData.attendance[k].absent; }).length
-        };
-        var cur = dom.debugPre.textContent.replace("\n\n--- ЗАГРУЗКА С GITHUB ---\nЗагрузка...", "");
-        dom.debugPre.textContent = cur + "\n\n--- GITHUB ---\n" + JSON.stringify(remoteInfo, null, 2);
-      }).catch(function (err) {
-        dom.debugPre.textContent += "\nОшибка: " + err.message;
-      });
+  /* ============================================================
+     DEV MODE — модальные окна
+     ============================================================ */
+
+  function openPasswordModal() {
+    dom.devPasswordModal.classList.add("open");
+    dom.devPasswordInput.value = "";
+    setTimeout(function () { dom.devPasswordInput.focus(); }, 100);
+  }
+
+  function closePasswordModal() {
+    dom.devPasswordModal.classList.remove("open");
+    dom.devPasswordInput.value = "";
+  }
+
+  function openDevPanel() {
+    dom.devPanelModal.classList.add("open");
+    refreshDevPanel();
+  }
+
+  function closeDevPanel() {
+    dom.devPanelModal.classList.remove("open");
+  }
+
+  function refreshDevPanel() {
+    // Password
+    dom.devCurrentPassword.textContent = state.settings.devPassword;
+    dom.devCurrentPassword.dataset.revealed = "1";
+    dom.devToggleReveal.textContent = "Скрыть";
+
+    // Maintenance
+    if (state.settings.maintenance) {
+      dom.devToggleMaintenanceButton.textContent = "🔴 Выключить тех.работы";
+      dom.devToggleMaintenanceButton.className = "danger";
+    } else {
+      dom.devToggleMaintenanceButton.textContent = "🟢 Включить тех.работы";
+      dom.devToggleMaintenanceButton.className = "warning";
+    }
+
+    // Message
+    dom.devMaintenanceMessageInput.value =
+      state.settings.maintenanceMessage || DEFAULT_MAINTENANCE_MSG;
+
+    // News
+    dom.devNewsInput.value = state.settings.news || "";
+  }
+
+  function tryDevLogin() {
+    var pw = dom.devPasswordInput.value;
+    if (!pw) { showToast("Введите пароль", "warning"); return; }
+    if (pw === state.settings.devPassword) {
+      state.devUnlocked = true;
+      saveDevUnlocked();
+      closePasswordModal();
+      openDevPanel();
+      renderMaintenance(); // Скрыть оверлей, если он был
+      showToast("Режим разработчика активирован", "success");
+    } else {
+      showToast("Неверный пароль", "error");
+      dom.devPasswordInput.value = "";
+      dom.devPasswordInput.focus();
     }
   }
+
+  /* ============================================================
+     Обработчики
+     ============================================================ */
 
   dom.addStudentButton.addEventListener("click", addStudent);
   dom.studentNameInput.addEventListener("keydown", function (e) {
@@ -1818,11 +2702,13 @@
     syncConfig.enabled = true;
     syncConfig.lastSyncStatus = "off";
     syncConfig.lastError = "";
+    syncRuntime.etag = null;
     saveSyncConfig();
     updateSyncUI();
     dom.syncConfig.classList.remove("open");
     showToast("Настройки сохранены. Синхронизация...", "success");
-    syncNow("manual");
+    fullSync("manual");
+    restartPolling();
   });
 
   dom.testConnectionButton.addEventListener("click", function () {
@@ -1836,7 +2722,7 @@
     syncConfig.gistId = gistId;
 
     setSyncStatus("busy", "Проверка...");
-    fetch(cacheBust("https://api.github.com/gists/" + gistId), {
+    fetch("https://api.github.com/gists/" + gistId, {
       headers: githubHeaders(),
       cache: "no-store"
     }).then(function (r) {
@@ -1855,12 +2741,14 @@
 
   dom.disableSyncButton.addEventListener("click", function () {
     if (!confirm("Отключить синхронизацию? Данные останутся на устройстве.")) return;
+    stopPolling();
     syncConfig.enabled = false;
     syncConfig.token = "";
     syncConfig.gistId = "";
     syncConfig.lastSync = 0;
     syncConfig.lastSyncStatus = "off";
     syncConfig.lastError = "";
+    syncRuntime.etag = null;
     saveSyncConfig();
     updateSyncUI();
     dom.githubToken.value = "";
@@ -1869,7 +2757,7 @@
     showToast("Синхронизация отключена");
   });
 
-  dom.syncNowButton.addEventListener("click", function () { syncNow("manual"); });
+  dom.syncNowButton.addEventListener("click", function () { fullSync("manual"); });
   dom.forcePushButton.addEventListener("click", forcePush);
   dom.forcePullButton.addEventListener("click", forcePull);
 
@@ -1881,9 +2769,8 @@
   dom.copyDebugButton.addEventListener("click", function () {
     var text = dom.debugPre.textContent;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () {
-        showToast("Скопировано", "success");
-      }).catch(function () { showToast("Не удалось скопировать", "error"); });
+      navigator.clipboard.writeText(text).then(function () { showToast("Скопировано", "success"); })
+        .catch(function () { showToast("Не удалось скопировать", "error"); });
     } else {
       var ta = document.createElement("textarea");
       ta.value = text;
@@ -1895,44 +2782,208 @@
     }
   });
 
+  dom.intervalSelect.addEventListener("change", function (e) {
+    var v = Number(e.target.value);
+    syncRuntime.pollIntervalMs = v;
+    saveInterval();
+    restartPolling();
+    var label = v === 0 ? "Автосинхронизация выключена" : "Автосинхронизация каждые " + (v/1000) + " сек";
+    showToast(label, "success");
+  });
+
+  /* ===== NEWS ===== */
+  dom.newsCloseButton.addEventListener("click", function () {
+    var news = (state.settings.news || "").trim();
+    if (sessStorage && news) sessStorage.setItem(NEWS_DISMISS_KEY, news);
+    dom.newsBanner.classList.remove("visible");
+  });
+
+  /* ===== DEV MODE ===== */
+  dom.versionButton.addEventListener("click", function () {
+    if (state.devUnlocked) openDevPanel();
+    else openPasswordModal();
+  });
+
+  dom.devPasswordCancel.addEventListener("click", closePasswordModal);
+  dom.devPasswordSubmit.addEventListener("click", tryDevLogin);
+  dom.devPasswordInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); tryDevLogin(); }
+    if (e.key === "Escape") closePasswordModal();
+  });
+
+  dom.devPasswordModal.addEventListener("click", function (e) {
+    if (e.target === dom.devPasswordModal) closePasswordModal();
+  });
+
+  dom.devCloseButton.addEventListener("click", closeDevPanel);
+  dom.devPanelModal.addEventListener("click", function (e) {
+    if (e.target === dom.devPanelModal) closeDevPanel();
+  });
+
+  // Password reveal toggle
+  dom.devToggleReveal.addEventListener("click", function () {
+    var el = dom.devCurrentPassword;
+    if (el.dataset.revealed === "1") {
+      el.dataset.full = el.textContent;
+      el.textContent = "••••••";
+      el.dataset.revealed = "0";
+      dom.devToggleReveal.textContent = "Показать";
+    } else {
+      el.textContent = el.dataset.full || state.settings.devPassword;
+      el.dataset.revealed = "1";
+      dom.devToggleReveal.textContent = "Скрыть";
+    }
+  });
+
+  // Change password
+  dom.devChangePasswordButton.addEventListener("click", function () {
+    var newPw = dom.devNewPasswordInput.value.trim();
+    if (!newPw) { showToast("Введите новый пароль", "warning"); return; }
+    if (newPw.length < 3) { showToast("Пароль слишком короткий (мин. 3)", "warning"); return; }
+    if (newPw === state.settings.devPassword) {
+      showToast("Это тот же пароль", "warning");
+      return;
+    }
+    updateSettings({ devPassword: newPw });
+    dom.devNewPasswordInput.value = "";
+    refreshDevPanel();
+    showToast("Пароль изменён и синхронизирован", "success");
+  });
+
+  // Toggle maintenance
+  dom.devToggleMaintenanceButton.addEventListener("click", function () {
+    var newState = !state.settings.maintenance;
+    if (newState) {
+      if (!confirm("Включить режим тех.работ?\n\nВсе остальные устройства увидят экран тех.работ до тех пор, пока вы его не отключите.")) return;
+      updateSettings({
+        maintenance: true,
+        maintenanceBy: deviceId
+      });
+      showToast("Тех.работы включены", "success");
+    } else {
+      updateSettings({
+        maintenance: false,
+        maintenanceBy: ""
+      });
+      showToast("Тех.работы выключены", "success");
+    }
+    refreshDevPanel();
+    renderMaintenance();
+  });
+
+  // Save maintenance message
+  dom.devSaveMaintenanceMessageButton.addEventListener("click", function () {
+    var msg = dom.devMaintenanceMessageInput.value.trim();
+    if (!msg) { showToast("Сообщение не может быть пустым", "warning"); return; }
+    updateSettings({ maintenanceMessage: msg });
+    renderMaintenance();
+    showToast("Сообщение сохранено", "success");
+  });
+
+  // Reset maintenance message
+  dom.devResetMaintenanceMessageButton.addEventListener("click", function () {
+    if (!confirm("Вернуть текст сообщения по умолчанию?")) return;
+    updateSettings({ maintenanceMessage: DEFAULT_MAINTENANCE_MSG });
+    dom.devMaintenanceMessageInput.value = DEFAULT_MAINTENANCE_MSG;
+    renderMaintenance();
+    showToast("Текст сброшен", "success");
+  });
+
+  // Save news
+  dom.devSaveNewsButton.addEventListener("click", function () {
+    var news = dom.devNewsInput.value.trim();
+    updateSettings({ news: news });
+    if (sessStorage) sessStorage.removeItem(NEWS_DISMISS_KEY); // показать заново
+    renderNews();
+    showToast(news ? "Новость опубликована" : "Новость очищена", "success");
+  });
+
+  // Clear news
+  dom.devClearNewsButton.addEventListener("click", function () {
+    if (!confirm("Удалить текст новости? Баннер исчезнет у всех.")) return;
+    dom.devNewsInput.value = "";
+    updateSettings({ news: "" });
+    renderNews();
+    showToast("Новость удалена", "success");
+  });
+
+  // Logout dev mode
+  dom.devLogoutButton.addEventListener("click", function () {
+    if (!confirm("Выйти из режима разработчика?\nДля повторного входа потребуется пароль.")) return;
+    state.devUnlocked = false;
+    saveDevUnlocked();
+    closeDevPanel();
+    renderMaintenance();
+    showToast("Вы вышли из режима разработчика");
+  });
+
+  // Dev access from maintenance overlay
+  dom.maintenanceDevAccessButton.addEventListener("click", function () {
+    openPasswordModal();
+  });
+
+  /* ===== ОБЩИЕ КЛАВИШИ ===== */
   document.addEventListener("keydown", function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === "f") {
       e.preventDefault();
-      dom.searchInput.focus();
-      dom.searchInput.select();
+      if (!shouldShowMaintenance()) {
+        dom.searchInput.focus();
+        dom.searchInput.select();
+      }
     }
-    if (e.key === "Escape" && document.activeElement === dom.searchInput) {
-      dom.searchInput.value = "";
-      state.searchQuery = "";
-      render();
-      dom.searchInput.blur();
+    if (e.key === "Escape") {
+      if (dom.devPasswordModal.classList.contains("open")) closePasswordModal();
+      else if (dom.devPanelModal.classList.contains("open")) closeDevPanel();
+      else if (document.activeElement === dom.searchInput) {
+        dom.searchInput.value = "";
+        state.searchQuery = "";
+        render();
+        dom.searchInput.blur();
+      }
     }
   });
 
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") {
-      if (syncConfig.enabled && Date.now() - syncConfig.lastSync > 30000) syncNow("auto");
+      if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) pollOnce();
     }
   });
 
   window.addEventListener("online", function () {
     if (syncConfig.enabled) {
       showToast("Сеть восстановлена. Синхронизация...", "success");
-      syncNow("auto");
+      fullSync("auto");
     }
   });
 
+  window.addEventListener("offline", function () {
+    setSyncStatus("paused", "Нет сети");
+  });
+
   window.addEventListener("beforeunload", function () { saveLocal(); });
+
+  /* ============================================================
+     Инициализация
+     ============================================================ */
 
   function init() {
     deviceId = getDeviceId();
     loadLocal();
     loadSyncConfig();
+    loadInterval();
+    loadDevUnlocked();
+
     dom.monthPicker.value = state.selectedMonth;
+    dom.intervalSelect.value = String(syncRuntime.pollIntervalMs);
+
     updateSyncUI();
     render();
+
     if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
-      setTimeout(function () { syncNow("auto"); }, 500);
+      setTimeout(function () {
+        fullSync("auto");
+        startPolling();
+      }, 500);
     }
   }
 
@@ -1943,4 +2994,4 @@
   }
   </script>
 </body>
-  </html>
+</html>
