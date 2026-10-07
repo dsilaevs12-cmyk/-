@@ -48,6 +48,7 @@
       .attendance-button:hover { background: #475569; }
       button.secondary { background: #334155; color: var(--text); }
       button.secondary:hover { background: #475569; }
+      .debug-pre { background: #0f172a !important; color: #cbd5e1 !important; }
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -129,6 +130,9 @@
 
     button.success { background: var(--success); }
     button.success:hover { background: #059669; }
+
+    button.warning { background: var(--warning); color: #172033; }
+    button.warning:hover { background: #d97706; }
 
     .month-title { margin-top: 16px; font-size: 18px; font-weight: 700; }
 
@@ -226,6 +230,30 @@
 
     .sync-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+    .debug-block {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(37, 99, 235, 0.2);
+    }
+
+    .debug-block.open { display: block; }
+
+    .debug-pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: ui-monospace, Menlo, Monaco, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      max-height: 300px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-top: 8px;
+    }
+
     .table-wrapper {
       overflow-x: auto;
       background: var(--card);
@@ -307,6 +335,7 @@
       font-size: 16px;
       font-weight: bold;
       touch-action: manipulation;
+      position: relative;
     }
 
     .attendance-button:hover { background: #e2e8f0; }
@@ -315,6 +344,18 @@
       color: #991b1b;
       background: var(--absent);
       border: 2px solid var(--absent-border);
+    }
+
+    /* Индикатор несохранённого изменения */
+    .attendance-button.pending::after {
+      content: "";
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--warning);
     }
 
     .empty { padding: 35px; text-align: center; color: var(--muted); }
@@ -361,7 +402,7 @@
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     .toast.success { background: var(--success); }
     .toast.error { background: var(--error); }
-    .toast.warning { background: var(--warning); }
+    .toast.warning { background: var(--warning); color: #172033; }
 
     @media (max-width: 700px) {
       .container { padding: 12px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
@@ -410,7 +451,10 @@
 
       <div class="sync-actions">
         <button id="toggleSyncConfigButton" class="secondary" type="button">⚙️ Настроить</button>
-        <button id="syncNowButton" class="success" type="button" disabled>🔄 Синхронизировать сейчас</button>
+        <button id="syncNowButton" class="success" type="button" disabled>🔄 Синхронизировать</button>
+        <button id="forcePushButton" class="warning" type="button" disabled>⬆️ Отправить мои данные</button>
+        <button id="forcePullButton" class="danger" type="button" disabled>⬇️ Взять с сервера</button>
+        <button id="debugButton" class="secondary" type="button">🐛 Отладка</button>
       </div>
 
       <div id="syncConfig" class="sync-config">
@@ -420,25 +464,31 @@
           <p class="help-text">
             Создайте токен на
             <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">github.com/settings/tokens/new</a>
-            с правами <strong>gist</strong>. Токен хранится только в вашем браузере.
+            с правами <strong>gist</strong>.
           </p>
         </div>
 
         <div class="field-group">
-          <label for="gistId">ID Gist</label>
+          <label for="gistId">ID Gist (или полная ссылка)</label>
           <input id="gistId" type="text" placeholder="abc123def456..." autocomplete="off" spellcheck="false" />
           <p class="help-text">
-            Создайте <a href="https://gist.github.com/" target="_blank" rel="noopener">новый Gist</a>
-            с файлом <code>attendance.json</code> и содержимым <code>{}</code>.
-            ID — последняя часть URL гиста.
+            Можно вставить полную ссылку — ID извлечётся автоматически.
           </p>
         </div>
 
         <div class="sync-actions">
-          <button id="saveSyncConfigButton" type="button">💾 Сохранить настройки</button>
+          <button id="saveSyncConfigButton" type="button">💾 Сохранить</button>
           <button id="testConnectionButton" class="secondary" type="button">🔌 Проверить связь</button>
           <button id="disableSyncButton" class="danger" type="button">❌ Отключить</button>
         </div>
+      </div>
+
+      <div id="debugBlock" class="debug-block">
+        <div class="sync-actions">
+          <button id="refreshDebugButton" class="secondary" type="button">🔄 Обновить</button>
+          <button id="copyDebugButton" class="secondary" type="button">📋 Копировать</button>
+        </div>
+        <pre id="debugPre" class="debug-pre">Нажмите «Обновить» для загрузки данных...</pre>
       </div>
     </section>
 
@@ -488,24 +538,23 @@
 
   var STORAGE_KEY = "attendance_diary_data";
   var SYNC_CONFIG_KEY = "attendance_sync_config";
+  var DEVICE_ID_KEY = "attendance_device_id";
   var GIST_FILENAME = "attendance.json";
-  var SYNC_DEBOUNCE_MS = 1500;
-  var TOMBSTONE_TTL_MS = 1000 * 60 * 60 * 24 * 90; // 90 дней
+  var SYNC_DEBOUNCE_MS = 1200;
+  var TOMBSTONE_TTL_MS = 1000 * 60 * 60 * 24 * 90;
+  var SYNC_RETRY_DELAY_MS = 300;
 
   /* ============================================================
      Состояние
-     ------------------------------------------------------------
-     Схема данных (v2):
-       student: { id, name, updatedAt, deleted }
-       attendance[key]: { absent: bool, updatedAt }
-       key = studentId + "_" + YYYY-MM-DD
      ============================================================ */
 
   var state = {
-    students: [],     // массив с tombstones (deleted: true)
-    attendance: {},   // объект, значения — { absent, updatedAt }
+    students: [],
+    attendance: {},
     selectedMonth: getMonthString(new Date()),
-    searchQuery: ""
+    searchQuery: "",
+    revision: 0,
+    lastSyncedRevision: 0
   };
 
   var syncConfig = {
@@ -519,6 +568,9 @@
 
   var syncTimer = null;
   var isSyncing = false;
+  var pendingSync = false;
+
+  var deviceId = "";
 
   /* ============================================================
      DOM
@@ -549,7 +601,14 @@
     saveSyncConfigButton: document.getElementById("saveSyncConfigButton"),
     testConnectionButton: document.getElementById("testConnectionButton"),
     disableSyncButton: document.getElementById("disableSyncButton"),
-    syncNowButton: document.getElementById("syncNowButton")
+    syncNowButton: document.getElementById("syncNowButton"),
+    forcePushButton: document.getElementById("forcePushButton"),
+    forcePullButton: document.getElementById("forcePullButton"),
+    debugButton: document.getElementById("debugButton"),
+    debugBlock: document.getElementById("debugBlock"),
+    debugPre: document.getElementById("debugPre"),
+    refreshDebugButton: document.getElementById("refreshDebugButton"),
+    copyDebugButton: document.getElementById("copyDebugButton")
   };
 
   var monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
@@ -586,7 +645,14 @@
     dom.toast.textContent = msg;
     dom.toast.className = "toast show" + (type ? " " + type : "");
     if (showToast._t) clearTimeout(showToast._t);
-    showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 2800);
+    showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 3000);
+  }
+  function log() {
+    if (window.console && console.log) {
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift("[Diary]");
+      console.log.apply(console, args);
+    }
   }
 
   function getStorage() {
@@ -599,14 +665,23 @@
   }
   var storage = getStorage();
 
+  function getDeviceId() {
+    if (!storage) return "unknown";
+    var id = storage.getItem(DEVICE_ID_KEY);
+    if (!id) {
+      id = generateId();
+      storage.setItem(DEVICE_ID_KEY, id);
+    }
+    return id;
+  }
+
   /* ============================================================
-     Миграция из v1 в v2
+     Миграция v1 → v2
      ============================================================ */
 
   function migrateV1toV2(data) {
     var result = { students: [], attendance: {} };
 
-    // Студенты
     if (Array.isArray(data.students)) {
       data.students.forEach(function (s) {
         if (s && typeof s.id === "string" && typeof s.name === "string") {
@@ -620,7 +695,6 @@
       });
     }
 
-    // Посещаемость: старый формат { key: true } → { key: { absent, updatedAt } }
     if (data.attendance && typeof data.attendance === "object" && !Array.isArray(data.attendance)) {
       Object.keys(data.attendance).forEach(function (k) {
         var v = data.attendance[k];
@@ -710,6 +784,11 @@
     };
   }
 
+  function cacheBust(url) {
+    var sep = url.indexOf("?") === -1 ? "?" : "&";
+    return url + sep + "_t=" + Date.now();
+  }
+
   function describeGithubError(status, errMsg) {
     if (status === 401) return "Неверный токен (401)";
     if (status === 403) return "Нет прав gist или лимит (403)";
@@ -723,14 +802,15 @@
     dom.syncStatus.className = "sync-status " + status;
     dom.syncStatusText.textContent = text;
     if (syncConfig.lastError) {
-      dom.syncStatus.title = "Последняя ошибка: " + syncConfig.lastError;
+      dom.syncStatus.title = "Ошибка: " + syncConfig.lastError;
     } else {
       dom.syncStatus.removeAttribute("title");
     }
   }
 
   function updateSyncUI() {
-    if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
+    var configured = syncConfig.enabled && syncConfig.token && syncConfig.gistId;
+    if (configured) {
       var when = syncConfig.lastSync
         ? new Date(syncConfig.lastSync).toLocaleString("ru-RU", {
             day: "2-digit", month: "2-digit",
@@ -739,15 +819,17 @@
         : "ещё не было";
       var st = syncConfig.lastSyncStatus === "error" ? "error" : "on";
       setSyncStatus(st, "Синхр.: " + when);
-      dom.syncNowButton.disabled = false;
     } else {
       setSyncStatus("off", "Не настроена");
-      dom.syncNowButton.disabled = true;
     }
+
+    dom.syncNowButton.disabled = !configured;
+    dom.forcePushButton.disabled = !configured;
+    dom.forcePullButton.disabled = !configured;
   }
 
   function fetchFromGist() {
-    return fetch("https://api.github.com/gists/" + syncConfig.gistId, {
+    return fetch(cacheBust("https://api.github.com/gists/" + syncConfig.gistId), {
       method: "GET",
       headers: githubHeaders(),
       cache: "no-store"
@@ -764,7 +846,7 @@
         return { version: 2, students: [], attendance: {} };
       }
       if (file.truncated && file.raw_url) {
-        return fetch(file.raw_url, { cache: "no-store" })
+        return fetch(cacheBust(file.raw_url), { cache: "no-store" })
           .then(function (r) { return r.json(); })
           .catch(function () { return { version: 2, students: [], attendance: {} }; });
       }
@@ -777,10 +859,11 @@
     var body = { files: {} };
     body.files[GIST_FILENAME] = { content: JSON.stringify(data, null, 2) };
 
-    return fetch("https://api.github.com/gists/" + syncConfig.gistId, {
+    return fetch(cacheBust("https://api.github.com/gists/" + syncConfig.gistId), {
       method: "PATCH",
       headers: Object.assign({ "Content-Type": "application/json" }, githubHeaders()),
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      cache: "no-store"
     }).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (err) {
@@ -792,10 +875,7 @@
   }
 
   /* ============================================================
-     Last-Write-Wins merge
-     ------------------------------------------------------------
-     Для каждого элемента берём версию с большим updatedAt.
-     Удаления обрабатываются через tombstones (deleted: true).
+     Merge — LWW с tombstone
      ============================================================ */
 
   function mergeStudents(local, remote) {
@@ -811,8 +891,11 @@
       var ls = byId[rs.id];
       if (!ls) {
         byId[rs.id] = rs;
-      } else if ((rs.updatedAt || 0) > (ls.updatedAt || 0)) {
-        byId[rs.id] = rs;
+      } else {
+        // При равенстве updatedAt предпочитаем local
+        if ((rs.updatedAt || 0) > (ls.updatedAt || 0)) {
+          byId[rs.id] = rs;
+        }
       }
     });
 
@@ -836,6 +919,7 @@
       var lTime = Number(le.updatedAt) || 0;
       var rTime = Number(re.updatedAt) || 0;
 
+      // При равенстве предпочитаем local
       if (rTime > lTime) result[k] = re;
       else result[k] = le;
     });
@@ -844,18 +928,13 @@
   }
 
   function mergeData(localData, remoteData) {
-    var merged = {
+    return {
       version: 2,
       students: mergeStudents(localData.students || [], remoteData.students || []),
       attendance: mergeAttendance(localData.attendance || {}, remoteData.attendance || {}),
       updatedAt: Date.now()
     };
-    return merged;
   }
-
-  /* ============================================================
-     Очистка старых tombstones (> 90 дней)
-     ============================================================ */
 
   function pruneTombstones(students) {
     var cutoff = Date.now() - TOMBSTONE_TTL_MS;
@@ -866,12 +945,21 @@
   }
 
   /* ============================================================
-     Синхронизация — оркестрация
+     Синхронизация
      ============================================================ */
+
+  function markChanged() {
+    state.revision++;
+  }
 
   function syncNow(reason) {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
-    if (isSyncing) return;
+
+    if (isSyncing) {
+      pendingSync = true;
+      log("sync: уже идёт, ставлю в очередь");
+      return;
+    }
     if (!navigator.onLine) {
       setSyncStatus("off", "Нет сети");
       return;
@@ -880,24 +968,47 @@
     isSyncing = true;
     syncConfig.lastError = "";
     setSyncStatus("busy", "Синхронизация...");
-    dom.syncNowButton.disabled = true;
 
-    // Чистим локальные tombstones от старых
+    var startRevision = state.revision;
+
+    // Чистим старые tombstones перед merge
     state.students = pruneTombstones(state.students);
 
-    var localData = {
+    var localSnapshot = {
       version: 2,
-      students: state.students,
-      attendance: state.attendance
+      students: JSON.parse(JSON.stringify(state.students)),
+      attendance: JSON.parse(JSON.stringify(state.attendance))
     };
+
+    log("sync: start", reason, "rev=" + startRevision);
 
     fetchFromGist()
       .then(function (remoteRaw) {
         var remoteData = migrateV1toV2(remoteRaw);
-        var merged = mergeData(localData, remoteData);
+        log("sync: remote has",
+            "students=" + (remoteData.students ? remoteData.students.length : 0),
+            "attendance=" + Object.keys(remoteData.attendance || {}).length);
 
-        state.students = merged.students;
-        state.attendance = merged.attendance;
+        var merged = mergeData(localSnapshot, remoteData);
+        log("sync: merged has",
+            "students=" + merged.students.length,
+            "attendance=" + Object.keys(merged.attendance).length);
+
+        // Проверяем: если во время fetch пользователь что-то изменил,
+        // применяем merged к актуальному local (а не к снимку)
+        if (state.revision !== startRevision) {
+          log("sync: local изменён во время fetch — сливаю повторно");
+          var merged2 = mergeData({
+            students: state.students,
+            attendance: state.attendance
+          }, merged);
+          state.students = merged2.students;
+          state.attendance = merged2.attendance;
+        } else {
+          state.students = merged.students;
+          state.attendance = merged.attendance;
+        }
+
         saveLocal();
         render();
 
@@ -913,18 +1024,32 @@
         syncConfig.lastSyncStatus = "ok";
         syncConfig.lastError = "";
         saveSyncConfig();
+        state.lastSyncedRevision = state.revision;
+        log("sync: done ok");
+
         isSyncing = false;
         updateSyncUI();
+
         if (reason === "manual") showToast("Синхронизация выполнена", "success");
+
+        // Если во время синхронизации пришли новые изменения — повторяем
+        if (pendingSync || state.revision !== startRevision) {
+          pendingSync = false;
+          log("sync: есть pending — запускаю ещё раз");
+          setTimeout(function () { syncNow("auto"); }, SYNC_RETRY_DELAY_MS);
+        }
       })
       .catch(function (err) {
-        console.error("Sync error:", err);
+        console.error("[Diary] sync error:", err);
         syncConfig.lastSyncStatus = "error";
         syncConfig.lastError = err.message || String(err);
         isSyncing = false;
         updateSyncUI();
-        if (reason === "manual") {
-          showToast("Ошибка: " + syncConfig.lastError, "error");
+        if (reason === "manual") showToast("Ошибка: " + syncConfig.lastError, "error");
+
+        if (pendingSync) {
+          pendingSync = false;
+          setTimeout(function () { syncNow("auto"); }, SYNC_RETRY_DELAY_MS * 3);
         }
       });
   }
@@ -932,7 +1057,66 @@
   function scheduleSync() {
     if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
     if (syncTimer) clearTimeout(syncTimer);
-    syncTimer = setTimeout(function () { syncNow("auto"); }, SYNC_DEBOUNCE_MS);
+    syncTimer = setTimeout(function () {
+      syncTimer = null;
+      syncNow("auto");
+    }, SYNC_DEBOUNCE_MS);
+  }
+
+  /* ============================================================
+     Принудительные операции
+     ============================================================ */
+
+  function forcePush() {
+    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
+    if (!confirm("Отправить локальные данные в GitHub, перезаписав серверную копию?\n\n" +
+                 "Все изменения с других устройств, ещё не синхронизированные сюда, будут потеряны.")) return;
+
+    setSyncStatus("busy", "Отправка...");
+    pushToGist({
+      version: 2,
+      students: state.students,
+      attendance: state.attendance,
+      updatedAt: Date.now()
+    }).then(function () {
+      syncConfig.lastSync = Date.now();
+      syncConfig.lastSyncStatus = "ok";
+      syncConfig.lastError = "";
+      saveSyncConfig();
+      updateSyncUI();
+      showToast("Данные отправлены на сервер", "success");
+    }).catch(function (err) {
+      syncConfig.lastSyncStatus = "error";
+      syncConfig.lastError = err.message;
+      updateSyncUI();
+      showToast("Ошибка: " + err.message, "error");
+    });
+  }
+
+  function forcePull() {
+    if (!syncConfig.enabled || !syncConfig.token || !syncConfig.gistId) return;
+    if (!confirm("Заменить локальные данные данными с сервера?\n\n" +
+                 "Все несинхронизированные локальные изменения будут потеряны.")) return;
+
+    setSyncStatus("busy", "Загрузка...");
+    fetchFromGist().then(function (remoteRaw) {
+      var remoteData = migrateV1toV2(remoteRaw);
+      state.students = remoteData.students;
+      state.attendance = remoteData.attendance;
+      saveLocal();
+      render();
+      syncConfig.lastSync = Date.now();
+      syncConfig.lastSyncStatus = "ok";
+      syncConfig.lastError = "";
+      saveSyncConfig();
+      updateSyncUI();
+      showToast("Данные загружены с сервера", "success");
+    }).catch(function (err) {
+      syncConfig.lastSyncStatus = "error";
+      syncConfig.lastError = err.message;
+      updateSyncUI();
+      showToast("Ошибка: " + err.message, "error");
+    });
   }
 
   /* ============================================================
@@ -964,6 +1148,7 @@
       deleted: false
     });
     dom.studentNameInput.value = "";
+    markChanged();
     saveLocal();
     render();
     scheduleSync();
@@ -979,7 +1164,6 @@
 
     if (!window.confirm('Удалить ученика «' + student.name + '»?\nВсе отметки также будут удалены.')) return;
 
-    // Tombstone — оставляем запись с deleted: true и свежим updatedAt
     state.students[idx] = {
       id: student.id,
       name: student.name,
@@ -987,8 +1171,6 @@
       deleted: true
     };
 
-    // Мягкая очистка отметок: ставим updatedAt, absent = false
-    // (не удаляем сразу, чтобы sync мог распространить «снятие»)
     var prefix = studentId + "_";
     var now = Date.now();
     Object.keys(state.attendance).forEach(function (k) {
@@ -997,6 +1179,7 @@
       }
     });
 
+    markChanged();
     saveLocal();
     render();
     scheduleSync();
@@ -1008,12 +1191,14 @@
     var current = state.attendance[key];
     var currentlyAbsent = current && current.absent;
 
-    // Переключаем: absent → present или present → absent
     state.attendance[key] = {
       absent: !currentlyAbsent,
       updatedAt: Date.now()
     };
 
+    log("toggle:", key, "→", !currentlyAbsent);
+
+    markChanged();
     saveLocal();
     render();
     scheduleSync();
@@ -1139,6 +1324,11 @@
           btn.title = "Присутствует. Нажмите, чтобы отметить отсутствие.";
         }
 
+        // Индикатор несохранённого изменения
+        if (state.revision > state.lastSyncedRevision && syncConfig.enabled) {
+          btn.classList.add("pending");
+        }
+
         (function (sid, dk) {
           btn.addEventListener("click", function () { toggleAbsence(sid, dk); });
         })(student.id, dk);
@@ -1192,6 +1382,71 @@
   }
 
   /* ============================================================
+     Отладка
+     ============================================================ */
+
+  function renderDebug() {
+    var localRaw = storage ? storage.getItem(STORAGE_KEY) : null;
+    var syncRaw = storage ? storage.getItem(SYNC_CONFIG_KEY) : null;
+
+    var local = localRaw ? JSON.parse(localRaw) : null;
+    var sync = syncRaw ? JSON.parse(syncRaw) : null;
+
+    var info = {
+      deviceId: deviceId,
+      revision: state.revision,
+      lastSyncedRevision: state.lastSyncedRevision,
+      isSyncing: isSyncing,
+      pendingSync: pendingSync,
+      syncEnabled: syncConfig.enabled,
+      syncStatus: syncConfig.lastSyncStatus,
+      lastError: syncConfig.lastError,
+      lastSync: syncConfig.lastSync ? new Date(syncConfig.lastSync).toISOString() : null,
+      gistId: syncConfig.gistId || null,
+      local: {
+        studentsCount: state.students.length,
+        visibleStudents: getVisibleStudents().length,
+        deletedStudents: state.students.filter(function (s) { return s.deleted; }).length,
+        attendanceKeys: Object.keys(state.attendance).length,
+        absentCount: Object.keys(state.attendance).filter(function (k) { return state.attendance[k].absent; }).length,
+        students: state.students.map(function (s) {
+          return { id: s.id.slice(0, 8), name: s.name, updatedAt: s.updatedAt, deleted: s.deleted };
+        }),
+        attendanceSample: Object.keys(state.attendance).slice(0, 10).map(function (k) {
+          return { key: k, absent: state.attendance[k].absent, updatedAt: state.attendance[k].updatedAt };
+        })
+      },
+      configInStorage: sync ? { enabled: sync.enabled, tokenLength: (sync.token || "").length, gistId: sync.gistId, lastSync: sync.lastSync } : null
+    };
+
+    dom.debugPre.textContent = JSON.stringify(info, null, 2);
+
+    if (syncConfig.enabled && syncConfig.token && syncConfig.gistId) {
+      dom.debugPre.textContent += "\n\n--- ЗАГРУЗКА С GITHUB ---\nЗагрузка...";
+      fetchFromGist().then(function (remoteRaw) {
+        var remoteData = migrateV1toV2(remoteRaw);
+        var remoteInfo = {
+          studentsCount: remoteData.students.length,
+          visibleStudents: remoteData.students.filter(function (s) { return !s.deleted; }).length,
+          deletedStudents: remoteData.students.filter(function (s) { return s.deleted; }).length,
+          attendanceKeys: Object.keys(remoteData.attendance).length,
+          absentCount: Object.keys(remoteData.attendance).filter(function (k) { return remoteData.attendance[k].absent; }).length,
+          students: remoteData.students.map(function (s) {
+            return { id: s.id.slice(0, 8), name: s.name, updatedAt: s.updatedAt, deleted: s.deleted };
+          }),
+          attendanceSample: Object.keys(remoteData.attendance).slice(0, 10).map(function (k) {
+            return { key: k, absent: remoteData.attendance[k].absent, updatedAt: remoteData.attendance[k].updatedAt };
+          })
+        };
+        var cur = dom.debugPre.textContent.replace("\n\n--- ЗАГРУЗКА С GITHUB ---\nЗагрузка...", "");
+        dom.debugPre.textContent = cur + "\n\n--- GITHUB ---\n" + JSON.stringify(remoteInfo, null, 2);
+      }).catch(function (err) {
+        dom.debugPre.textContent += "\nОшибка: " + err.message;
+      });
+    }
+  }
+
+  /* ============================================================
      Обработчики
      ============================================================ */
 
@@ -1227,7 +1482,7 @@
     dom.searchInput.focus();
   });
 
-  // Синхронизация — UI
+  // Sync UI
   dom.toggleSyncConfigButton.addEventListener("click", function () {
     dom.syncConfig.classList.toggle("open");
     if (dom.syncConfig.classList.contains("open")) {
@@ -1236,13 +1491,16 @@
     }
   });
 
+  function extractGistId(input) {
+    var v = (input || "").trim();
+    var m = v.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]+)/i);
+    if (m) return m[1];
+    return v;
+  }
+
   dom.saveSyncConfigButton.addEventListener("click", function () {
     var token = dom.githubToken.value.trim();
-    var gistId = dom.gistId.value.trim();
-
-    // Поддержка случая, когда пользователь вставил полную ссылку
-    var m = gistId.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]+)/i);
-    if (m) gistId = m[1];
+    var gistId = extractGistId(dom.gistId.value);
 
     if (!token || !gistId) {
       showToast("Заполните оба поля", "warning");
@@ -1263,11 +1521,7 @@
 
   dom.testConnectionButton.addEventListener("click", function () {
     var token = dom.githubToken.value.trim();
-    var gistId = dom.gistId.value.trim();
-
-    var m = gistId.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]+)/i);
-    if (m) gistId = m[1];
-
+    var gistId = extractGistId(dom.gistId.value);
     if (!token || !gistId) { showToast("Заполните оба поля", "warning"); return; }
 
     var prevToken = syncConfig.token;
@@ -1276,7 +1530,7 @@
     syncConfig.gistId = gistId;
 
     setSyncStatus("busy", "Проверка...");
-    fetch("https://api.github.com/gists/" + gistId, {
+    fetch(cacheBust("https://api.github.com/gists/" + gistId), {
       headers: githubHeaders(),
       cache: "no-store"
     }).then(function (r) {
@@ -1290,7 +1544,7 @@
       }
     }).catch(function (err) {
       showToast("Ошибка: " + err.message, "error");
-      setSyncStatus("error", "Ошибка связи");
+      setSyncStatus("error", "Ошибка");
     }).then(function () {
       syncConfig.token = prevToken;
       syncConfig.gistId = prevGistId;
@@ -1314,6 +1568,31 @@
   });
 
   dom.syncNowButton.addEventListener("click", function () { syncNow("manual"); });
+  dom.forcePushButton.addEventListener("click", forcePush);
+  dom.forcePullButton.addEventListener("click", forcePull);
+
+  dom.debugButton.addEventListener("click", function () {
+    dom.debugBlock.classList.toggle("open");
+    if (dom.debugBlock.classList.contains("open")) renderDebug();
+  });
+  dom.refreshDebugButton.addEventListener("click", renderDebug);
+  dom.copyDebugButton.addEventListener("click", function () {
+    var text = dom.debugPre.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast("Скопировано", "success");
+      }).catch(function () {
+        showToast("Не удалось скопировать", "error");
+      });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); showToast("Скопировано", "success"); } catch (e) { showToast("Не удалось", "error"); }
+      document.body.removeChild(ta);
+    }
+  });
 
   /* ============================================================
      Горячие клавиши
@@ -1359,6 +1638,9 @@
      ============================================================ */
 
   function init() {
+    deviceId = getDeviceId();
+    log("init, deviceId=" + deviceId);
+
     loadLocal();
     loadSyncConfig();
     dom.monthPicker.value = state.selectedMonth;
@@ -1377,4 +1659,4 @@
   }
   </script>
 </body>
-  </html>
+</html>
