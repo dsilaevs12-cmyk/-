@@ -166,7 +166,6 @@
       min-height: 100dvh;
     }
 
-    /* УПРОЩЁННЫЙ ФОН — 2 градиента вместо 5 */
     body::before {
       content: "";
       position: fixed;
@@ -336,7 +335,6 @@
 
     .news-close:hover { opacity: 1; }
 
-    /* УПРОЩЁННЫЕ ПАНЕЛИ — без blur, только прозрачный фон */
     .panel {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
@@ -698,7 +696,6 @@
       border: 1px solid #1e293b;
     }
 
-    /* ТАБЛИЦА — БЕЗ BLUR НА STICKY ЭЛЕМЕНТАХ */
     .table-wrapper {
       background: var(--card);
       border: 1px solid var(--border);
@@ -732,7 +729,6 @@
     th:last-child, td:last-child { border-right: 0; }
     tr:last-child td { border-bottom: 0; }
 
-    /* Solid background, no blur — мгновенно быстрый sticky */
     th {
       position: sticky;
       top: 0;
@@ -767,7 +763,6 @@
       th.student-column { background: #334155; }
     }
 
-    /* Solid card, no blur — мгновенный sticky */
     td.student-name-cell {
       position: sticky;
       left: 0;
@@ -782,7 +777,6 @@
       vertical-align: middle;
     }
 
-    /* Hover: только смена фона, БЕЗ transform */
     @media (hover: hover) and (pointer: fine) {
       tbody tr:hover td { background-color: var(--row-hover); }
       tbody tr:hover td.student-name-cell {
@@ -890,7 +884,6 @@
       }
     }
 
-    /* БЕЗ transform, БЕЗ transition на каждый hover */
     .attendance-button {
       display: inline-flex;
       align-items: center;
@@ -1707,6 +1700,15 @@
       </div>
 
       <div class="dev-section">
+        <label>📋 Сортировка по фамилии</label>
+        <p class="help-text">
+          Автоматически располагать список учеников по алфавиту фамилий (А→Я).
+          Когда выключено — ученики идут в порядке добавления.
+        </p>
+        <button id="devToggleSortButton" type="button">Включить</button>
+      </div>
+
+      <div class="dev-section">
         <label>🚧 Режим технических работ</label>
         <p class="help-text">
           При включении все устройства, кроме этого, увидят незакрывающийся экран тех.работ.
@@ -1780,6 +1782,17 @@
   var STATUS_ABSENT = "absent";
   var STATUS_LATE = "late";
 
+  /* Типичные окончания русских фамилий.
+     Используются для определения, какое слово в ФИО — фамилия. */
+  var SURNAME_ENDINGS = [
+    // женские (длиннее — проверяются первыми)
+    "ова", "ева", "ёва", "ина", "ына", "ская", "цкая", "ая", "яя", "ич", "ук", "юк",
+    // мужские
+    "ов", "ев", "ёв", "ин", "ын", "ский", "цкий", "ой", "ий", "ых", "их",
+    "ко", "енко", "ук", "юк", "ич", "ак", "як", "ец", "ян", "ан", "чук", "чик",
+    "ник", "тель", "арь", "ер", "ор", "ун", "ец", "их"
+  ];
+
   var state = {
     students: [],
     attendance: {},
@@ -1790,6 +1803,7 @@
       news: "",
       devPassword: DEFAULT_DEV_PASSWORD,
       versionText: DEFAULT_VERSION_TEXT,
+      sortByLastName: true,
       updatedAt: 0
     },
     selectedMonth: getMonthString(new Date()),
@@ -1886,6 +1900,7 @@
     devVersionTextInput: document.getElementById("devVersionTextInput"),
     devSaveVersionTextButton: document.getElementById("devSaveVersionTextButton"),
     devResetVersionTextButton: document.getElementById("devResetVersionTextButton"),
+    devToggleSortButton: document.getElementById("devToggleSortButton"),
     devToggleMaintenanceButton: document.getElementById("devToggleMaintenanceButton"),
     devMaintenanceMessageInput: document.getElementById("devMaintenanceMessageInput"),
     devSaveMaintenanceMessageButton: document.getElementById("devSaveMaintenanceMessageButton"),
@@ -1913,6 +1928,70 @@
   var monthNamesGenitive = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
   var weekdayNames = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
   var weekdayFull = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
+
+  /* ============================================================
+     УТИЛИТЫ СОРТИРОВКИ ПО ФАМИЛИИ
+     ============================================================ */
+
+  /* Извлекает фамилию из полного имени.
+     Стратегия:
+       1. Разбить на слова.
+       2. Если одно слово — это и есть фамилия.
+       3. Искать слово с типичным фамильным окончанием.
+       4. Если ни одно не подошло — взять первое слово
+          (в русской традиции чаще «Фамилия Имя Отчество»). */
+  function extractLastName(fullName) {
+    if (!fullName) return "";
+    var parts = String(fullName).trim().split(/\s+/);
+    if (parts.length === 0) return "";
+    if (parts.length === 1) return parts[0];
+
+    for (var i = 0; i < parts.length; i++) {
+      var word = parts[i];
+      var lower = word.toLowerCase();
+
+      for (var j = 0; j < SURNAME_ENDINGS.length; j++) {
+        var end = SURNAME_ENDINGS[j];
+        // слово должно быть длиннее окончания минимум на 2 символа
+        if (lower.length > end.length + 1 && lower.slice(-end.length) === end) {
+          return word;
+        }
+      }
+    }
+
+    return parts[0];
+  }
+
+  /* Сравнение строк с русской локалью. Фоллбэк для старых WebView. */
+  function compareNames(a, b) {
+    try {
+      return a.localeCompare(b, "ru", { sensitivity: "base" });
+    } catch (e) {
+      var la = a.toLowerCase();
+      var lb = b.toLowerCase();
+      if (la < lb) return -1;
+      if (la > lb) return 1;
+      return 0;
+    }
+  }
+
+  /* Возвращает видимых (не удалённых) учеников.
+     Если включена сортировка по фамилии — сортирует по ней,
+     сохраняя исходный порядок в state.students. */
+  function getSortedVisibleStudents() {
+    var visible = state.students.filter(function (s) { return !s.deleted; });
+
+    if (!state.settings.sortByLastName) return visible;
+
+    return visible.slice().sort(function (a, b) {
+      var la = extractLastName(a.name);
+      var lb = extractLastName(b.name);
+      var cmp = compareNames(la, lb);
+      if (cmp !== 0) return cmp;
+      // Фамилии одинаковые — сортируем по полному имени
+      return compareNames(a.name, b.name);
+    });
+  }
 
   function getMonthString(date) {
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
@@ -1948,7 +2027,6 @@
     showToast._t = setTimeout(function () { dom.toast.className = "toast"; }, 3000);
   }
 
-  /* ===== ОПТИМИЗАЦИЯ: BATCH RENDER + DEBOUNCED SAVE ===== */
   function scheduleRender() {
     if (renderScheduled) return;
     renderScheduled = true;
@@ -2019,6 +2097,8 @@
       versionText: typeof s.versionText === "string" && s.versionText.trim()
         ? s.versionText.trim()
         : DEFAULT_VERSION_TEXT,
+      // По умолчанию включена. Отключается только явным false.
+      sortByLastName: s.sortByLastName !== false,
       updatedAt: Number(s.updatedAt) || 0
     };
   }
@@ -2210,7 +2290,7 @@
   }
 
   function updateBackupUI() {
-    var total = getVisibleStudents().length;
+    var total = state.students.filter(function (s) { return !s.deleted; }).length;
     var attendanceCount = 0;
     Object.keys(state.attendance).forEach(function (k) {
       var e = normalizeStatusEntry(state.attendance[k]);
@@ -2277,8 +2357,6 @@
           throw e;
         });
       }
-      // ОПТИМИЗАЦИЯ: забираем новый ETag из ответа PATCH,
-      // чтобы следующий GET сразу вернул 304
       var newEtag = r.headers.get("ETag");
       syncRuntime.etag = newEtag || null;
       return r.json();
@@ -2492,7 +2570,6 @@
         };
         var merged = mergeData(localSnapshot, remoteData);
 
-        // Сравнение через stringify — быстро для 30 учеников
         var studentsChanged = JSON.stringify(merged.students) !== JSON.stringify(state.students);
         var attendanceChanged = JSON.stringify(merged.attendance) !== JSON.stringify(state.attendance);
         var settingsChanged = JSON.stringify(merged.settings) !== JSON.stringify(state.settings);
@@ -2597,10 +2674,6 @@
       if (state.students[i].id === id) return i;
     }
     return -1;
-  }
-
-  function getVisibleStudents() {
-    return state.students.filter(function (s) { return !s.deleted; });
   }
 
   function getStudentById(id) {
@@ -2721,8 +2794,9 @@
     scheduleRender();
   }
 
+  /* Фильтрует уже отсортированный список видимых учеников */
   function getFilteredStudents() {
-    var visible = getVisibleStudents();
+    var visible = getSortedVisibleStudents();
     var q = state.searchQuery.trim().toLowerCase();
     if (!q) return visible;
     return visible.filter(function (s) {
@@ -2772,9 +2846,9 @@
 
   function renderBody(days) {
     var filtered = getFilteredStudents();
-    var visible = getVisibleStudents();
+    var visibleCount = state.students.filter(function (s) { return !s.deleted; }).length;
 
-    if (visible.length === 0) {
+    if (visibleCount === 0) {
       dom.emptyMessage.style.display = "block";
       dom.noSearchResults.style.display = "none";
       dom.tableBody.innerHTML = "";
@@ -2795,9 +2869,10 @@
     for (var j = 0; j < days.length; j++) dayKeys.push(formatDateKey(days[j]));
     var daysLen = days.length;
 
+    /* Индекс idx — это позиция в отсортированном списке.
+       Именно её показываем в номере ученика. */
     for (var s = 0; s < filtered.length; s++) {
       var student = filtered[s];
-      var idx = visible.indexOf(student);
       var row = document.createElement("tr");
 
       var nameCell = document.createElement("td");
@@ -2808,7 +2883,7 @@
 
       var num = document.createElement("span");
       num.className = "student-number";
-      num.textContent = (idx + 1) + ".";
+      num.textContent = (s + 1) + ".";
 
       var nm = document.createElement("span");
       nm.className = "student-name-text";
@@ -2833,8 +2908,6 @@
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "attendance-button";
-
-        // ОПТИМИЗАЦИЯ: сохраняем sid/dk в data-атрибуты для event delegation
         btn.setAttribute("data-sid", student.id);
         btn.setAttribute("data-dk", dk);
 
@@ -2873,7 +2946,7 @@
 
   function renderSearchInfo() {
     var q = state.searchQuery.trim();
-    var total = getVisibleStudents().length;
+    var total = state.students.filter(function (s) { return !s.deleted; }).length;
     var filtered = getFilteredStudents().length;
     if (!q) { dom.searchResultsInfo.textContent = total > 0 ? "Всего: " + total : ""; return; }
     dom.searchResultsInfo.textContent = "Найдено: " + filtered + " из " + total;
@@ -2931,7 +3004,6 @@
     updateBackupUI();
   }
 
-  /* Быстрый ререндер только тела (для поиска) */
   function renderBodyOnly() {
     var days = getDaysInMonth(state.selectedMonth);
     renderBody(days);
@@ -2966,9 +3038,14 @@
       lastSync: syncConfig.lastSync ? new Date(syncConfig.lastSync).toISOString() : null,
       gistId: syncConfig.gistId || null,
       devUnlocked: state.devUnlocked,
+      settings: {
+        sortByLastName: state.settings.sortByLastName,
+        maintenance: state.settings.maintenance,
+        versionText: state.settings.versionText
+      },
       local: {
         studentsCount: state.students.length,
-        visibleStudents: getVisibleStudents().length,
+        visibleStudents: state.students.filter(function (s) { return !s.deleted; }).length,
         attendanceKeys: Object.keys(state.attendance).length,
         absentCount: absentCount,
         lateCount: lateCount
@@ -3000,7 +3077,7 @@
         settings: state.settings
       },
       meta: {
-        studentsCount: getVisibleStudents().length,
+        studentsCount: state.students.filter(function (s) { return !s.deleted; }).length,
         attendanceRecords: Object.keys(state.attendance).length,
         deviceId: deviceId
       }
@@ -3129,6 +3206,14 @@
     dom.devToggleReveal.textContent = "Скрыть";
     dom.devVersionTextInput.value = state.settings.versionText || DEFAULT_VERSION_TEXT;
 
+    if (state.settings.sortByLastName) {
+      dom.devToggleSortButton.textContent = "🔴 Выключить сортировку";
+      dom.devToggleSortButton.className = "danger";
+    } else {
+      dom.devToggleSortButton.textContent = "🟢 Включить сортировку";
+      dom.devToggleSortButton.className = "warning";
+    }
+
     if (state.settings.maintenance) {
       dom.devToggleMaintenanceButton.textContent = "🔴 Выключить тех.работы";
       dom.devToggleMaintenanceButton.className = "danger";
@@ -3160,7 +3245,6 @@
 
   /* ========== ОБРАБОТЧИКИ ========== */
 
-  /* Event delegation для таблицы — один listener вместо ~900 */
   dom.tableBody.addEventListener("click", function (e) {
     var attBtn = e.target.closest ? e.target.closest(".attendance-button") : null;
     if (attBtn) {
@@ -3191,7 +3275,6 @@
     scheduleRender();
   });
 
-  /* Поиск с requestAnimationFrame — без лагов при наборе */
   dom.searchInput.addEventListener("input", function (e) {
     var v = e.target.value;
     state.searchQuery = v;
@@ -3414,6 +3497,14 @@
     showToast("Текст версии сброшен", "success");
   });
 
+  /* Сортировка по фамилии — переключатель */
+  dom.devToggleSortButton.addEventListener("click", function () {
+    var newVal = !state.settings.sortByLastName;
+    updateSettings({ sortByLastName: newVal });
+    refreshDevPanel();
+    showToast(newVal ? "Сортировка по фамилии включена" : "Сортировка отключена — ученики в порядке добавления", "success");
+  });
+
   dom.devToggleMaintenanceButton.addEventListener("click", function () {
     var newState = !state.settings.maintenance;
     if (newState) {
@@ -3544,4 +3635,4 @@
   }
   </script>
 </body>
-          </html>
+        </html>
