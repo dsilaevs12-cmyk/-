@@ -206,16 +206,16 @@
       font-weight: 500;
     }
 
-    .beta-badge {
+    /* ============ БЕЙДЖ ВЕРСИИ (адаптивный под текст) ============ */
+    .version-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 14px 7px 8px;
+      padding: 7px 16px 7px 9px;
       border-radius: var(--radius-full);
       font-size: var(--fs-xs);
       font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.05em;
       white-space: nowrap;
       flex-shrink: 0;
       color: #ffffff;
@@ -230,18 +230,19 @@
       border: 0;
       font-family: inherit;
       transition: transform var(--t-fast), box-shadow var(--t-fast);
+      max-width: min(65vw, 380px);
     }
 
-    .beta-badge:hover {
+    .version-badge:hover {
       transform: translateY(-1px);
       box-shadow:
         0 6px 20px rgba(239, 68, 68, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.35);
     }
 
-    .beta-badge:active { transform: translateY(0); }
+    .version-badge:active { transform: translateY(0); }
 
-    .beta-badge::before {
+    .version-badge::before {
       content: "";
       position: absolute;
       top: 0;
@@ -258,7 +259,7 @@
       50% { transform: translateX(50%); }
     }
 
-    .beta-badge-dot {
+    .version-badge-dot {
       display: inline-block;
       width: 8px;
       height: 8px;
@@ -275,8 +276,15 @@
       100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
 
+    .version-badge-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
     @media (prefers-color-scheme: dark) {
-      .beta-badge {
+      .version-badge {
         background: linear-gradient(135deg, #fbbf24 0%, #f43f5e 50%, #ec4899 100%);
         box-shadow: 0 4px 18px rgba(244, 63, 94, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
       }
@@ -363,9 +371,7 @@
       transition: box-shadow var(--t-base);
     }
 
-    .panel:hover {
-      box-shadow: var(--shadow-md);
-    }
+    .panel:hover { box-shadow: var(--shadow-md); }
 
     .controls {
       display: flex;
@@ -469,16 +475,10 @@
       button.danger:hover { background: #991b1b; }
     }
 
-    button.success {
-      background: var(--success);
-      color: #ffffff;
-    }
+    button.success { background: var(--success); color: #ffffff; }
     button.success:hover { background: var(--success-dark); }
 
-    button.warning {
-      background: var(--warning);
-      color: #ffffff;
-    }
+    button.warning { background: var(--warning); color: #ffffff; }
     button.warning:hover { background: var(--warning-dark); }
 
     .month-title {
@@ -623,17 +623,9 @@
       box-shadow: 0 0 0 0 currentColor;
     }
 
-    .sync-status.on .status-dot {
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-    }
-
-    .sync-status.error .status-dot {
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-    }
-
-    .sync-status.busy .status-dot {
-      animation: pulse 1s infinite;
-    }
+    .sync-status.on .status-dot { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+    .sync-status.error .status-dot { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2); }
+    .sync-status.busy .status-dot { animation: pulse 1s infinite; }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -649,10 +641,7 @@
       border-top: 1px solid rgba(37, 99, 235, 0.15);
     }
 
-    .sync-config.open {
-      display: flex;
-      animation: slideDown 0.2s ease-out;
-    }
+    .sync-config.open { display: flex; animation: slideDown 0.2s ease-out; }
 
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-4px); }
@@ -775,15 +764,10 @@
       transition: box-shadow var(--t-base);
     }
 
-    .table-wrapper:hover {
-      box-shadow: var(--shadow-md);
-    }
+    .table-wrapper:hover { box-shadow: var(--shadow-md); }
 
     @media (min-width: 701px) {
-      .table-wrapper {
-        max-height: 78vh;
-        overflow-y: auto;
-      }
+      .table-wrapper { max-height: 78vh; overflow-y: auto; }
     }
 
     table {
@@ -941,10 +925,7 @@
       border-bottom-color: var(--today-border);
     }
 
-    th.today-column .weekday {
-      color: var(--today-text);
-      opacity: 0.85;
-    }
+    th.today-column .weekday { color: var(--today-text); opacity: 0.85; }
 
     td.today-column { background: var(--today-bg); }
 
@@ -995,11 +976,7 @@
       cursor: pointer;
     }
 
-    .attendance-button:hover {
-      background: #e2e8f0;
-      transform: scale(1.08);
-    }
-
+    .attendance-button:hover { background: #e2e8f0; transform: scale(1.08); }
     .attendance-button:active { transform: scale(0.95); }
 
     @media (prefers-color-scheme: dark) {
@@ -1039,12 +1016,7 @@
       font-weight: 500;
     }
 
-    .legend-item {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      min-width: 0;
-    }
+    .legend-item { display: flex; gap: 8px; align-items: center; min-width: 0; }
 
     .legend-box {
       width: clamp(16px, 1vw + 10px, 20px);
@@ -1108,24 +1080,10 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .toast.success {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .toast.error {
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .toast.warning {
-      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: linear-gradient(135deg, #059669 0%, #047857 100%); border-color: rgba(255, 255, 255, 0.15); }
+    .toast.error { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border-color: rgba(255, 255, 255, 0.15); }
+    .toast.warning { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); }
 
     .modal-backdrop {
       position: fixed;
@@ -1141,15 +1099,9 @@
       overflow-y: auto;
     }
 
-    .modal-backdrop.open {
-      display: flex;
-      animation: fadeIn var(--t-base);
-    }
+    .modal-backdrop.open { display: flex; animation: fadeIn var(--t-base); }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .modal {
       background: var(--card);
@@ -1198,11 +1150,7 @@
 
     .modal-actions button { flex: 0 1 auto; }
 
-    .modal.modal-attendance {
-      max-width: 520px;
-      padding: 0;
-      overflow: hidden;
-    }
+    .modal.modal-attendance { max-width: 520px; padding: 0; overflow: hidden; }
 
     .att-head {
       padding: 20px 22px 14px;
@@ -1240,17 +1188,10 @@
       box-shadow: none;
     }
 
-    .att-head-close:hover {
-      background: rgba(255, 255, 255, 0.95);
-      transform: none;
-      box-shadow: none;
-    }
+    .att-head-close:hover { background: rgba(255, 255, 255, 0.95); transform: none; box-shadow: none; }
 
     @media (prefers-color-scheme: dark) {
-      .att-head-close {
-        background: rgba(0, 0, 0, 0.4);
-        color: #e2e8f0;
-      }
+      .att-head-close { background: rgba(0, 0, 0, 0.4); color: #e2e8f0; }
       .att-head-close:hover { background: rgba(0, 0, 0, 0.6); }
     }
 
@@ -1263,9 +1204,7 @@
       margin-bottom: 6px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .att-head-label { color: #bfdbfe; }
-    }
+    @media (prefers-color-scheme: dark) { .att-head-label { color: #bfdbfe; } }
 
     .att-head-name {
       font-size: clamp(18px, 2vw + 12px, 22px);
@@ -1277,9 +1216,7 @@
       padding-right: 36px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .att-head-name { color: #f8fafc; }
-    }
+    @media (prefers-color-scheme: dark) { .att-head-name { color: #f8fafc; } }
 
     .att-head-date {
       margin-top: 6px;
@@ -1291,14 +1228,9 @@
       gap: 6px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .att-head-date { color: #cbd5e1; }
-    }
+    @media (prefers-color-scheme: dark) { .att-head-date { color: #cbd5e1; } }
 
-    .att-body {
-      padding: 20px 22px 22px;
-      background: var(--card);
-    }
+    .att-body { padding: 20px 22px 22px; background: var(--card); }
 
     .att-question {
       font-size: var(--fs-sm);
@@ -1308,9 +1240,7 @@
       text-align: center;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .att-question { color: #94a3b8; }
-    }
+    @media (prefers-color-scheme: dark) { .att-question { color: #94a3b8; } }
 
     .att-options {
       display: grid;
@@ -1319,9 +1249,7 @@
       margin-bottom: 14px;
     }
 
-    @media (max-width: 480px) {
-      .att-options { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 480px) { .att-options { grid-template-columns: 1fr; } }
 
     .att-option {
       display: flex;
@@ -1345,12 +1273,7 @@
       user-select: none;
     }
 
-    .att-option:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      background: var(--surface-1);
-    }
-
+    .att-option:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); background: var(--surface-1); }
     .att-option:active { transform: translateY(0); }
 
     .att-option-icon {
@@ -1382,27 +1305,12 @@
       box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);
     }
 
-    .att-option-label {
-      font-size: var(--fs-sm);
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
+    .att-option-label { font-size: var(--fs-sm); font-weight: 700; letter-spacing: -0.01em; }
+    .att-option-hint { font-size: var(--fs-2xs); font-weight: 500; color: var(--muted); margin-top: 2px; }
 
-    .att-option-hint {
-      font-size: var(--fs-2xs);
-      font-weight: 500;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    @media (prefers-color-scheme: dark) { .att-option-hint { color: #94a3b8; } }
 
-    @media (prefers-color-scheme: dark) {
-      .att-option-hint { color: #94a3b8; }
-    }
-
-    .att-option.current {
-      border-width: 3px;
-      position: relative;
-    }
+    .att-option.current { border-width: 3px; position: relative; }
 
     .att-option.current::after {
       content: "Выбрано";
@@ -1419,20 +1327,9 @@
       background: var(--primary);
     }
 
-    .att-option-present.current {
-      border-color: var(--success);
-      background: var(--success-soft);
-    }
-
-    .att-option-absent.current {
-      border-color: var(--absent-border);
-      background: var(--absent);
-    }
-
-    .att-option-late.current {
-      border-color: var(--late-border);
-      background: var(--late);
-    }
+    .att-option-present.current { border-color: var(--success); background: var(--success-soft); }
+    .att-option-absent.current { border-color: var(--absent-border); background: var(--absent); }
+    .att-option-late.current { border-color: var(--late-border); background: var(--late); }
 
     @media (prefers-color-scheme: dark) {
       .att-option-present.current { background: #064e3b; }
@@ -1449,13 +1346,9 @@
       transition: border-color var(--t-base), background var(--t-base);
     }
 
-    @media (prefers-color-scheme: dark) {
-      .dev-section { background: #1a2537; border-color: #334155; }
-    }
+    @media (prefers-color-scheme: dark) { .dev-section { background: #1a2537; border-color: #334155; } }
 
-    .dev-section:hover {
-      border-color: var(--border-strong);
-    }
+    .dev-section:hover { border-color: var(--border-strong); }
 
     .dev-section > label {
       display: block;
@@ -1505,12 +1398,7 @@
       outline: none;
     }
 
-    .dev-section .row-actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
+    .dev-section .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .dev-section .row-actions button { flex: 0 1 auto; }
 
     .dev-password-reveal {
@@ -1525,9 +1413,7 @@
       border: 1px solid var(--border);
     }
 
-    @media (prefers-color-scheme: dark) {
-      .dev-password-reveal { background: #334155; border-color: #475569; }
-    }
+    @media (prefers-color-scheme: dark) { .dev-password-reveal { background: #334155; border-color: #475569; } }
 
     .maintenance-overlay {
       position: fixed;
@@ -1556,9 +1442,7 @@
     .maintenance-overlay.open { display: flex; }
 
     @media (prefers-color-scheme: dark) {
-      .maintenance-overlay {
-        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%);
-      }
+      .maintenance-overlay { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #020617 100%); }
     }
 
     .maintenance-content {
@@ -1694,7 +1578,7 @@
       .sync-actions button { width: 100%; }
       .table-wrapper { border-radius: var(--radius-md); }
       .page-header { flex-direction: column; align-items: flex-start; gap: var(--space-xs); }
-      .beta-badge { align-self: flex-start; }
+      .version-badge { align-self: flex-start; max-width: 100%; }
       .modal { padding: 20px; border-radius: var(--radius-lg); }
       .modal-actions { flex-direction: column-reverse; }
       .modal-actions button { width: 100%; }
@@ -1735,12 +1619,14 @@
       .news-icon { font-size: 18px; }
       .maintenance-icon { font-size: 60px; }
       h1 { font-size: var(--fs-lg); }
+      .version-badge { font-size: 10px; padding: 5px 12px 5px 7px; }
     }
 
     @media (max-width: 360px) {
       .container { padding: 8px; }
       .panel { padding: 10px; }
       .student-name-flex { font-size: 12px; gap: 6px; }
+      .version-badge { font-size: 9.5px; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
@@ -1759,7 +1645,7 @@
       button.danger:hover { background: var(--absent); }
       .attendance-button:hover { background: var(--surface-2); transform: none; }
       td.today-column .attendance-button:not(.absent):not(.late):hover { background: #ffffff; }
-      .beta-badge:hover { transform: none; }
+      .version-badge:hover { transform: none; }
       .panel:hover { box-shadow: var(--shadow-sm); }
       .att-option:hover { transform: none; box-shadow: none; }
       .att-option:active { transform: scale(0.98); }
@@ -1783,7 +1669,7 @@
     }
 
     @media print {
-      .panel, button, .toast, .beta-badge, .news-banner,
+      .panel, button, .toast, .version-badge, .news-banner,
       .modal-backdrop, .maintenance-overlay { display: none !important; }
       .table-wrapper { border: 1px solid #000; box-shadow: none; max-height: none; }
       body { background: #ffffff; color: #000000; }
@@ -1806,9 +1692,9 @@
         </h1>
         <p class="subtitle">Кликните по ячейке, чтобы отметить посещаемость.</p>
       </div>
-      <button id="versionButton" class="beta-badge" type="button" title="Нажмите, чтобы войти в режим разработчика">
-        <span class="beta-badge-dot"></span>
-        Beta&nbsp;·&nbsp;v1
+      <button id="versionButton" class="version-badge" type="button" title="Нажмите, чтобы войти в режим разработчика">
+        <span class="version-badge-dot"></span>
+        <span id="versionButtonText" class="version-badge-text">версия: 1.0</span>
       </button>
     </header>
 
@@ -1984,6 +1870,19 @@
       </div>
 
       <div class="dev-section">
+        <label>🏷️ Текст версии</label>
+        <p class="help-text">
+          Показывается в правом верхнем углу как бейдж.
+          Например: «версия: 1.0», «Beta · v1», «Release 2.0».
+        </p>
+        <input id="devVersionTextInput" type="text" placeholder="версия: 1.0" autocomplete="off" spellcheck="false" maxlength="60" />
+        <div class="row-actions">
+          <button id="devSaveVersionTextButton" class="secondary" type="button">💾 Сохранить</button>
+          <button id="devResetVersionTextButton" class="secondary" type="button">↺ По умолчанию</button>
+        </div>
+      </div>
+
+      <div class="dev-section">
         <label>🚧 Режим технических работ</label>
         <p class="help-text">
           При включении все устройства, кроме этого, увидят незакрывающийся
@@ -2056,6 +1955,7 @@
 
   var DEFAULT_DEV_PASSWORD = "020912";
   var DEFAULT_MAINTENANCE_MSG = "Сайт временно недоступен. Приносим извинения за неудобства. Попробуйте позже.";
+  var DEFAULT_VERSION_TEXT = "версия: 1.0";
 
   var STATUS_PRESENT = "present";
   var STATUS_ABSENT = "absent";
@@ -2070,6 +1970,7 @@
       maintenanceBy: "",
       news: "",
       devPassword: DEFAULT_DEV_PASSWORD,
+      versionText: DEFAULT_VERSION_TEXT,
       updatedAt: 0
     },
     selectedMonth: getMonthString(new Date()),
@@ -2145,6 +2046,7 @@
     copyDebugButton: document.getElementById("copyDebugButton"),
     intervalSelect: document.getElementById("intervalSelect"),
     versionButton: document.getElementById("versionButton"),
+    versionButtonText: document.getElementById("versionButtonText"),
     maintenanceActiveBadge: document.getElementById("maintenanceActiveBadge"),
     newsBanner: document.getElementById("newsBanner"),
     newsText: document.getElementById("newsText"),
@@ -2158,6 +2060,9 @@
     devToggleReveal: document.getElementById("devToggleReveal"),
     devNewPasswordInput: document.getElementById("devNewPasswordInput"),
     devChangePasswordButton: document.getElementById("devChangePasswordButton"),
+    devVersionTextInput: document.getElementById("devVersionTextInput"),
+    devSaveVersionTextButton: document.getElementById("devSaveVersionTextButton"),
+    devResetVersionTextButton: document.getElementById("devResetVersionTextButton"),
     devToggleMaintenanceButton: document.getElementById("devToggleMaintenanceButton"),
     devMaintenanceMessageInput: document.getElementById("devMaintenanceMessageInput"),
     devSaveMaintenanceMessageButton: document.getElementById("devSaveMaintenanceMessageButton"),
@@ -2259,6 +2164,9 @@
       devPassword: typeof s.devPassword === "string" && s.devPassword
         ? s.devPassword
         : DEFAULT_DEV_PASSWORD,
+      versionText: typeof s.versionText === "string" && s.versionText.trim()
+        ? s.versionText.trim()
+        : DEFAULT_VERSION_TEXT,
       updatedAt: Number(s.updatedAt) || 0
     };
   }
@@ -3114,6 +3022,13 @@
     dom.newsBanner.classList.add("visible");
   }
 
+  function renderVersionBadge() {
+    var text = (state.settings.versionText || "").trim();
+    if (!text) text = DEFAULT_VERSION_TEXT;
+    dom.versionButtonText.textContent = text;
+    dom.versionButton.title = text + " — нажмите, чтобы войти в режим разработчика";
+  }
+
   function shouldShowMaintenance() {
     if (!state.settings.maintenance) return false;
     if (state.settings.maintenanceBy && state.settings.maintenanceBy === deviceId) return false;
@@ -3146,6 +3061,7 @@
     renderBody(days);
     renderSearchInfo();
     renderNews();
+    renderVersionBadge();
     renderMaintenance();
   }
 
@@ -3183,6 +3099,7 @@
         maintenanceBy: state.settings.maintenanceBy,
         hasNews: Boolean(state.settings.news),
         devPasswordSet: state.settings.devPassword !== DEFAULT_DEV_PASSWORD,
+        versionText: state.settings.versionText,
         updatedAt: state.settings.updatedAt
       },
       local: {
@@ -3224,6 +3141,8 @@
     dom.devCurrentPassword.dataset.full = state.settings.devPassword;
     dom.devCurrentPassword.dataset.revealed = "1";
     dom.devToggleReveal.textContent = "Скрыть";
+
+    dom.devVersionTextInput.value = state.settings.versionText || DEFAULT_VERSION_TEXT;
 
     if (state.settings.maintenance) {
       dom.devToggleMaintenanceButton.textContent = "🔴 Выключить тех.работы";
@@ -3461,6 +3380,24 @@
     dom.devNewPasswordInput.value = "";
     refreshDevPanel();
     showToast("Пароль изменён и синхронизирован", "success");
+  });
+
+  dom.devSaveVersionTextButton.addEventListener("click", function () {
+    var v = dom.devVersionTextInput.value.trim();
+    if (!v) { showToast("Текст версии не может быть пустым", "warning"); return; }
+    if (v === state.settings.versionText) { showToast("Текст не изменён", "warning"); return; }
+    updateSettings({ versionText: v });
+    renderVersionBadge();
+    refreshDevPanel();
+    showToast("Текст версии обновлён", "success");
+  });
+
+  dom.devResetVersionTextButton.addEventListener("click", function () {
+    if (!confirm("Вернуть текст версии по умолчанию?")) return;
+    updateSettings({ versionText: DEFAULT_VERSION_TEXT });
+    dom.devVersionTextInput.value = DEFAULT_VERSION_TEXT;
+    renderVersionBadge();
+    showToast("Текст версии сброшен", "success");
   });
 
   dom.devToggleMaintenanceButton.addEventListener("click", function () {
