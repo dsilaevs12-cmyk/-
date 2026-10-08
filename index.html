@@ -3,71 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#2563eb" />
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Дневник" />
   <meta name="color-scheme" content="light dark" />
   <title>Электронный дневник посещаемости</title>
 
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-light: #60a5fa;
-      --primary-soft: #eff6ff;
+      /* iOS / Apple-style palette */
+      --ios-blue: #007aff;
+      --ios-green: #34c759;
+      --ios-red: #ff3b30;
+      --ios-orange: #ff9500;
+      --ios-gray: #8e8e93;
 
-      --background: #eef2f8;
-      --background-alt: #e4eaf3;
+      --primary: var(--ios-blue);
+      --primary-dark: #0062cc;
+      --primary-light: #4da2ff;
+      --primary-soft: #eaf3ff;
+
+      --background: #f2f2f7;
+      --background-alt: #e8e8ed;
       --card: #ffffff;
-      --surface-1: #f8fafc;
-      --surface-2: #f1f5f9;
+      --surface-1: #ffffff;
+      --surface-2: #f2f2f7;
 
-      --border: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --border-subtle: #eef2f7;
+      --border: rgba(60, 60, 67, 0.12);
+      --border-strong: rgba(60, 60, 67, 0.2);
+      --border-subtle: rgba(60, 60, 67, 0.07);
 
-      --text: #1e293b;
-      --text-strong: #0f172a;
-      --text-soft: #475569;
-      --muted: #64748b;
-      --muted-strong: #475569;
-      --placeholder: #94a3b8;
+      --text: #1c1c1e;
+      --text-strong: #000000;
+      --text-soft: #3a3a3c;
+      --muted: #8e8e93;
+      --muted-strong: #6d6d72;
+      --placeholder: #c7c7cc;
 
-      --success: #10b981;
-      --success-dark: #059669;
-      --success-soft: #ecfdf5;
-      --warning: #f59e0b;
-      --warning-dark: #d97706;
-      --error: #ef4444;
-      --error-dark: #dc2626;
+      --success: var(--ios-green);
+      --success-dark: #28a745;
+      --success-soft: #e9f9ef;
+      --warning: var(--ios-orange);
+      --warning-dark: #e07f00;
+      --error: var(--ios-red);
+      --error-dark: #d93025;
 
-      --absent: #fee2e2;
-      --absent-border: #ef4444;
-      --absent-text: #b91c1c;
+      --absent: #ffe5e3;
+      --absent-border: var(--ios-red);
+      --absent-text: #c9352c;
 
-      --late: #fef3c7;
-      --late-border: #f59e0b;
-      --late-text: #92400e;
+      --late: #fff1dc;
+      --late-border: var(--ios-orange);
+      --late-text: #9a5b00;
 
-      --weekend: #f8fafc;
-      --today-bg: #dbeafe;
-      --today-text: #1d4ed8;
-      --today-border: #60a5fa;
+      --weekend: #f7f7fa;
+      --today-bg: #e2f0ff;
+      --today-text: #0062cc;
+      --today-border: var(--ios-blue);
 
-      --glass-bg: rgba(255, 255, 255, 0.72);
-      --glass-bg-strong: rgba(255, 255, 255, 0.82);
-      --glass-bg-soft: rgba(255, 255, 255, 0.5);
-      --glass-border: rgba(255, 255, 255, 0.7);
+      --glass-bg: rgba(246, 246, 250, 0.78);
+      --glass-bg-strong: rgba(255, 255, 255, 0.86);
+      --glass-bg-soft: rgba(255, 255, 255, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.72);
       --glass-border-soft: rgba(255, 255, 255, 0.5);
 
-      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.04);
-      --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.1), 0 4px 8px rgba(15, 23, 42, 0.05);
-      --shadow-xl: 0 20px 50px rgba(15, 23, 42, 0.15), 0 8px 16px rgba(15, 23, 42, 0.08);
-      --shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.16);
+      --shadow-focus: 0 0 0 3px rgba(0, 122, 255, 0.18);
 
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 20px;
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-xl: 26px;
       --radius-full: 999px;
 
       --space-xs: clamp(6px, 0.6vw, 10px);
@@ -84,65 +96,69 @@
       --fs-lg: clamp(17px, 0.8vw + 13px, 21px);
       --fs-xl: clamp(20px, 1.4vw + 14px, 30px);
 
-      --t-fast: 0.1s;
-      --t-base: 0.15s;
-      --t-slow: 0.25s;
+      --t-fast: 0.12s;
+      --t-base: 0.2s;
+      --t-slow: 0.32s;
+      --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
 
       --cell-btn: clamp(28px, 1.5vw + 22px, 42px);
       --row-pad: clamp(5px, 0.5vw, 8px);
-      --row-hover: #eef4ff;
-      --row-hover-border: #bfdbfe;
+      --row-hover: #f0f4ff;
+      --row-hover-border: #b3d4ff;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --primary: #3b82f6;
-        --primary-dark: #2563eb;
-        --primary-soft: #1e3a8a;
+        --primary: #0a84ff;
+        --primary-dark: #0060df;
+        --primary-light: #409cff;
+        --primary-soft: #0a2540;
 
-        --background: #060a15;
-        --background-alt: #0a1220;
-        --card: #1e293b;
-        --surface-1: #1e293b;
-        --surface-2: #334155;
+        --background: #000000;
+        --background-alt: #0b0b0f;
+        --card: #1c1c1e;
+        --surface-1: #1c1c1e;
+        --surface-2: #2c2c2e;
 
-        --border: #334155;
-        --border-strong: #475569;
-        --border-subtle: #1e293b;
+        --border: rgba(255, 255, 255, 0.12);
+        --border-strong: rgba(255, 255, 255, 0.2);
+        --border-subtle: rgba(255, 255, 255, 0.07);
 
-        --text: #e2e8f0;
-        --text-strong: #f8fafc;
-        --text-soft: #cbd5e1;
-        --muted: #94a3b8;
-        --placeholder: #64748b;
+        --text: #ffffff;
+        --text-strong: #ffffff;
+        --text-soft: #ebebf5;
+        --muted: #98989f;
+        --muted-strong: #aeaeb2;
+        --placeholder: #636366;
 
-        --absent: #7f1d1d;
-        --absent-border: #ef4444;
-        --absent-text: #fecaca;
+        --success-soft: #04321a;
+        --absent: #3d1212;
+        --absent-border: #ff453a;
+        --absent-text: #ffb0a8;
 
-        --late: #78350f;
-        --late-border: #f59e0b;
-        --late-text: #fcd34d;
+        --late: #3a2a08;
+        --late-border: #ff9f0a;
+        --late-text: #ffd79a;
 
-        --weekend: #1a2537;
-        --today-bg: #1e3a5f;
-        --today-text: #bfdbfe;
-        --today-border: #3b82f6;
+        --weekend: #1c1c1e;
+        --today-bg: #0a2e5c;
+        --today-text: #64b5ff;
+        --today-border: #0a84ff;
 
-        --glass-bg: rgba(30, 41, 59, 0.72);
-        --glass-bg-strong: rgba(30, 41, 59, 0.82);
-        --glass-bg-soft: rgba(30, 41, 59, 0.5);
-        --glass-border: rgba(255, 255, 255, 0.08);
-        --glass-border-soft: rgba(255, 255, 255, 0.05);
+        --glass-bg: rgba(28, 28, 30, 0.72);
+        --glass-bg-strong: rgba(38, 38, 42, 0.85);
+        --glass-bg-soft: rgba(28, 28, 30, 0.55);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-border-soft: rgba(255, 255, 255, 0.06);
 
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
-        --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.7);
-        --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+        --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.55);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.65);
+        --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.75);
+        --shadow-focus: 0 0 0 3px rgba(10, 132, 255, 0.3);
 
-        --row-hover: #273549;
-        --row-hover-border: #3b82f6;
+        --row-hover: #2c2c2e;
+        --row-hover-border: #0a84ff;
       }
     }
 
@@ -154,7 +170,8 @@
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+        "Segoe UI", "Inter", Roboto, Arial, sans-serif;
       font-size: var(--fs-base);
       color: var(--text);
       background: var(--background);
@@ -164,15 +181,19 @@
       overflow-x: hidden;
       min-height: 100vh;
       min-height: 100dvh;
+      letter-spacing: -0.01em;
     }
 
+    /* iOS-подложка: мягкие цветные «пятна» под liquid glass */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
       z-index: -1;
       background:
-        radial-gradient(circle at 25% 15%, rgba(37, 99, 235, 0.14), transparent 50%),
+        radial-gradient(58% 46% at 12% 6%, rgba(0, 122, 255, 0.13), transparent 62%),
+        radial-gradient(48% 42% at 92% 12%, rgba(255, 45, 85, 0.09), transparent 60%),
+        radial-gradient(55% 50% at 78% 92%, rgba(52, 199, 89, 0.09), transparent 62%),
         linear-gradient(180deg, var(--background) 0%, var(--background-alt) 100%);
       pointer-events: none;
     }
@@ -180,8 +201,10 @@
     @media (prefers-color-scheme: dark) {
       body::before {
         background:
-          radial-gradient(circle at 25% 15%, rgba(59, 130, 246, 0.18), transparent 50%),
-          linear-gradient(180deg, var(--background) 0%, var(--background-alt) 100%);
+          radial-gradient(58% 46% at 12% 6%, rgba(10, 132, 255, 0.16), transparent 62%),
+          radial-gradient(48% 42% at 92% 12%, rgba(255, 55, 95, 0.1), transparent 60%),
+          radial-gradient(55% 50% at 78% 92%, rgba(48, 209, 88, 0.1), transparent 62%),
+          linear-gradient(180deg, #000 0%, var(--background-alt) 100%);
       }
     }
 
@@ -213,7 +236,7 @@
       font-weight: 800;
       line-height: 1.15;
       color: var(--text-strong);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
       word-wrap: break-word;
     }
 
@@ -222,6 +245,23 @@
       color: var(--muted);
       font-size: var(--fs-sm);
       font-weight: 500;
+    }
+
+    /* Liquid glass панель (как карточки в iOS) */
+    .panel {
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+      box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      position: relative;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .panel { box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
     }
 
     .version-badge {
@@ -335,15 +375,6 @@
 
     .news-close:hover { opacity: 1; }
 
-    .panel {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-md);
-      margin-bottom: var(--space-md);
-      box-shadow: var(--shadow-sm);
-    }
-
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -364,23 +395,37 @@
       border-radius: var(--radius-sm);
       padding: 0 14px;
       outline: none;
-      background: var(--card);
+      background: rgba(142, 142, 147, 0.12);
       color: var(--text-strong);
       width: 100%;
       min-width: 0;
       font-weight: 500;
+      transition: background var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
+    }
+
+    input[type="text"]:focus, input[type="search"]:focus, input[type="password"]:focus {
+      background: var(--card);
     }
 
     select {
       min-height: clamp(40px, 3vw + 22px, 46px);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 0 14px;
+      padding: 0 34px 0 14px;
       outline: none;
-      background: var(--card);
+      background-color: rgba(142, 142, 147, 0.12);
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238e8e93' d='M1.41 0 6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
       color: var(--text-strong);
       cursor: pointer;
       font-weight: 500;
+    }
+
+    /* Нативная календарная иконка у input[type=month] */
+    input[type="month"] {
+      -webkit-appearance: auto;
+      appearance: auto;
     }
 
     input::placeholder { color: var(--placeholder); opacity: 1; }
@@ -406,34 +451,34 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: background var(--t-base);
+      transition: background var(--t-base), transform var(--t-fast) var(--ease-ios), filter var(--t-fast);
     }
 
     button:hover { background: var(--primary-dark); }
-    button:active { filter: brightness(0.92); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:active { transform: scale(0.97); filter: brightness(0.95); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     button.secondary {
-      color: var(--text-strong);
-      background: var(--surface-2);
-      border: 1px solid var(--border);
+      color: var(--primary);
+      background: rgba(142, 142, 147, 0.12);
+      border: 0;
     }
-    button.secondary:hover { background: #e2e8f0; }
+    button.secondary:hover { background: rgba(142, 142, 147, 0.18); }
 
     @media (prefers-color-scheme: dark) {
-      button.secondary { background: #334155; color: var(--text); border-color: #475569; }
-      button.secondary:hover { background: #475569; }
+      button.secondary { background: rgba(142, 142, 147, 0.22); color: var(--primary); }
+      button.secondary:hover { background: rgba(142, 142, 147, 0.3); }
     }
 
     button.danger {
-      color: var(--absent-text);
-      background: var(--absent);
+      color: var(--ios-red);
+      background: rgba(255, 59, 48, 0.12);
     }
-    button.danger:hover { background: #fecaca; }
+    button.danger:hover { background: rgba(255, 59, 48, 0.18); }
 
     @media (prefers-color-scheme: dark) {
-      button.danger { background: var(--absent); color: #fecaca; }
-      button.danger:hover { background: #991b1b; }
+      button.danger { background: rgba(255, 69, 58, 0.18); color: #ff6961; }
+      button.danger:hover { background: rgba(255, 69, 58, 0.26); }
     }
 
     button.success { background: var(--success); color: #ffffff; }
@@ -443,6 +488,19 @@
     button.warning:hover { background: var(--warning-dark); }
 
     button.backup-action { min-height: 46px; padding: 0 20px; }
+
+    /* Навигация по месяцам: стрелки — квадратные кнопки */
+    #previousMonthButton,
+    #nextMonthButton {
+      flex: 0 0 auto !important;
+      width: clamp(44px, 8vw, 54px) !important;
+      min-width: 44px;
+      padding: 0;
+      font-size: var(--fs-lg);
+      font-weight: 700;
+    }
+
+    .controls > #todayButton { flex: 1 1 auto; }
 
     .month-title {
       margin-top: var(--space-md);
@@ -487,27 +545,32 @@
       border-radius: var(--radius-full);
     }
 
+    /* Окрашенные liquid glass панели (Настройки / Резервная копия) */
     .sync-panel {
-      background: linear-gradient(135deg, rgba(240, 247, 255, 0.85) 0%, rgba(224, 237, 255, 0.75) 100%);
-      border: 1px solid rgba(191, 219, 254, 0.7);
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.14) 0%, rgba(88, 86, 214, 0.1) 100%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid rgba(0, 122, 255, 0.22);
     }
 
     @media (prefers-color-scheme: dark) {
       .sync-panel {
-        background: linear-gradient(135deg, rgba(30, 58, 138, 0.75) 0%, rgba(30, 64, 175, 0.7) 100%);
-        border-color: rgba(59, 130, 246, 0.3);
+        background: linear-gradient(135deg, rgba(10, 132, 255, 0.16) 0%, rgba(94, 92, 230, 0.12) 100%);
+        border-color: rgba(10, 132, 255, 0.28);
       }
     }
 
     .backup-panel {
-      background: linear-gradient(135deg, rgba(236, 253, 245, 0.85) 0%, rgba(209, 250, 229, 0.75) 100%);
-      border: 1px solid rgba(167, 243, 208, 0.7);
+      background: linear-gradient(135deg, rgba(52, 199, 89, 0.13) 0%, rgba(48, 209, 88, 0.08) 100%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid rgba(52, 199, 89, 0.24);
     }
 
     @media (prefers-color-scheme: dark) {
       .backup-panel {
-        background: linear-gradient(135deg, rgba(6, 78, 59, 0.75) 0%, rgba(4, 120, 87, 0.7) 100%);
-        border-color: rgba(16, 185, 129, 0.3);
+        background: linear-gradient(135deg, rgba(48, 209, 88, 0.14) 0%, rgba(30, 130, 76, 0.1) 100%);
+        border-color: rgba(48, 209, 88, 0.26);
       }
     }
 
@@ -542,26 +605,32 @@
       font-weight: 600;
       padding: 6px 14px;
       border-radius: var(--radius-full);
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.7);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
       margin-left: auto;
       white-space: nowrap;
       border: 1px solid var(--border);
     }
 
-    .backup-info { color: #047857; }
-    .sync-status.on { color: #047857; }
-    .sync-status.off { color: #475569; }
-    .sync-status.busy { color: #b45309; }
-    .sync-status.error { color: #b91c1c; }
-    .sync-status.paused { color: #64748b; }
+    @media (prefers-color-scheme: dark) {
+      .backup-info, .sync-status { background: rgba(44, 44, 48, 0.7); }
+    }
+
+    .backup-info { color: #248a3d; }
+    .sync-status.on { color: #248a3d; }
+    .sync-status.off { color: var(--muted-strong); }
+    .sync-status.busy { color: #c93400; }
+    .sync-status.error { color: var(--ios-red); }
+    .sync-status.paused { color: var(--muted); }
 
     @media (prefers-color-scheme: dark) {
-      .backup-info { color: #6ee7b7; }
-      .sync-status.on { color: #6ee7b7; }
-      .sync-status.off { color: #cbd5e1; }
-      .sync-status.busy { color: #fcd34d; }
-      .sync-status.error { color: #fca5a5; }
-      .sync-status.paused { color: #94a3b8; }
+      .backup-info { color: #30d158; }
+      .sync-status.on { color: #30d158; }
+      .sync-status.off { color: #aeaeb2; }
+      .sync-status.busy { color: #ff9f0a; }
+      .sync-status.error { color: #ff6961; }
+      .sync-status.paused { color: #98989f; }
     }
 
     .status-dot {
@@ -594,17 +663,19 @@
 
     .field-group label {
       font-size: var(--fs-xs);
-      color: #1e3a8a;
+      color: var(--muted-strong);
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     @media (prefers-color-scheme: dark) {
-      .field-group label { color: #bfdbfe; }
+      .field-group label { color: #98989f; }
     }
 
     .help-text {
       font-size: var(--fs-xs);
-      color: #1e40af;
+      color: var(--text-soft);
       line-height: 1.5;
       margin: 0;
       font-weight: 500;
@@ -612,16 +683,16 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      .help-text { color: #dbeafe; }
+      .help-text { color: #aeaeb2; }
     }
 
-    .help-text a { color: #1d4ed8; font-weight: 700; text-decoration: none; }
+    .help-text a { color: var(--primary); font-weight: 700; text-decoration: none; }
     .help-text a:hover { text-decoration: underline; }
-    @media (prefers-color-scheme: dark) { .help-text a { color: #93c5fd; } }
+    @media (prefers-color-scheme: dark) { .help-text a { color: #409cff; } }
 
     .help-text code {
-      background: rgba(30, 58, 138, 0.1);
-      color: #1e3a8a;
+      background: rgba(142, 142, 147, 0.16);
+      color: var(--text-strong);
       padding: 1px 6px;
       border-radius: 4px;
       font-size: var(--fs-xs);
@@ -639,14 +710,14 @@
 
     .backup-hint {
       font-size: var(--fs-xs);
-      color: #065f46;
+      color: #248a3d;
       line-height: 1.5;
       margin: 10px 0 0;
       font-weight: 500;
     }
 
     @media (prefers-color-scheme: dark) {
-      .backup-hint { color: #a7f3d0; }
+      .backup-hint { color: #30d158; }
     }
 
     .interval-row {
@@ -662,11 +733,11 @@
     .interval-row label {
       font-size: var(--fs-xs);
       font-weight: 700;
-      color: #1e3a8a;
+      color: var(--muted-strong);
     }
 
     @media (prefers-color-scheme: dark) {
-      .interval-row label { color: #bfdbfe; }
+      .interval-row label { color: #98989f; }
     }
 
     .interval-row select { min-height: 36px; font-size: var(--fs-sm); padding: 0 12px; width: auto; font-weight: 600; }
@@ -697,12 +768,18 @@
     }
 
     .table-wrapper {
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: var(--glass-bg-strong);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.45);
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .table-wrapper { box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
     }
 
     @media (min-width: 701px) {
@@ -733,17 +810,20 @@
       position: sticky;
       top: 0;
       z-index: 2;
-      background: #f1f5f9;
-      color: var(--text-strong);
+      background: rgba(246, 246, 250, 0.9);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      backdrop-filter: blur(16px) saturate(180%);
+      color: var(--muted-strong);
       font-size: var(--fs-xs);
       font-weight: 700;
       min-width: clamp(30px, 3vw, 48px);
       text-transform: uppercase;
-      border-bottom: 2px solid var(--border);
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid var(--border);
     }
 
     @media (prefers-color-scheme: dark) {
-      th { background: #334155; color: #f1f5f9; border-bottom-color: #475569; }
+      th { background: rgba(44, 44, 48, 0.92); color: #aeaeb2; border-bottom-color: rgba(255, 255, 255, 0.12); }
     }
 
     th.student-column {
@@ -755,12 +835,16 @@
       padding-left: var(--space-sm);
       padding-right: var(--space-sm);
       min-width: clamp(130px, 14vw, 220px);
-      background: #f1f5f9;
+      width: clamp(130px, 14vw, 220px);
+      background: rgba(246, 246, 250, 0.92);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      backdrop-filter: blur(16px) saturate(180%);
       text-transform: none;
+      box-shadow: 1px 0 0 var(--border);
     }
 
     @media (prefers-color-scheme: dark) {
-      th.student-column { background: #334155; }
+      th.student-column { background: rgba(44, 44, 48, 0.92); }
     }
 
     td.student-name-cell {
@@ -769,23 +853,59 @@
       z-index: 1;
       text-align: left;
       padding: var(--row-pad) var(--space-sm);
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.9);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
       font-weight: 600;
       color: var(--text-strong);
       min-width: clamp(130px, 14vw, 220px);
+      width: clamp(130px, 14vw, 220px);
       max-width: clamp(180px, 20vw, 300px);
       vertical-align: middle;
+      box-shadow: 1px 0 0 var(--border-subtle);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      td.student-name-cell { background: rgba(28, 28, 30, 0.9); }
+    }
+
+    /* Ячейка «Действия» — тоже липкая, с правой стороны */
+    th.action-column,
+    td.action-column {
+      position: sticky;
+      right: 0;
+      z-index: 4;
+      background: rgba(246, 246, 250, 0.92);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      backdrop-filter: blur(16px) saturate(180%);
+      min-width: clamp(74px, 7vw, 104px);
+      box-shadow: -1px 0 0 var(--border);
+    }
+
+    td.action-column {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.9);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      box-shadow: -1px 0 0 var(--border-subtle);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      th.action-column { background: rgba(44, 44, 48, 0.92); }
+      td.action-column { background: rgba(28, 28, 30, 0.9); }
     }
 
     @media (hover: hover) and (pointer: fine) {
       tbody tr:hover td { background-color: var(--row-hover); }
       tbody tr:hover td.student-name-cell {
         background-color: var(--row-hover);
-        box-shadow: inset -2px 0 0 var(--row-hover-border);
+        box-shadow: inset -2px 0 0 var(--row-hover-border), 1px 0 0 var(--border-subtle);
+      }
+      tbody tr:hover td.action-column {
+        background-color: var(--row-hover);
+        box-shadow: inset 2px 0 0 var(--row-hover-border), -1px 0 0 var(--border-subtle);
       }
       tbody tr:hover td { border-top-color: var(--row-hover-border); border-bottom-color: var(--row-hover-border); }
-      tbody tr:hover td:first-child { border-left: 2px solid var(--row-hover-border); }
-      tbody tr:hover td:last-child { border-right: 2px solid var(--row-hover-border); }
       tbody tr:hover td.today-column { background-color: var(--today-bg); }
       tbody tr:hover td.weekend:not(.today-column) { background-color: var(--row-hover); }
       tbody tr:hover .attendance-button:not(.absent):not(.late) {
@@ -818,10 +938,18 @@
       height: clamp(24px, 1.8vw + 12px, 32px);
       border-radius: 50%;
       color: #ffffff;
-      background: var(--primary);
+      background: linear-gradient(180deg, #4da2ff 0%, var(--ios-blue) 100%);
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
       font-size: var(--fs-xs);
       font-weight: 700;
       flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .student-number {
+        background: linear-gradient(180deg, #409cff 0%, #0a84ff 100%);
+        box-shadow: 0 2px 6px rgba(10, 132, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      }
     }
 
     .date-number {
@@ -851,7 +979,7 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      th.today-column { background: #1e3a5f !important; }
+      th.today-column { background: rgba(10, 132, 255, 0.28) !important; }
     }
 
     th.today-column .weekday { color: var(--today-text); opacity: 0.85; }
@@ -860,27 +988,30 @@
 
     td.today-column .attendance-button:not(.absent):not(.late) {
       background: #ffffff;
-      border: 1.5px solid var(--today-border);
+      border-color: transparent;
+      box-shadow: inset 0 0 0 2px var(--today-border);
       color: var(--today-text);
     }
 
     td.today-column .attendance-button.absent {
       background: var(--absent);
-      border: 2px solid var(--absent-border);
+      border-color: transparent;
+      box-shadow: inset 0 0 0 2px var(--absent-border);
       color: var(--absent-text);
     }
 
     td.today-column .attendance-button.late {
       background: var(--late);
-      border: 2px solid var(--late-border);
+      border-color: transparent;
+      box-shadow: inset 0 0 0 2px var(--late-border);
       color: var(--late-text);
     }
 
     @media (prefers-color-scheme: dark) {
       td.today-column .attendance-button:not(.absent):not(.late) {
-        background: #0f172a;
-        border: 1.5px solid #3b82f6;
-        color: #bfdbfe;
+        background: #1c1c1e;
+        box-shadow: inset 0 0 0 2px #0a84ff;
+        color: #64b5ff;
       }
     }
 
@@ -892,34 +1023,51 @@
       width: var(--cell-btn);
       height: var(--cell-btn);
       padding: 0;
-      border-radius: var(--radius-sm);
-      color: var(--text-soft);
-      background: var(--surface-2);
+      border-radius: 12px;
+      color: var(--muted-strong);
+      background: rgba(142, 142, 147, 0.1);
       font-size: clamp(12px, 0.6vw + 10px, 16px);
       font-weight: 700;
       line-height: 1;
       cursor: pointer;
-      transition: background-color var(--t-fast);
+      transition: background-color var(--t-fast), transform var(--t-fast) var(--ease-ios);
       min-height: var(--cell-btn);
+      border: 1px solid transparent;
     }
 
-    .attendance-button:hover { background: #e2e8f0; }
+    .attendance-button:hover { background: rgba(142, 142, 147, 0.18); }
+    .attendance-button:active { transform: scale(0.9); }
 
     @media (prefers-color-scheme: dark) {
-      .attendance-button { background: #334155; color: #e2e8f0; }
-      .attendance-button:hover { background: #475569; }
+      .attendance-button { background: rgba(142, 142, 147, 0.16); color: #aeaeb2; }
+      .attendance-button:hover { background: rgba(142, 142, 147, 0.26); }
     }
 
+    /* Ровные ячейки: рамка через box-shadow, чтобы кнопки «—/Н/О»
+       не сдвигались относительно друг друга на 1px */
     .attendance-button.absent {
-      color: var(--absent-text);
-      background: var(--absent);
-      border: 2px solid var(--absent-border);
+      color: #ffffff;
+      background: linear-gradient(180deg, #ff514a 0%, var(--ios-red) 100%);
+      border-color: transparent;
+      box-shadow: 0 2px 6px rgba(255, 59, 48, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .attendance-button.late {
-      color: var(--late-text);
-      background: var(--late);
-      border: 2px solid var(--late-border);
+      color: #ffffff;
+      background: linear-gradient(180deg, #ffaa33 0%, var(--ios-orange) 100%);
+      border-color: transparent;
+      box-shadow: 0 2px 6px rgba(255, 149, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .attendance-button.absent {
+        background: linear-gradient(180deg, #ff6961 0%, #ff453a 100%);
+        box-shadow: 0 2px 6px rgba(255, 69, 58, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
+      .attendance-button.late {
+        background: linear-gradient(180deg, #ffb340 0%, #ff9f0a 100%);
+        box-shadow: 0 2px 6px rgba(255, 159, 10, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      }
     }
 
     .empty {
@@ -956,15 +1104,15 @@
     }
 
     .legend-box {
-      background: var(--absent);
-      border: 2px solid var(--absent-border);
-      color: var(--absent-text);
+      background: linear-gradient(180deg, #ff514a 0%, var(--ios-red) 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(255, 59, 48, 0.3);
     }
 
     .legend-box-late {
-      background: var(--late);
-      border: 2px solid var(--late-border);
-      color: var(--late-text);
+      background: linear-gradient(180deg, #ffaa33 0%, var(--ios-orange) 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(255, 149, 0, 0.3);
     }
 
     .legend-box-today {
@@ -1006,12 +1154,16 @@
       position: fixed;
       inset: 0;
       background: rgba(15, 23, 42, 0.55);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 5000;
-      padding: 20px;
+      padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+               max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     .modal-backdrop.open { display: flex; }
@@ -1023,11 +1175,18 @@
       padding: 24px;
       max-width: 480px;
       width: 100%;
-      max-height: 90vh;
+      max-height: calc(100dvh - 40px);
       overflow-y: auto;
+      overscroll-behavior: contain;
       box-shadow: var(--shadow-xl);
       color: var(--text);
       margin: auto;
+      animation: modalIn var(--t-slow) ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.985); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .modal.modal-dev { max-width: 580px; }
@@ -1336,6 +1495,14 @@
       border-radius: var(--radius-full);
     }
 
+    /* Не даём глобальному «button:hover» перекрывать стили спец-кнопок */
+    .maintenance-dev-btn:hover { background: rgba(255, 255, 255, 0.18); }
+    .att-head-close:hover { background: rgba(255, 255, 255, 0.95); }
+    .version-badge:hover { background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #ec4899 100%); }
+    @media (prefers-color-scheme: dark) {
+      .att-head-close:hover { background: rgba(0, 0, 0, 0.65); }
+    }
+
     .maintenance-active-badge {
       display: inline-flex;
       align-items: center;
@@ -1399,14 +1566,26 @@
       .dev-section .row-actions button { width: 100%; }
       .panel { border-radius: var(--radius-md); }
 
+      /* На мобильных «Действия» — обычная колонка (без sticky, чтобы не перекрывать дни) */
+      th.action-column,
+      td.action-column { position: static; box-shadow: none; min-width: 84px; }
+
       .modal.modal-attendance {
         max-width: 100%;
         margin-top: auto;
         margin-bottom: 0;
+        max-height: calc(100dvh - max(20px, env(safe-area-inset-top)));
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         border-top-left-radius: var(--radius-xl);
         border-top-right-radius: var(--radius-xl);
+        padding-bottom: env(safe-area-inset-bottom);
+        animation: sheetIn var(--t-slow) ease;
+      }
+
+      @keyframes sheetIn {
+        from { transform: translateY(24px); opacity: 0.6; }
+        to   { transform: translateY(0); opacity: 1; }
       }
 
       .modal-backdrop.open { align-items: flex-end; }
@@ -1424,10 +1603,30 @@
       .version-badge { font-size: 10px; min-height: 30px; padding: 0 12px 0 8px; gap: 6px; }
     }
 
+    /* Компактный режим для узких экранов: колонки «Ученик» и «Действия» уже,
+       чтобы помещалось больше дней без горизонтального скролла */
+    @media (max-width: 480px) {
+      th.student-column,
+      td.student-name-cell {
+        min-width: 104px;
+        width: 104px;
+        max-width: 104px;
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .student-name-flex { gap: 6px; }
+      .student-number { min-width: 20px; height: 20px; font-size: 10px; }
+      th.action-column,
+      td.action-column { min-width: 62px; padding-left: 3px; padding-right: 3px; }
+      .action-delete { padding: 0 8px; font-size: 11px; }
+    }
+
     @media (max-width: 360px) {
       .container { padding: 8px; }
       .student-name-flex { font-size: 12px; gap: 6px; }
       .version-badge { font-size: 9.5px; min-height: 28px; }
+      th.student-column,
+      td.student-name-cell { min-width: 92px; width: 92px; max-width: 92px; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
@@ -1472,6 +1671,282 @@
       th { background: #f0f0f0 !important; color: #000 !important; }
       td.today-column { background: #f0f0f0 !important; }
     }
+
+    /* ========== ВКЛАДКИ ========== */
+    .view-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: var(--space-md);
+      padding: 4px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .view-tabs::-webkit-scrollbar { display: none; }
+    .view-tab {
+      flex: 1 1 auto;
+      min-height: 38px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background var(--t-fast) ease, color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+    }
+    .view-tab.active {
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(230,240,255,0.9));
+      color: #1d4ed8;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
+    .view-tab:not(.active):hover { color: var(--text); background: rgba(255, 255, 255, 0.07); }
+    @media (prefers-color-scheme: dark) {
+      .view-tab.active {
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(225,236,255,0.92));
+        color: #1e40af;
+      }
+    }
+
+    /* ========== РАССАДКА В КЛАССЕ ========== */
+    .seating-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      align-items: center;
+      margin-top: var(--space-xs);
+    }
+    .seating-stats {
+      margin-left: auto;
+      font-size: var(--fs-sm);
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .seating-board {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+    }
+    .board-front-label {
+      text-align: center;
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1.5px dashed rgba(148, 163, 184, 0.5);
+      background: rgba(148, 163, 184, 0.08);
+    }
+    .desk-row-block { display: flex; flex-direction: column; gap: 8px; }
+    .desk-row-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .row-add-btn {
+      min-height: 28px;
+      width: auto;
+      padding: 0 10px;
+      margin-left: auto;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+    .desks-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: stretch;
+    }
+    .desk-card {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--t-fast) ease, box-shadow var(--t-fast) ease;
+    }
+    .desk-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .seat {
+      width: 128px;
+      min-height: 74px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 6px;
+      border-radius: 12px;
+      border: 1.5px dashed rgba(148, 163, 184, 0.55);
+      background: rgba(148, 163, 184, 0.07);
+      color: var(--muted);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--t-fast) ease, background var(--t-fast) ease, transform var(--t-fast) ease;
+    }
+    .seat:hover { border-color: var(--primary); background: rgba(59, 130, 246, 0.10); }
+    .seat.seat-empty-text { opacity: 0.85; }
+    .seat.seat-filled {
+      border-style: solid;
+      border-color: rgba(59, 130, 246, 0.45);
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.16), rgba(59, 130, 246, 0.07));
+      color: var(--text);
+    }
+    .seat-initial {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      flex: none;
+    }
+    .seat-name {
+      line-height: 1.2;
+      word-break: break-word;
+      max-width: 100%;
+    }
+    .seat-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 26px;
+      height: 26px;
+      min-height: 26px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, 0.25);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--t-fast) ease;
+    }
+    .seat-remove:hover { background: var(--absent); color: #fff; }
+    .desk-number {
+      position: absolute;
+      left: 8px;
+      bottom: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .add-desk-placeholder {
+      width: 128px;
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      border: 1.5px dashed rgba(148, 163, 184, 0.45);
+      background: transparent;
+      color: var(--muted);
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color var(--t-fast) ease, color var(--t-fast) ease, background var(--t-fast) ease;
+    }
+    .add-desk-placeholder:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(59, 130, 246, 0.07);
+    }
+    .seating-empty {
+      padding: var(--space-lg);
+      text-align: center;
+      color: var(--muted);
+      font-size: var(--fs-sm);
+    }
+    .seat-picker-search { margin-bottom: var(--space-sm); }
+    .seat-picker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: min(46vh, 380px);
+      overflow-y: auto;
+      margin: 0 calc(-1 * var(--space-md)) 0;
+      padding: 0 var(--space-md);
+    }
+    .seat-pick {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 44px;
+      padding: 6px 10px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: background var(--t-fast) ease, border-color var(--t-fast) ease;
+    }
+    .seat-pick:hover { background: rgba(59, 130, 246, 0.14); border-color: rgba(59, 130, 246, 0.4); }
+    .seat-pick.seat-pick-clear {
+      justify-content: center;
+      color: var(--absent);
+      font-weight: 700;
+    }
+    .seat-pick.seat-pick-clear:hover { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.4); }
+    .seat-pick-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      flex: none;
+    }
+    .seat-pick-meta { font-size: 11px; color: var(--muted); font-weight: 500; }
+    @media (max-width: 640px) {
+      .seat { width: 108px; min-height: 66px; }
+      .add-desk-placeholder { width: 108px; min-height: 66px; }
+      .seating-stats { margin-left: 0; width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .seat { width: calc(50% - 3px); }
+      .desk-card { width: 100%; }
+      .add-desk-placeholder { width: 100%; min-height: 56px; }
+    }
+    @media print {
+      .panel.view-tabs-panel + .panel { break-inside: avoid; }
+      .view-tabs { display: none !important; }
+    }
   </style>
 </head>
 
@@ -1501,6 +1976,12 @@
       <button id="newsCloseButton" class="news-close" type="button" aria-label="Закрыть">×</button>
     </div>
 
+    <nav class="view-tabs" aria-label="Разделы">
+      <button id="tabAttendance" class="view-tab active" type="button" data-view="attendance">📅 Посещаемость</button>
+      <button id="tabSeating" class="view-tab" type="button" data-view="seating">🪑 Рассадка в классе</button>
+    </nav>
+
+    <div id="view-attendance">
     <section class="panel sync-panel">
       <div class="sync-header">
         <h2>☁️ Синхронизация через GitHub</h2>
@@ -1591,12 +2072,12 @@
 
     <section class="panel">
       <div class="controls">
-        <input id="studentName" type="text" placeholder="Введите имя ученика" autocomplete="off" />
-        <button id="addStudentButton" type="button">Добавить ученика</button>
-        <input id="monthPicker" type="month" />
-        <button id="previousMonthButton" class="secondary" type="button">← Предыдущий месяц</button>
-        <button id="todayButton" class="secondary" type="button">Текущий месяц</button>
-        <button id="nextMonthButton" class="secondary" type="button">Следующий месяц →</button>
+        <input id="studentName" type="text" placeholder="Фамилия Имя Отчество" autocomplete="off" aria-label="Имя ученика" />
+        <button id="addStudentButton" type="button">➕ Добавить ученика</button>
+        <input id="monthPicker" type="month" aria-label="Выбор месяца" />
+        <button id="previousMonthButton" class="secondary" type="button" title="Предыдущий месяц" aria-label="Предыдущий месяц">←</button>
+        <button id="todayButton" class="secondary" type="button" title="Перейти к текущему месяцу">Сегодня</button>
+        <button id="nextMonthButton" class="secondary" type="button" title="Следующий месяц" aria-label="Следующий месяц">→</button>
       </div>
 
       <div class="search-block">
@@ -1624,6 +2105,27 @@
       <div id="emptyMessage" class="empty">Пока нет учеников. Добавьте первого ученика выше.</div>
       <div id="noSearchResults" class="empty" style="display: none;">По вашему запросу ничего не найдено.</div>
     </section>
+    </div><!-- /view-attendance -->
+
+    <div id="view-seating" style="display: none;">
+      <section class="panel">
+        <h2>🪑 Рассадка в классе</h2>
+        <p class="help-text">
+          Три ряда парт. За каждой партой — два ученика. Нажмите на свободное место,
+          чтобы посадить ученика, или на занятое, чтобы заменить/освободить его.
+        </p>
+        <div class="seating-toolbar">
+          <button id="addDeskRow1" class="secondary" type="button">➕ Парта · 1 ряд</button>
+          <button id="addDeskRow2" class="secondary" type="button">➕ Парта · 2 ряд</button>
+          <button id="addDeskRow3" class="secondary" type="button">➕ Парта · 3 ряд</button>
+          <span id="seatingStats" class="seating-stats"></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div id="seatingBoard" class="seating-board"></div>
+      </section>
+    </div><!-- /view-seating -->
   </main>
 
   <div id="attendanceModal" class="modal-backdrop">
@@ -1653,6 +2155,17 @@
             <span class="att-option-hint">Пришёл с опозданием</span>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="seatPickerModal" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 id="seatPickerTitle">🪑 Выбор ученика</h3>
+      <input id="seatPickerSearch" class="seat-picker-search" type="search" placeholder="Поиск по фамилии..." autocomplete="off" />
+      <div id="seatPickerList" class="seat-picker-list"></div>
+      <div class="modal-actions">
+        <button id="seatPickerCancel" class="secondary" type="button">Отмена</button>
       </div>
     </div>
   </div>
@@ -1782,6 +2295,9 @@
   var STATUS_ABSENT = "absent";
   var STATUS_LATE = "late";
 
+  var SEATING_ROWS = [1, 2, 3];
+  var SEATS_PER_DESK = 2;
+
   /* Типичные окончания русских фамилий.
      Используются для определения, какое слово в ФИО — фамилия. */
   var SURNAME_ENDINGS = [
@@ -1796,6 +2312,7 @@
   var state = {
     students: [],
     attendance: {},
+    seating: {},
     settings: {
       maintenance: false,
       maintenanceMessage: DEFAULT_MAINTENANCE_MSG,
@@ -1845,6 +2362,15 @@
     dateKey: "",
     currentStatus: STATUS_PRESENT
   };
+
+  var seatPickerState = {
+    open: false,
+    deskId: "",
+    seatIndex: -1,
+    query: ""
+  };
+
+  var activeView = "attendance";
 
   var deviceId = "";
 
@@ -1921,7 +2447,21 @@
     backupInfo: document.getElementById("backupInfo"),
     exportFileButton: document.getElementById("exportFileButton"),
     importFileButton: document.getElementById("importFileButton"),
-    fileInput: document.getElementById("fileInput")
+    fileInput: document.getElementById("fileInput"),
+    tabAttendance: document.getElementById("tabAttendance"),
+    tabSeating: document.getElementById("tabSeating"),
+    viewAttendance: document.getElementById("view-attendance"),
+    viewSeating: document.getElementById("view-seating"),
+    seatingBoard: document.getElementById("seatingBoard"),
+    seatingStats: document.getElementById("seatingStats"),
+    addDeskRow1: document.getElementById("addDeskRow1"),
+    addDeskRow2: document.getElementById("addDeskRow2"),
+    addDeskRow3: document.getElementById("addDeskRow3"),
+    seatPickerModal: document.getElementById("seatPickerModal"),
+    seatPickerTitle: document.getElementById("seatPickerTitle"),
+    seatPickerSearch: document.getElementById("seatPickerSearch"),
+    seatPickerList: document.getElementById("seatPickerList"),
+    seatPickerCancel: document.getElementById("seatPickerCancel")
   };
 
   var monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
@@ -2120,8 +2660,47 @@
     return null;
   }
 
+  /* Ключ ячейки рассадки: row_N_seat_M */
+  function seatingKey(row, seatIndex) {
+    return "row_" + row + "_seat_" + seatIndex;
+  }
+
+  /* Приведение рассадки к виду { "row_1_seat_0": { studentId, updatedAt }, ... } */
+  function normalizeSeating(raw, studentsById) {
+    var result = {};
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return result;
+    Object.keys(raw).forEach(function (k) {
+      var v = raw[k];
+      if (!v || typeof v !== "object") return;
+      if (typeof v.studentId !== "string" || !v.studentId) return;
+      if (studentsById && !studentsById[v.studentId]) return; /* ученик удалён — место свободно */
+      result[k] = { studentId: v.studentId, updatedAt: Number(v.updatedAt) || 0 };
+    });
+    return result;
+  }
+
+  /* Слияние рассадки по устройствам: последний редактор места побеждает.
+     Если ученик удалён (tombstone) — его убираем со всех мест. */
+  function mergeSeating(local, remote, deletedStudentIds) {
+    var result = {};
+    var allKeys = {};
+    Object.keys(local || {}).forEach(function (k) { allKeys[k] = true; });
+    Object.keys(remote || {}).forEach(function (k) { allKeys[k] = true; });
+    Object.keys(allKeys).forEach(function (k) {
+      var le = local && local[k];
+      var re = remote && remote[k];
+      var pick = null;
+      if (le && re) pick = ((re.updatedAt || 0) > (le.updatedAt || 0)) ? re : le;
+      else pick = le || re;
+      if (!pick) return;
+      if (deletedStudentIds && deletedStudentIds[pick.studentId]) return;
+      result[k] = { studentId: pick.studentId, updatedAt: pick.updatedAt || 0 };
+    });
+    return result;
+  }
+
   function migrateData(data) {
-    var result = { students: [], attendance: {}, settings: cloneSettings(null) };
+    var result = { students: [], attendance: {}, seating: {}, settings: cloneSettings(null) };
     if (!data || typeof data !== "object") return result;
 
     if (Array.isArray(data.students)) {
@@ -2144,6 +2723,10 @@
       });
     }
 
+    var studentsById = {};
+    result.students.forEach(function (s) { if (!s.deleted) studentsById[s.id] = s; });
+    result.seating = normalizeSeating(data.seating, studentsById);
+
     if (data.settings && typeof data.settings === "object") {
       result.settings = cloneSettings(data.settings);
     }
@@ -2158,6 +2741,7 @@
         version: 3,
         students: state.students,
         attendance: state.attendance,
+        seating: state.seating,
         settings: state.settings,
         updatedAt: Date.now()
       }));
@@ -2173,6 +2757,7 @@
       var m = migrateData(p);
       state.students = m.students;
       state.attendance = m.attendance;
+      state.seating = m.seating;
       state.settings = m.settings;
     } catch (e) { console.error(e); }
   }
@@ -2368,6 +2953,7 @@
       version: 3,
       students: state.students,
       attendance: state.attendance,
+      seating: state.seating,
       settings: state.settings,
       updatedAt: Date.now()
     };
@@ -2411,10 +2997,14 @@
   }
 
   function mergeData(localData, remoteData) {
+    var students = mergeStudents(localData.students || [], remoteData.students || []);
+    var deletedIds = {};
+    students.forEach(function (s) { if (s && s.deleted && s.id) deletedIds[s.id] = true; });
     return {
       version: 3,
-      students: mergeStudents(localData.students || [], remoteData.students || []),
+      students: students,
       attendance: mergeAttendance(localData.attendance || {}, remoteData.attendance || {}),
+      seating: mergeSeating(localData.seating || {}, remoteData.seating || {}, deletedIds),
       settings: mergeSettings(localData.settings || {}, remoteData.settings || {}),
       updatedAt: Date.now()
     };
@@ -2436,6 +3026,7 @@
   function applyMergedToState(merged) {
     state.students = merged.students;
     state.attendance = merged.attendance;
+    state.seating = merged.seating || {};
     state.settings = merged.settings;
   }
 
@@ -2464,6 +3055,7 @@
       version: 3,
       students: state.students,
       attendance: state.attendance,
+      seating: state.seating,
       settings: state.settings
     };
 
@@ -2485,6 +3077,7 @@
           var merged2 = mergeData({
             students: state.students,
             attendance: state.attendance,
+            seating: state.seating,
             settings: state.settings
           }, merged);
           applyMergedToState(merged2);
@@ -2566,15 +3159,17 @@
         var localSnapshot = {
           students: state.students,
           attendance: state.attendance,
+          seating: state.seating,
           settings: state.settings
         };
         var merged = mergeData(localSnapshot, remoteData);
 
         var studentsChanged = JSON.stringify(merged.students) !== JSON.stringify(state.students);
         var attendanceChanged = JSON.stringify(merged.attendance) !== JSON.stringify(state.attendance);
+        var seatingChanged = JSON.stringify(merged.seating || {}) !== JSON.stringify(state.seating || {});
         var settingsChanged = JSON.stringify(merged.settings) !== JSON.stringify(state.settings);
 
-        if (studentsChanged || attendanceChanged || settingsChanged) {
+        if (studentsChanged || attendanceChanged || seatingChanged || settingsChanged) {
           applyMergedToState(merged);
           saveLocal();
           scheduleRender();
@@ -2650,6 +3245,7 @@
       if (res.etag) syncRuntime.etag = res.etag;
       state.students = remoteData.students;
       state.attendance = remoteData.attendance;
+      state.seating = remoteData.seating;
       state.settings = remoteData.settings;
       saveLocal();
       scheduleRender();
@@ -2719,6 +3315,11 @@
     var now = Date.now();
     Object.keys(state.attendance).forEach(function (k) {
       if (k.indexOf(prefix) === 0) state.attendance[k] = { status: STATUS_PRESENT, updatedAt: now };
+    });
+
+    /* Освободить места в рассадке за удалённым учеником */
+    Object.keys(state.seating).forEach(function (k) {
+      if (state.seating[k] && state.seating[k].studentId === studentId) delete state.seating[k];
     });
 
     markChanged();
@@ -2794,6 +3395,303 @@
     scheduleRender();
   }
 
+  /* ========== РАССАДКА В КЛАССЕ ========== */
+
+  /* Парты хранятся в flat-структуре: ключ "row_N_seat_M" -> { studentId, updatedAt }.
+     Парта N ряда — это пара мест (seat 2N, seat 2N+1). Рядов ровно 3. */
+
+  function getRowDesks(row) {
+    var desks = [];
+    for (var s = 0; ; s += SEATS_PER_DESK) {
+      var k1 = seatingKey(row, s);
+      var k2 = seatingKey(row, s + 1);
+      if (!state.seating.hasOwnProperty(k1) && !state.seating.hasOwnProperty(k2)) break;
+      desks.push({ number: desks.length + 1, keys: [k1, k2] });
+    }
+    return desks;
+  }
+
+  function addDesk(row) {
+    var desks = getRowDesks(row);
+    var baseSeat = desks.length * SEATS_PER_DESK;
+    var now = Date.now();
+    /* Создаём парту сразу с обоими местами (пустыми), чтобы нумерация была стабильной */
+    state.seating[seatingKey(row, baseSeat)] = { studentId: "", updatedAt: now };
+    state.seating[seatingKey(row, baseSeat + 1)] = { studentId: "", updatedAt: now };
+    markChanged();
+    scheduleSave();
+    renderSeating();
+    scheduleSync();
+    showToast("Парта добавлена в ряд " + row, "success");
+  }
+
+  function removeLastDesk(row) {
+    var desks = getRowDesks(row);
+    if (desks.length === 0) return;
+    var last = desks[desks.length - 1];
+    var occupied = last.keys.some(function (k) {
+      return state.seating[k] && state.seating[k].studentId;
+    });
+    var msg = "Удалить последнюю парту №" + last.number + " из ряда " + row + "?" +
+      (occupied ? "\n⚠️ На ней сидят ученики — места освободятся." : "");
+    if (!window.confirm(msg)) return;
+
+    /* Все места ряда сдвигаются на одну позицию назад (хвост удаляется) */
+    var totalSeats = desks.length * SEATS_PER_DESK;
+    for (var s = 0; s < totalSeats; s++) {
+      var from = seatingKey(row, s);
+      var to = seatingKey(row, s - SEATS_PER_DESK);
+      if (s >= SEATS_PER_DESK) {
+        if (state.seating.hasOwnProperty(from)) state.seating[to] = state.seating[from];
+        else delete state.seating[to];
+      }
+      delete state.seating[from];
+    }
+
+    markChanged();
+    scheduleSave();
+    renderSeating();
+    scheduleSync();
+    showToast("Парта удалена из ряда " + row, "success");
+  }
+
+  function seatOccupantsCount() {
+    var n = 0;
+    Object.keys(state.seating).forEach(function (k) {
+      if (state.seating[k] && state.seating[k].studentId) n++;
+    });
+    return n;
+  }
+
+  function isStudentSeated(studentId) {
+    var place = null;
+    Object.keys(state.seating).forEach(function (k) {
+      var v = state.seating[k];
+      if (v && v.studentId === studentId) {
+        var m = /^row_(\d+)_seat_(\d+)$/.exec(k);
+        if (m) place = "ряд " + m[1] + ", парта " + (Math.floor(Number(m[2]) / SEATS_PER_DESK) + 1);
+      }
+    });
+    return place;
+  }
+
+  function renderSeating() {
+    if (!dom.seatingBoard) return;
+    var frag = document.createDocumentFragment();
+
+    var front = document.createElement("div");
+    front.className = "board-front-label";
+    front.textContent = "📖 Доска";
+    frag.appendChild(front);
+
+    var totalDesks = 0;
+    SEATING_ROWS.forEach(function (row) {
+      var block = document.createElement("div");
+      block.className = "desk-row-block";
+
+      var head = document.createElement("div");
+      head.className = "desk-row-head";
+      var label = document.createElement("span");
+      label.textContent = "Ряд " + row;
+      head.appendChild(label);
+
+      var addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "secondary row-add-btn";
+      addBtn.setAttribute("data-add-row", String(row));
+      addBtn.textContent = "➕ Парта";
+      head.appendChild(addBtn);
+
+      var remBtn = document.createElement("button");
+      remBtn.type = "button";
+      remBtn.className = "danger row-add-btn";
+      remBtn.setAttribute("data-remove-row", String(row));
+      remBtn.textContent = "➖ Убрать";
+      head.appendChild(remBtn);
+      block.appendChild(head);
+
+      var list = document.createElement("div");
+      list.className = "desks-list";
+      var desks = getRowDesks(row);
+      totalDesks += desks.length;
+
+      if (desks.length === 0) {
+        var hint = document.createElement("button");
+        hint.type = "button";
+        hint.className = "add-desk-placeholder";
+        hint.setAttribute("data-add-row", String(row));
+        hint.textContent = "＋";
+        hint.title = "Добавить первую парту в ряд " + row;
+        list.appendChild(hint);
+      }
+
+      desks.forEach(function (desk) {
+        var card = document.createElement("div");
+        card.className = "desk-card";
+
+        desk.keys.forEach(function (key, idx) {
+          var entry = state.seating[key];
+          var sid = entry ? entry.studentId : "";
+          var student = sid ? getStudentById(sid) : null;
+          if (sid && (!student || student.deleted)) { sid = ""; student = null; }
+
+          var seat = document.createElement("button");
+          seat.type = "button";
+          seat.className = "seat" + (student ? " seat-filled" : " seat-empty-text");
+          seat.setAttribute("data-seat-key", key);
+
+          if (student) {
+            var av = document.createElement("span");
+            av.className = "seat-initial";
+            av.textContent = student.name.trim().charAt(0).toUpperCase();
+            seat.appendChild(av);
+            var nm = document.createElement("span");
+            nm.className = "seat-name";
+            nm.textContent = student.name;
+            seat.appendChild(nm);
+          } else {
+            var em = document.createElement("span");
+            em.textContent = "Садить…";
+            em.style.fontSize = "12px";
+            seat.appendChild(em);
+          }
+          card.appendChild(seat);
+        });
+
+        var num = document.createElement("span");
+        num.className = "desk-number";
+        num.textContent = "№" + desk.number;
+        card.appendChild(num);
+
+        list.appendChild(card);
+      });
+
+      block.appendChild(list);
+      frag.appendChild(block);
+    });
+
+    dom.seatingBoard.innerHTML = "";
+    dom.seatingBoard.appendChild(frag);
+
+    var seatsTotal = totalDesks * SEATS_PER_DESK;
+    var seated = seatOccupantsCount();
+    var visibleStudents = state.students.filter(function (s) { return !s.deleted; }).length;
+    var unseated = 0;
+    state.students.forEach(function (s) {
+      if (!s.deleted && !isStudentSeated(s.id)) unseated++;
+    });
+    dom.seatingStats.textContent = "Парт: " + totalDesks +
+      " · Мест: " + seatsTotal +
+      " · Посажено: " + seated + "/" + visibleStudents +
+      (unseated > 0 ? " (свободных учеников: " + unseated + ")" : "");
+  }
+
+  function openSeatPicker(deskKey) {
+    var m = /^row_(\d+)_seat_(\d+)$/.exec(deskKey);
+    if (!m) return;
+    seatPickerState.open = true;
+    seatPickerState.deskId = deskKey;
+    seatPickerState.query = "";
+    dom.seatPickerSearch.value = "";
+
+    var row = m[1], deskNum = Math.floor(Number(m[2]) / SEATS_PER_DESK) + 1;
+    var side = (Number(m[2]) % SEATS_PER_DESK === 0) ? "левое" : "правое";
+    dom.seatPickerTitle.textContent = "🪑 Ряд " + row + " · парта " + deskNum + " (" + side + " место)";
+
+    renderSeatPickerList();
+    dom.seatPickerModal.classList.add("open");
+    setTimeout(function () { dom.seatPickerSearch.focus(); }, 80);
+  }
+
+  function closeSeatPicker() {
+    seatPickerState.open = false;
+    dom.seatPickerModal.classList.remove("open");
+  }
+
+  function renderSeatPickerList() {
+    var q = seatPickerState.query.trim().toLowerCase();
+    var currentId = state.seating[seatPickerState.deskId]
+      ? state.seating[seatPickerState.deskId].studentId : "";
+    var listFrag = document.createDocumentFragment();
+
+    var students = getSortedVisibleStudents().filter(function (s) {
+      if (s.id === currentId) return false;
+      if (!q) return true;
+      return s.name.toLowerCase().indexOf(q) !== -1;
+    });
+
+    if (currentId) {
+      var clearBtn = document.createElement("button");
+      clearBtn.type = "button";
+      clearBtn.className = "seat-pick seat-pick-clear";
+      clearBtn.setAttribute("data-pick", "__clear__");
+      clearBtn.textContent = "✖ Освободить место";
+      listFrag.appendChild(clearBtn);
+    }
+
+    if (students.length === 0) {
+      var empty = document.createElement("p");
+      empty.className = "help-text";
+      empty.style.textAlign = "center";
+      empty.textContent = q ? "Никого не найдено." : "Все ученики уже посажены. Добавьте учеников на вкладке «Посещаемость».";
+      listFrag.appendChild(empty);
+    }
+
+    students.forEach(function (s) {
+      var where = isStudentSeated(s.id);
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "seat-pick";
+      btn.setAttribute("data-pick", s.id);
+
+      var av = document.createElement("span");
+      av.className = "seat-pick-avatar";
+      av.textContent = s.name.trim().charAt(0).toUpperCase();
+      btn.appendChild(av);
+
+      var wrap = document.createElement("span");
+      wrap.style.display = "flex";
+      wrap.style.flexDirection = "column";
+      wrap.style.gap = "2px";
+      wrap.style.minWidth = "0";
+
+      var nm = document.createElement("span");
+      nm.textContent = s.name;
+      wrap.appendChild(nm);
+
+      if (where) {
+        var meta = document.createElement("span");
+        meta.className = "seat-pick-meta";
+        meta.textContent = "Уже сидит: " + where + " — пересадить сюда";
+        wrap.appendChild(meta);
+      }
+      btn.appendChild(wrap);
+      listFrag.appendChild(btn);
+    });
+
+    dom.seatPickerList.innerHTML = "";
+    dom.seatPickerList.appendChild(listFrag);
+  }
+
+  function assignSeat(studentId) {
+    var key = seatPickerState.deskId;
+    var now = Date.now();
+    if (!studentId) {
+      delete state.seating[key];
+    } else {
+      /* Ученик мог сидеть на другом месте — убираем старое (пересадка) */
+      Object.keys(state.seating).forEach(function (k) {
+        if (state.seating[k] && state.seating[k].studentId === studentId) delete state.seating[k];
+      });
+      state.seating[key] = { studentId: studentId, updatedAt: now };
+    }
+    markChanged();
+    scheduleSave();
+    scheduleSync();
+    closeSeatPicker();
+    renderSeating();
+  }
+
   /* Фильтрует уже отсортированный список видимых учеников */
   function getFilteredStudents() {
     var visible = getSortedVisibleStudents();
@@ -2836,6 +3734,7 @@
     }
 
     var ah = document.createElement("th");
+    ah.className = "action-column";
     ah.textContent = "Действия";
     row.appendChild(ah);
 
@@ -2883,7 +3782,7 @@
 
       var num = document.createElement("span");
       num.className = "student-number";
-      num.textContent = (s + 1) + ".";
+      num.textContent = s + 1;
 
       var nm = document.createElement("span");
       nm.className = "student-name-text";
@@ -2929,11 +3828,14 @@
       }
 
       var ac = document.createElement("td");
+      ac.className = "action-column";
       var rb = document.createElement("button");
       rb.type = "button";
       rb.className = "danger action-delete";
       rb.setAttribute("data-sid", student.id);
-      rb.textContent = "Удалить";
+      rb.setAttribute("title", "Удалить ученика «" + student.name + "»");
+      rb.setAttribute("aria-label", "Удалить: " + student.name);
+      rb.textContent = "🗑 Удалить";
       ac.appendChild(rb);
       row.appendChild(ac);
 
@@ -3002,6 +3904,7 @@
     renderVersionBadge();
     renderMaintenance();
     updateBackupUI();
+    if (activeView === "seating") renderSeating();
   }
 
   function renderBodyOnly() {
@@ -3295,6 +4198,63 @@
     dom.searchInput.focus();
   });
 
+  /* ── Переключение вкладок (Посещаемость / Рассадка) ─────────────── */
+  function switchView(view) {
+    activeView = view;
+    var tabs = document.querySelectorAll(".view-tab");
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].classList.toggle("active", tabs[i].getAttribute("data-view") === view);
+    }
+    if (dom.viewAttendance) dom.viewAttendance.style.display = view === "attendance" ? "" : "none";
+    if (dom.viewSeating) dom.viewSeating.style.display = view === "seating" ? "" : "none";
+    if (view === "seating") renderSeating();
+  }
+
+  var tabButtons = document.querySelectorAll(".view-tab");
+  for (var ti = 0; ti < tabButtons.length; ti++) {
+    tabButtons[ti].addEventListener("click", function () {
+      switchView(this.getAttribute("data-view"));
+    });
+  }
+
+  /* ── Рассадка: тулбар, доска и выбор ученика ────────────────────── */
+  if (dom.addDeskRow1) dom.addDeskRow1.addEventListener("click", function () { addDesk(1); });
+  if (dom.addDeskRow2) dom.addDeskRow2.addEventListener("click", function () { addDesk(2); });
+  if (dom.addDeskRow3) dom.addDeskRow3.addEventListener("click", function () { addDesk(3); });
+
+  if (dom.seatingBoard) {
+    dom.seatingBoard.addEventListener("click", function (e) {
+      var t = e.target.closest ? e.target : null;
+      var addBtn = t.closest("[data-add-row]");
+      if (addBtn) { addDesk(Number(addBtn.getAttribute("data-add-row"))); return; }
+      var remBtn = t.closest("[data-remove-row]");
+      if (remBtn) { removeLastDesk(Number(remBtn.getAttribute("data-remove-row"))); return; }
+      var seatBtn = t.closest("[data-seat-key]");
+      if (seatBtn) { openSeatPicker(seatBtn.getAttribute("data-seat-key")); return; }
+    });
+  }
+
+  if (dom.seatPickerSearch) {
+    dom.seatPickerSearch.addEventListener("input", function () {
+      seatPickerState.query = dom.seatPickerSearch.value;
+      renderSeatPickerList();
+    });
+  }
+  if (dom.seatPickerList) {
+    dom.seatPickerList.addEventListener("click", function (e) {
+      var btn = e.target.closest ? e.target.closest("[data-pick]") : null;
+      if (!btn) return;
+      var pick = btn.getAttribute("data-pick");
+      assignSeat(pick === "__clear__" ? "" : pick);
+    });
+  }
+  if (dom.seatPickerCancel) dom.seatPickerCancel.addEventListener("click", closeSeatPicker);
+  if (dom.seatPickerModal) {
+    dom.seatPickerModal.addEventListener("click", function (e) {
+      if (e.target === dom.seatPickerModal) closeSeatPicker();
+    });
+  }
+
   dom.attCloseButton.addEventListener("click", closeAttendanceModal);
   dom.attendanceModal.addEventListener("click", function (e) {
     if (e.target === dom.attendanceModal) closeAttendanceModal();
@@ -3571,7 +4531,8 @@
       }
     }
     if (e.key === "Escape") {
-      if (attendanceModalState.open) closeAttendanceModal();
+      if (seatPickerState.open) closeSeatPicker();
+      else if (attendanceModalState.open) closeAttendanceModal();
       else if (dom.devPasswordModal.classList.contains("open")) closePasswordModal();
       else if (dom.devPanelModal.classList.contains("open")) closeDevPanel();
       else if (document.activeElement === dom.searchInput) {
@@ -3635,4 +4596,4 @@
   }
   </script>
 </body>
-        </html>
+</html>
