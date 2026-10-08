@@ -44,6 +44,11 @@
       --absent: #fee2e2;
       --absent-border: #ef4444;
       --absent-text: #b91c1c;
+
+      --late: #fef3c7;
+      --late-border: #f59e0b;
+      --late-text: #92400e;
+
       --weekend: #f8fafc;
       --today-bg: #dbeafe;
       --today-text: #1d4ed8;
@@ -117,6 +122,11 @@
         --absent: #7f1d1d;
         --absent-border: #ef4444;
         --absent-text: #fecaca;
+
+        --late: #78350f;
+        --late-border: #f59e0b;
+        --late-text: #fcd34d;
+
         --weekend: #1a2537;
         --today-bg: #1e3a5f;
         --today-text: #bfdbfe;
@@ -860,7 +870,7 @@
       }
       tbody tr:hover td:first-child { border-left: 2px solid var(--row-hover-border); }
       tbody tr:hover td:last-child { border-right: 2px solid var(--row-hover-border); }
-      tbody tr:hover .attendance-button:not(.absent) {
+      tbody tr:hover .attendance-button:not(.absent):not(.late) {
         background: #ffffff;
         border: 1px solid var(--row-hover-border);
       }
@@ -938,7 +948,7 @@
 
     td.today-column { background: var(--today-bg); }
 
-    td.today-column .attendance-button:not(.absent) {
+    td.today-column .attendance-button:not(.absent):not(.late) {
       background: #ffffff;
       border: 1.5px solid var(--today-border);
       color: var(--today-text);
@@ -950,8 +960,14 @@
       color: var(--absent-text);
     }
 
+    td.today-column .attendance-button.late {
+      background: var(--late);
+      border: 2px solid var(--late-border);
+      color: var(--late-text);
+    }
+
     @media (prefers-color-scheme: dark) {
-      td.today-column .attendance-button:not(.absent) {
+      td.today-column .attendance-button:not(.absent):not(.late) {
         background: #0f172a;
         border: 1.5px solid #3b82f6;
         color: #bfdbfe;
@@ -974,14 +990,14 @@
       font-weight: 700;
       line-height: 1;
       touch-action: manipulation;
-      position: relative;
-      transition: background-color var(--t-base), border-color var(--t-base), transform var(--t-fast);
+      transition: background-color var(--t-base), border-color var(--t-base), color var(--t-base), transform var(--t-fast);
       box-shadow: none;
+      cursor: pointer;
     }
 
     .attendance-button:hover {
       background: #e2e8f0;
-      transform: scale(1.05);
+      transform: scale(1.08);
     }
 
     .attendance-button:active { transform: scale(0.95); }
@@ -996,6 +1012,13 @@
       background: var(--absent);
       border: 2px solid var(--absent-border);
       box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
+    }
+
+    .attendance-button.late {
+      color: var(--late-text);
+      background: var(--late);
+      border: 2px solid var(--late-border);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
     }
 
     .empty {
@@ -1030,6 +1053,29 @@
       background: var(--absent);
       border: 2px solid var(--absent-border);
       flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--absent-text);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .legend-box-late {
+      width: clamp(16px, 1vw + 10px, 20px);
+      height: clamp(16px, 1vw + 10px, 20px);
+      border-radius: 5px;
+      background: var(--late);
+      border: 2px solid var(--late-border);
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--late-text);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
     }
 
     .legend-box-today {
@@ -1151,6 +1197,248 @@
     }
 
     .modal-actions button { flex: 0 1 auto; }
+
+    .modal.modal-attendance {
+      max-width: 520px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .att-head {
+      padding: 20px 22px 14px;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-head {
+        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        border-color: #1e40af;
+      }
+    }
+
+    .att-head-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      min-height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--text-strong);
+      border: 0;
+      padding: 0;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--t-fast);
+      box-shadow: none;
+    }
+
+    .att-head-close:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: none;
+      box-shadow: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-head-close {
+        background: rgba(0, 0, 0, 0.4);
+        color: #e2e8f0;
+      }
+      .att-head-close:hover { background: rgba(0, 0, 0, 0.6); }
+    }
+
+    .att-head-label {
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      color: #1e40af;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-head-label { color: #bfdbfe; }
+    }
+
+    .att-head-name {
+      font-size: clamp(18px, 2vw + 12px, 22px);
+      font-weight: 800;
+      color: var(--text-strong);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      word-wrap: break-word;
+      padding-right: 36px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-head-name { color: #f8fafc; }
+    }
+
+    .att-head-date {
+      margin-top: 6px;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--muted-strong);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-head-date { color: #cbd5e1; }
+    }
+
+    .att-body {
+      padding: 20px 22px 22px;
+      background: var(--card);
+    }
+
+    .att-question {
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0 0 14px;
+      text-align: center;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-question { color: #94a3b8; }
+    }
+
+    .att-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .att-options { grid-template-columns: 1fr; }
+    }
+
+    .att-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 10px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      background: var(--card);
+      color: var(--text-strong);
+      cursor: pointer;
+      transition: all var(--t-base);
+      font-family: inherit;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      min-height: 96px;
+      box-shadow: none;
+      text-align: center;
+      user-select: none;
+    }
+
+    .att-option:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: var(--surface-1);
+    }
+
+    .att-option:active { transform: translateY(0); }
+
+    .att-option-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .att-option-present .att-option-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .att-option-absent .att-option-icon {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      box-shadow: 0 3px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .att-option-late .att-option-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3);
+    }
+
+    .att-option-label {
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .att-option-hint {
+      font-size: var(--fs-2xs);
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-option-hint { color: #94a3b8; }
+    }
+
+    .att-option.current {
+      border-width: 3px;
+      position: relative;
+    }
+
+    .att-option.current::after {
+      content: "Выбрано";
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      color: #ffffff;
+      background: var(--primary);
+    }
+
+    .att-option-present.current {
+      border-color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .att-option-absent.current {
+      border-color: var(--absent-border);
+      background: var(--absent);
+    }
+
+    .att-option-late.current {
+      border-color: var(--late-border);
+      background: var(--late);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .att-option-present.current { background: #064e3b; }
+      .att-option-absent.current { background: #7f1d1d; }
+      .att-option-late.current { background: #78350f; }
+    }
 
     .dev-section {
       margin-bottom: 16px;
@@ -1413,6 +1701,24 @@
       .dev-section .row-actions { flex-direction: column; }
       .dev-section .row-actions button { width: 100%; }
       .panel { border-radius: var(--radius-md); }
+
+      .modal.modal-attendance {
+        max-width: 100%;
+        margin-top: auto;
+        margin-bottom: 0;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: var(--radius-xl);
+        border-top-right-radius: var(--radius-xl);
+        animation: sheetUp var(--t-slow) cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+
+      @keyframes sheetUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .modal-backdrop.open { align-items: flex-end; }
     }
 
     @media (max-width: 480px) {
@@ -1452,14 +1758,18 @@
       button.secondary:hover { background: var(--surface-2); }
       button.danger:hover { background: var(--absent); }
       .attendance-button:hover { background: var(--surface-2); transform: none; }
-      td.today-column .attendance-button:not(.absent):hover { background: #ffffff; }
+      td.today-column .attendance-button:not(.absent):not(.late):hover { background: #ffffff; }
       .beta-badge:hover { transform: none; }
       .panel:hover { box-shadow: var(--shadow-sm); }
+      .att-option:hover { transform: none; box-shadow: none; }
+      .att-option:active { transform: scale(0.98); }
+      .att-head-close:hover { background: rgba(255, 255, 255, 0.7); }
 
       @media (prefers-color-scheme: dark) {
         button.secondary:hover { background: #334155; }
         .attendance-button:hover { background: #334155; }
-        td.today-column .attendance-button:not(.absent):hover { background: #0f172a; }
+        td.today-column .attendance-button:not(.absent):not(.late):hover { background: #0f172a; }
+        .att-head-close:hover { background: rgba(0, 0, 0, 0.4); }
       }
     }
 
@@ -1494,7 +1804,7 @@
             🚧 Тех.работы
           </span>
         </h1>
-        <p class="subtitle">Отмечайте только тех учеников, которые отсутствуют.</p>
+        <p class="subtitle">Кликните по ячейке, чтобы отметить посещаемость.</p>
       </div>
       <button id="versionButton" class="beta-badge" type="button" title="Нажмите, чтобы войти в режим разработчика">
         <span class="beta-badge-dot"></span>
@@ -1595,9 +1905,10 @@
       <div id="monthTitle" class="month-title"></div>
 
       <div class="legend">
-        <div class="legend-item"><span class="legend-box"></span><span>Ученик отсутствует</span></div>
+        <div class="legend-item"><span class="legend-box">Н</span><span>Отсутствует</span></div>
+        <div class="legend-item"><span class="legend-box-late">О</span><span>Опоздал</span></div>
         <div class="legend-item"><span class="legend-box-today"></span><span>Текущий день</span></div>
-        <div class="legend-item"><span>Нажмите на ячейку, чтобы изменить статус</span></div>
+        <div class="legend-item"><span>Клик по ячейке → окно выбора</span></div>
       </div>
     </section>
 
@@ -1610,6 +1921,37 @@
       <div id="noSearchResults" class="empty" style="display: none;">По вашему запросу ничего не найдено.</div>
     </section>
   </main>
+
+  <div id="attendanceModal" class="modal-backdrop">
+    <div class="modal modal-attendance" role="dialog" aria-modal="true">
+      <div class="att-head">
+        <button id="attCloseButton" class="att-head-close" type="button" aria-label="Закрыть">×</button>
+        <div class="att-head-label">Отметка посещаемости</div>
+        <div class="att-head-name" id="attStudentName">—</div>
+        <div class="att-head-date" id="attDateText">—</div>
+      </div>
+      <div class="att-body">
+        <p class="att-question">Выберите статус для этого дня:</p>
+        <div class="att-options" id="attOptions">
+          <button type="button" class="att-option att-option-present" data-status="present">
+            <span class="att-option-icon">✓</span>
+            <span class="att-option-label">Присутствует</span>
+            <span class="att-option-hint">Отметки нет</span>
+          </button>
+          <button type="button" class="att-option att-option-absent" data-status="absent">
+            <span class="att-option-icon">Н</span>
+            <span class="att-option-label">Отсутствует</span>
+            <span class="att-option-hint">Не был на уроке</span>
+          </button>
+          <button type="button" class="att-option att-option-late" data-status="late">
+            <span class="att-option-icon">О</span>
+            <span class="att-option-label">Опоздал</span>
+            <span class="att-option-hint">Пришёл с опозданием</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="devPasswordModal" class="modal-backdrop">
     <div class="modal">
@@ -1715,6 +2057,10 @@
   var DEFAULT_DEV_PASSWORD = "020912";
   var DEFAULT_MAINTENANCE_MSG = "Сайт временно недоступен. Приносим извинения за неудобства. Попробуйте позже.";
 
+  var STATUS_PRESENT = "present";
+  var STATUS_ABSENT = "absent";
+  var STATUS_LATE = "late";
+
   var state = {
     students: [],
     attendance: {},
@@ -1753,6 +2099,13 @@
     lastPullAt: 0,
     lastPushedAt: 0,
     hasPendingChanges: false
+  };
+
+  var attendanceModalState = {
+    open: false,
+    studentId: "",
+    dateKey: "",
+    currentStatus: STATUS_PRESENT
   };
 
   var deviceId = "";
@@ -1816,11 +2169,19 @@
     devCloseButton: document.getElementById("devCloseButton"),
     maintenanceOverlay: document.getElementById("maintenanceOverlay"),
     maintenanceMessageText: document.getElementById("maintenanceMessageText"),
-    maintenanceDevAccessButton: document.getElementById("maintenanceDevAccessButton")
+    maintenanceDevAccessButton: document.getElementById("maintenanceDevAccessButton"),
+
+    attendanceModal: document.getElementById("attendanceModal"),
+    attCloseButton: document.getElementById("attCloseButton"),
+    attStudentName: document.getElementById("attStudentName"),
+    attDateText: document.getElementById("attDateText"),
+    attOptions: document.getElementById("attOptions")
   };
 
   var monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+  var monthNamesGenitive = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
   var weekdayNames = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+  var weekdayFull = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
 
   function getMonthString(date) {
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
@@ -1831,6 +2192,10 @@
   }
   function formatDateKey(date) {
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+  }
+  function parseDateKey(key) {
+    var p = key.split("-");
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
   }
   function getDaysInMonth(s) {
     var d = parseMonth(s);
@@ -1898,6 +2263,26 @@
     };
   }
 
+  function normalizeStatusEntry(v) {
+    if (v === true) return { status: STATUS_ABSENT, updatedAt: 0 };
+    if (v === false) return { status: STATUS_PRESENT, updatedAt: 0 };
+    if (!v || typeof v !== "object") return null;
+
+    var updatedAt = Number(v.updatedAt) || 0;
+    var status = v.status;
+
+    if (status === STATUS_PRESENT || status === STATUS_ABSENT || status === STATUS_LATE) {
+      return { status: status, updatedAt: updatedAt };
+    }
+    if (typeof v.absent === "boolean") {
+      return {
+        status: v.absent ? STATUS_ABSENT : STATUS_PRESENT,
+        updatedAt: updatedAt
+      };
+    }
+    return null;
+  }
+
   function migrateData(data) {
     var result = {
       students: [],
@@ -1922,15 +2307,8 @@
 
     if (data.attendance && typeof data.attendance === "object" && !Array.isArray(data.attendance)) {
       Object.keys(data.attendance).forEach(function (k) {
-        var v = data.attendance[k];
-        if (v === true) result.attendance[k] = { absent: true, updatedAt: 0 };
-        else if (v === false) result.attendance[k] = { absent: false, updatedAt: 0 };
-        else if (v && typeof v === "object") {
-          result.attendance[k] = {
-            absent: Boolean(v.absent),
-            updatedAt: Number(v.updatedAt) || 0
-          };
-        }
+        var entry = normalizeStatusEntry(data.attendance[k]);
+        if (entry) result.attendance[k] = entry;
       });
     }
 
@@ -2164,12 +2542,12 @@
     Object.keys(local).forEach(function (k) { allKeys[k] = true; });
     Object.keys(remote).forEach(function (k) { allKeys[k] = true; });
     Object.keys(allKeys).forEach(function (k) {
-      var le = local[k];
-      var re = remote[k];
+      var le = normalizeStatusEntry(local[k]);
+      var re = normalizeStatusEntry(remote[k]);
       if (!le) { result[k] = re; return; }
       if (!re) { result[k] = le; return; }
-      var lTime = Number(le.updatedAt) || 0;
-      var rTime = Number(re.updatedAt) || 0;
+      var lTime = le.updatedAt || 0;
+      var rTime = re.updatedAt || 0;
       if (rTime > lTime) result[k] = re;
       else result[k] = le;
     });
@@ -2458,6 +2836,13 @@
     return state.students.filter(function (s) { return !s.deleted; });
   }
 
+  function getStudentById(id) {
+    for (var i = 0; i < state.students.length; i++) {
+      if (state.students[i].id === id) return state.students[i];
+    }
+    return null;
+  }
+
   function addStudent() {
     var name = dom.studentNameInput.value.trim();
     if (!name) { showToast("Введите имя ученика", "warning"); dom.studentNameInput.focus(); return; }
@@ -2493,7 +2878,7 @@
     var prefix = studentId + "_";
     var now = Date.now();
     Object.keys(state.attendance).forEach(function (k) {
-      if (k.indexOf(prefix) === 0) state.attendance[k] = { absent: false, updatedAt: now };
+      if (k.indexOf(prefix) === 0) state.attendance[k] = { status: STATUS_PRESENT, updatedAt: now };
     });
 
     markChanged();
@@ -2503,18 +2888,64 @@
     showToast("Ученик удалён", "success");
   }
 
-  function toggleAbsence(studentId, dateKey) {
+  function openAttendanceModal(studentId, dateKey) {
+    var student = getStudentById(studentId);
+    if (!student) return;
+
     var key = studentId + "_" + dateKey;
-    var current = state.attendance[key];
-    var currentlyAbsent = current && current.absent;
-    state.attendance[key] = {
-      absent: !currentlyAbsent,
-      updatedAt: Date.now()
-    };
+    var entry = normalizeStatusEntry(state.attendance[key]);
+    var currentStatus = entry ? entry.status : STATUS_PRESENT;
+
+    attendanceModalState.open = true;
+    attendanceModalState.studentId = studentId;
+    attendanceModalState.dateKey = dateKey;
+    attendanceModalState.currentStatus = currentStatus;
+
+    dom.attStudentName.textContent = student.name;
+
+    var d = parseDateKey(dateKey);
+    var dateStr = weekdayFull[d.getDay()] + ", " + d.getDate() + " " + monthNamesGenitive[d.getMonth()] + " " + d.getFullYear();
+    dom.attDateText.textContent = "📅 " + dateStr;
+
+    updateAttendanceModalOptions();
+
+    dom.attendanceModal.classList.add("open");
+  }
+
+  function updateAttendanceModalOptions() {
+    var options = dom.attOptions.querySelectorAll(".att-option");
+    for (var i = 0; i < options.length; i++) {
+      var btn = options[i];
+      btn.classList.remove("current");
+      if (btn.getAttribute("data-status") === attendanceModalState.currentStatus) {
+        btn.classList.add("current");
+      }
+    }
+  }
+
+  function closeAttendanceModal() {
+    attendanceModalState.open = false;
+    dom.attendanceModal.classList.remove("open");
+  }
+
+  function setAttendanceStatus(newStatus) {
+    if (!attendanceModalState.open) return;
+    var key = attendanceModalState.studentId + "_" + attendanceModalState.dateKey;
+
+    if (newStatus === STATUS_PRESENT) {
+      delete state.attendance[key];
+    } else {
+      state.attendance[key] = {
+        status: newStatus,
+        updatedAt: Date.now()
+      };
+    }
+
     markChanged();
     saveLocal();
     render();
     scheduleSync();
+    closeAttendanceModal();
   }
 
   function changeMonth(offset) {
@@ -2617,8 +3048,8 @@
         var cell = document.createElement("td");
         var dk = formatDateKey(day);
         var ak = student.id + "_" + dk;
-        var entry = state.attendance[ak];
-        var absent = entry && entry.absent;
+        var entry = normalizeStatusEntry(state.attendance[ak]);
+        var status = entry ? entry.status : STATUS_PRESENT;
 
         if (isWeekend(day)) cell.classList.add("weekend");
         if (isToday(day)) cell.classList.add("today-column");
@@ -2626,17 +3057,22 @@
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "attendance-button";
-        if (absent) {
+
+        if (status === STATUS_ABSENT) {
           btn.classList.add("absent");
           btn.textContent = "Н";
           btn.title = "Отсутствует";
+        } else if (status === STATUS_LATE) {
+          btn.classList.add("late");
+          btn.textContent = "О";
+          btn.title = "Опоздал";
         } else {
           btn.textContent = "—";
           btn.title = "Присутствует";
         }
 
         (function (sid, dk) {
-          btn.addEventListener("click", function () { toggleAbsence(sid, dk); });
+          btn.addEventListener("click", function () { openAttendanceModal(sid, dk); });
         })(student.id, dk);
 
         cell.appendChild(btn);
@@ -2717,6 +3153,14 @@
     var syncRaw = storage ? storage.getItem(SYNC_CONFIG_KEY) : null;
     var sync = syncRaw ? JSON.parse(syncRaw) : null;
 
+    var absentCount = 0, lateCount = 0;
+    Object.keys(state.attendance).forEach(function (k) {
+      var e = normalizeStatusEntry(state.attendance[k]);
+      if (!e) return;
+      if (e.status === STATUS_ABSENT) absentCount++;
+      else if (e.status === STATUS_LATE) lateCount++;
+    });
+
     var info = {
       deviceId: deviceId,
       revision: state.revision,
@@ -2746,7 +3190,8 @@
         visibleStudents: getVisibleStudents().length,
         deletedStudents: state.students.filter(function (s) { return s.deleted; }).length,
         attendanceKeys: Object.keys(state.attendance).length,
-        absentCount: Object.keys(state.attendance).filter(function (k) { return state.attendance[k].absent; }).length
+        absentCount: absentCount,
+        lateCount: lateCount
       },
       configInStorage: sync ? { enabled: sync.enabled, tokenLength: (sync.token || "").length, gistId: sync.gistId, lastSync: sync.lastSync } : null
     };
@@ -2839,6 +3284,18 @@
     state.searchQuery = "";
     render();
     dom.searchInput.focus();
+  });
+
+  dom.attCloseButton.addEventListener("click", closeAttendanceModal);
+  dom.attendanceModal.addEventListener("click", function (e) {
+    if (e.target === dom.attendanceModal) closeAttendanceModal();
+  });
+
+  dom.attOptions.addEventListener("click", function (e) {
+    var btn = e.target.closest(".att-option");
+    if (!btn) return;
+    var status = btn.getAttribute("data-status");
+    setAttendanceStatus(status);
   });
 
   dom.toggleSyncConfigButton.addEventListener("click", function () {
@@ -3074,13 +3531,23 @@
       }
     }
     if (e.key === "Escape") {
-      if (dom.devPasswordModal.classList.contains("open")) closePasswordModal();
+      if (attendanceModalState.open) closeAttendanceModal();
+      else if (dom.devPasswordModal.classList.contains("open")) closePasswordModal();
       else if (dom.devPanelModal.classList.contains("open")) closeDevPanel();
       else if (document.activeElement === dom.searchInput) {
         dom.searchInput.value = "";
         state.searchQuery = "";
         render();
         dom.searchInput.blur();
+      }
+    }
+    if (attendanceModalState.open) {
+      if (e.key === "1" || e.key.toLowerCase() === "п") {
+        setAttendanceStatus(STATUS_PRESENT);
+      } else if (e.key === "2" || e.key.toLowerCase() === "н") {
+        setAttendanceStatus(STATUS_ABSENT);
+      } else if (e.key === "3" || e.key.toLowerCase() === "о") {
+        setAttendanceStatus(STATUS_LATE);
       }
     }
   });
