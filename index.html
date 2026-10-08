@@ -206,16 +206,19 @@
       font-weight: 500;
     }
 
-    /* ============ БЕЙДЖ ВЕРСИИ (адаптивный под текст) ============ */
+    /* ============ БЕЙДЖ ВЕРСИИ ============ */
     .version-badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      padding: 7px 16px 7px 9px;
+      padding: 0 16px 0 10px;
+      min-height: 34px;
       border-radius: var(--radius-full);
       font-size: var(--fs-xs);
       font-weight: 700;
       letter-spacing: 0.05em;
+      line-height: 1;
       white-space: nowrap;
       flex-shrink: 0;
       color: #ffffff;
@@ -231,6 +234,7 @@
       font-family: inherit;
       transition: transform var(--t-fast), box-shadow var(--t-fast);
       max-width: min(65vw, 380px);
+      text-transform: none;
     }
 
     .version-badge:hover {
@@ -260,14 +264,17 @@
     }
 
     .version-badge-dot {
-      display: inline-block;
+      display: block;
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: #ffffff;
+      flex-shrink: 0;
+      align-self: center;
+      margin: 0;
+      padding: 0;
       box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
       animation: betaPulse 2s infinite;
-      flex-shrink: 0;
     }
 
     @keyframes betaPulse {
@@ -277,10 +284,16 @@
     }
 
     .version-badge-text {
+      display: block;
+      line-height: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       min-width: 0;
+      align-self: center;
+      margin: 0;
+      padding: 0;
+      text-transform: none;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -1619,14 +1632,15 @@
       .news-icon { font-size: 18px; }
       .maintenance-icon { font-size: 60px; }
       h1 { font-size: var(--fs-lg); }
-      .version-badge { font-size: 10px; padding: 5px 12px 5px 7px; }
+      .version-badge { font-size: 10px; min-height: 30px; padding: 0 12px 0 8px; gap: 6px; }
+      .version-badge-dot { width: 7px; height: 7px; }
     }
 
     @media (max-width: 360px) {
       .container { padding: 8px; }
       .panel { padding: 10px; }
       .student-name-flex { font-size: 12px; gap: 6px; }
-      .version-badge { font-size: 9.5px; }
+      .version-badge { font-size: 9.5px; min-height: 28px; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
