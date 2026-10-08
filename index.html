@@ -2219,6 +2219,258 @@ input[type="date"]:focus { outline: none; border-color: var(--primary); box-shad
 
 .modal-backdrop.open { animation: none; }
 .project-panel-body .row-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
+/* Liquid Glass, screen-only: printing and exported documents keep their own styles. */
+@media screen {
+  :root {
+    --primary: #14657f; --primary-dark: #0d4f69; --primary-light: #52a3bf; --primary-soft: #dfedf5;
+    --background: #dcebf3; --background-alt: #e8f1f7; --card: #f5f9fc; --surface-1: #edf5f9; --surface-2: #e2eef4;
+    --text: #24475a; --text-strong: #10354e; --text-soft: #34586c; --muted: #506d7d; --muted-strong: #395d70; --placeholder: #5f7b8b;
+    --border: #bed5e2; --border-strong: #81adbf; --border-subtle: #d3e3ed;
+    --success: #157354; --success-soft: #d5efe2; --absent: #fbe0e5; --absent-text: #a92c48; --absent-border: #ebbbc6;
+    --late: #ffebc9; --late-text: #8b530c; --late-border: #e7cb92; --error: #a92c48; --error-soft: #fbe0e5;
+    --weekend: #e9f1f7; --today-bg: #dceef3; --today-text: #125f78; --today-border: #8ebccb;
+    --row-hover: #e5f1f6; --row-hover-border: #9fc7d4;
+    --glass: rgba(246, 251, 255, .54); --glass-strong: rgba(246, 251, 255, .83); --glass-table: rgba(247, 251, 254, .78);
+    --glass-line: rgba(255, 255, 255, .9); --glass-edge: rgba(119, 170, 195, .34); --glass-highlight: rgba(255, 255, 255, .88);
+    --glass-shadow: 0 8px 24px rgba(44, 95, 121, .09), inset 0 1px 1px rgba(255, 255, 255, .95), inset 0 -1px 1px rgba(79, 137, 166, .12);
+    --glass-field: rgba(250, 253, 255, .68); --glass-button: linear-gradient(170deg, #529ab4 0%, #25718f 47%, #1c637f 100%); --button-text: #fff;
+    --shadow-focus: 0 0 0 3px rgba(29, 117, 150, .22);
+    --radius-sm: 14px; --radius-md: 18px; --radius-lg: 24px; --radius-xl: 28px;
+  }
+  body {
+    background-color: var(--background);
+    background-image: radial-gradient(ellipse at 5% 12%, rgba(149, 204, 225, .84), transparent 40%), radial-gradient(ellipse at 84% 6%, rgba(208, 206, 239, .66), transparent 35%), radial-gradient(ellipse at 82% 87%, rgba(135, 197, 209, .6), transparent 45%), linear-gradient(125deg, transparent 12%, rgba(255,255,255,.72) 27%, transparent 40%, rgba(255,255,255,.6) 60%, transparent 75%);
+    background-attachment: fixed; line-height: 1.5;
+  }
+  .container {
+    position: relative; width: calc(100% - 48px); max-width: 1460px; margin: 28px auto; padding: 28px;
+    border: 1px solid var(--glass-line); border-radius: 34px; background: linear-gradient(145deg, rgba(255,255,255,.48), rgba(217,237,247,.22));
+    box-shadow: 0 22px 68px rgba(37,85,113,.16), inset 0 0 0 1px rgba(255,255,255,.4), inset 0 2px 3px #ffffffb3, 0 0 0 1px var(--glass-edge);
+  }
+  .page-header { align-items:center; border:0; margin:0 0 18px; padding:0; gap:18px; }
+  .page-header h1 { font-size:clamp(29px,3vw,43px); font-weight:700; letter-spacing:-.04em; margin-bottom:4px; }
+  .eyebrow { color:var(--primary); letter-spacing:.12em; font-size:10px; margin-bottom:6px; }
+  .subtitle { color:var(--muted); font-size:13px; }
+  .header-actions { max-width:475px; gap:8px; }
+  .header-actions button { min-height:40px; padding:0 15px; font-size:12px; }
+  .storage-badge { padding:0 6px; color:var(--muted); font-size:11px; }
+  button { border:1px solid var(--glass-line); border-radius:15px; background:var(--glass-button); color:var(--button-text); box-shadow:0 3px 9px #25566a1a, inset 0 1px 1px #ffffffa6, inset 0 -1px 1px #113f6126; transition:background-color .15s, box-shadow .15s, transform .15s; }
+  button:hover { box-shadow:0 5px 14px #25566a26, inset 0 1px 1px #ffffffb3; transform:translateY(-1px); }
+  button:active { transform:translateY(0); }
+  button.secondary, button.version-badge { background:linear-gradient(160deg, var(--glass-field), var(--glass)); color:var(--text-strong); border:1px solid var(--glass-line); box-shadow:var(--glass-shadow); }
+  button.secondary:hover, button.version-badge:hover { background:var(--glass-strong); box-shadow:var(--glass-shadow); }
+  button.danger { background:var(--absent); color:var(--absent-text); border-color:var(--absent-border); }
+  button:disabled { transform:none; box-shadow:none; }
+  button.version-badge { border-radius:999px; font-size:11px; padding:0 15px; }
+  .version-badge-dot { display:none; }
+  #reportsButton { min-width:120px; gap:9px; }
+  .glass-icon { display:inline-block; width:19px; height:19px; flex-shrink:0; vertical-align:middle; }
+  .offline-panel, .summary-card, .journal-panel, .lessons-panel, .sync-panel, .table-card {
+    background:var(--glass); border:1px solid var(--glass-line); box-shadow:var(--glass-shadow);
+    -webkit-backdrop-filter:blur(20px) saturate(145%); backdrop-filter:blur(20px) saturate(145%);
+  }
+  .panel:hover, .table-wrapper:hover { box-shadow:var(--glass-shadow); }
+  .offline-panel { border-radius:17px; margin:0 0 16px; }
+  .offline-panel summary { padding:11px 16px; font-size:11px; gap:8px 22px; align-items:center; }
+  #offlineStatus { color:var(--primary); }
+  #offlineStatus.has-conflicts { color:var(--error); }
+  .summary-grid { gap:12px; margin:0 0 18px; }
+  .summary-card { display:grid; grid-template-columns:52px 1fr; column-gap:14px; align-content:center; padding:19px 20px; border-radius:22px; min-height:108px; }
+  .summary-card .summary-symbol { display:flex; float:none; grid-row:1/4; align-self:center; width:50px; height:50px; border:1px solid #ffffffb3; background:linear-gradient(140deg, #f1faffb3, #b6dcef99); border-radius:17px; color:#247d9f; box-shadow:inset 0 1px 3px #fff9, 0 4px 10px #2853710a; font-size:26px; }
+  .summary-symbol .glass-icon { width:26px; height:26px; }
+  .summary-card.present .summary-symbol { background:linear-gradient(140deg, #f0fff7a6, var(--success-soft)); color:var(--success); }
+  .summary-card.absent .summary-symbol { background:linear-gradient(140deg, #fff8f9a6, var(--absent)); color:var(--absent-text); }
+  .summary-card.late .summary-symbol { background:linear-gradient(140deg, #fffaf1a6, var(--late)); color:var(--late-text); }
+  .summary-label { color:var(--text-soft); font-size:12px; }
+  .summary-value, .summary-card.present .summary-value, .summary-card.absent .summary-value, .summary-card.late .summary-value { color:var(--text-strong); font-size:30px; font-weight:700; line-height:1.15; margin:3px 0; }
+  .summary-note { font-size:10px; }
+  .journal-panel { padding:18px 20px; margin-bottom:14px; border-radius:24px; }
+  .panel-heading { margin-bottom:12px; }
+  .panel-heading p { font-size:11px; }
+  .class-toolbar { margin:10px 0; }
+  .view-switcher { background:var(--glass); border:1px solid var(--glass-line); border-radius:999px; padding:4px; box-shadow:inset 0 1px 3px #3e728a14, 0 1px 0 #ffffffa6; gap:3px; }
+  .view-switcher button { background:transparent; color:var(--text-soft) !important; min-height:34px; border:1px solid transparent; border-radius:999px; padding:0 18px; box-shadow:none; }
+  .view-switcher button[aria-pressed="true"] { background:var(--glass-button); color:var(--button-text) !important; border-color:var(--glass-line); box-shadow:inset 0 1px 1px #ffffff9e, 0 2px 7px #12426026; }
+  .view-switcher button:hover { transform:none; }
+  input[type="text"], input[type="month"], input[type="search"], input[type="password"], input[type="date"], input[type="time"], input[type="number"], select, textarea, .project-form input, .project-form select {
+    background:var(--glass-field); color:var(--text-strong); border:1px solid var(--glass-line); border-radius:13px; box-shadow:inset 0 1px 3px #3f739014, 0 0 0 1px var(--glass-edge); min-height:42px; font-family:inherit;
+  }
+  input::placeholder, textarea::placeholder { color:var(--placeholder); opacity:1; }
+  input:focus, select:focus, textarea:focus { border-color:var(--primary-light); box-shadow:var(--shadow-focus); }
+  select option { color:var(--text-strong); background:var(--card); }
+  .month-navigation input { text-align:center; }
+  #previousMonthButton, #nextMonthButton { border-radius:50%; min-height:40px; }
+  .search-block { margin-top:12px; padding-top:12px; border-color:var(--glass-edge); }
+  .search-results-info { color:var(--muted); background:transparent; }
+  .journal-heading { margin:15px 0 0; }
+  .journal-heading .month-title { font-size:22px; color:var(--text-strong); }
+  .legend-box, .legend-box-late, .legend-box-present, .legend-box-unmarked { border-radius:50%; }
+  .table-card { border-radius:24px; background:var(--glass-table); }
+  .table-card .table-wrapper { background:transparent; box-shadow:none; }
+  th { background:var(--surface-1); color:var(--text-soft); height:55px; }
+  th.student-column { background:var(--surface-1); color:var(--text-soft); }
+  th.student-name-cell { background:var(--card); color:var(--text-strong); }
+  th, td { border-color:var(--border-subtle); }
+  .student-card-trigger { color:var(--text-strong); background:transparent; border:0; box-shadow:none; }
+  .student-card-trigger:hover { color:var(--primary); background:transparent; box-shadow:none; transform:none; }
+  .student-number { background:var(--primary-soft); color:var(--primary); border-radius:50%; border:1px solid var(--glass-line); box-shadow:inset 0 1px 2px #ffffff66; }
+  .attendance-button { border-radius:50%; box-shadow:none; }
+  .attendance-button.unmarked { color:var(--placeholder); box-shadow:none; }
+  .attendance-button.present, td.today-column .attendance-button.present:not(.absent):not(.late), tbody tr:hover .attendance-button.present:not(.absent):not(.late) { background:var(--success-soft); color:var(--success); border-color:transparent; box-shadow:inset 0 1px 1px #ffffff8c; }
+  .attendance-button.absent { background:var(--absent); color:var(--absent-text); border-color:transparent; box-shadow:inset 0 1px 1px #ffffff8c; }
+  .attendance-button.late { background:var(--late); color:var(--late-text); border-color:transparent; box-shadow:inset 0 1px 1px #ffffff8c; }
+  .attendance-button:hover { transform:none; outline:1px solid var(--primary-light); outline-offset:1px; }
+  .table-card[data-view="day"] .attendance-button { border-radius:999px; }
+  .table-caption { background:var(--glass-field); padding:10px 17px; color:var(--muted); }
+  .lessons-panel, .sync-panel { padding:0; margin-top:16px; border-radius:24px; }
+  .lessons-panel > summary { padding:18px 22px; }
+  .lessons-panel > summary h2 { font-size:16px; }
+  .sync-panel, .news-banner { border-color:var(--glass-line); }
+  .sync-status { border-radius:999px; background:var(--glass-field); border-color:var(--glass-line); }
+  .modal-backdrop { background:rgba(23,52,76,.27); -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); }
+  .modal, .maintenance-content { background:var(--glass-strong); border:1px solid var(--glass-line); border-radius:28px; box-shadow:0 30px 90px #163c5440, inset 0 1px 2px var(--glass-highlight); -webkit-backdrop-filter:blur(30px) saturate(140%); backdrop-filter:blur(30px) saturate(140%); }
+  .modal h3 { font-size:23px; font-weight:680; letter-spacing:-.025em; }
+  .att-head, .att-body { background:transparent; }
+  .att-option { background:var(--glass-field); border:1px solid var(--glass-line); border-radius:19px; box-shadow:var(--glass-shadow); color:var(--text-strong); }
+  .att-option:hover { box-shadow:var(--glass-shadow); transform:none; }
+  .att-option-icon { border-radius:50%; }
+  .dev-section, .card-stat { background:var(--glass-field); border-color:var(--glass-line); border-radius:18px; }
+  .student-card-day { box-shadow:inset 0 1px 1px var(--glass-highlight); }
+  .report-summary { background:var(--primary-soft); color:var(--primary); border:1px solid var(--glass-line); border-radius:18px; }
+  .report-table-wrap { border-color:var(--border); border-radius:17px; }
+  .report-table td { background:var(--card); }
+  .report-table th { background:var(--surface-1); }
+  .report-filters { gap:12px; }
+  .modal-actions { border-color:var(--border); }
+  .toast, .toast.success, .toast.error, .toast.warning { background:var(--text-strong); color:var(--card); border:1px solid var(--glass-edge); border-radius:999px; }
+  .journal-footer { margin-top:20px; color:var(--text-soft); font-size:11px; }
+  .demo-notice { background:var(--glass-field) !important; color:var(--text-soft) !important; border-bottom:1px solid var(--glass-line); }
+}
+@media screen and (min-width:1101px) {
+  .journal-panel { display:grid; grid-template-columns:minmax(240px,.8fr) minmax(220px,1fr) auto; gap:14px 18px; }
+  .journal-panel .class-toolbar { grid-column:1; grid-row:1; margin:0; flex-wrap:nowrap; gap:8px; }
+  .journal-panel .class-toolbar label, .journal-panel .search-block label { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .journal-panel .class-toolbar select { width:100%; min-width:80px; }
+  .journal-panel .class-toolbar button { flex-shrink:0; }
+  .journal-panel .panel-heading { grid-column:3; grid-row:1; margin:0; }
+  .journal-panel .panel-heading > div:first-child { display:none; }
+  .journal-panel .search-block { grid-column:2; grid-row:1; margin:0; padding:0; border:0; flex-wrap:nowrap; gap:7px; }
+  .journal-panel .search-block input { min-width:100px; max-width:none; width:100%; min-height:42px; }
+  .journal-panel .search-results-info:empty { display:none; }
+  .journal-panel .search-results-info { font-size:10px; white-space:nowrap; margin:0; }
+  .journal-panel .controls { grid-column:1/-1; grid-row:2; gap:14px; }
+  .journal-panel .student-entry { max-width:510px; }
+  .journal-panel .journal-heading { grid-column:1/-1; grid-row:3; margin:4px 0 0; }
+}
+@media screen and (max-width:1100px) and (min-width:701px) {
+  .container { width:calc(100% - 30px); padding:22px; margin:20px auto; }
+  .summary-card { grid-template-columns:36px 1fr; gap:9px; padding:15px 12px; }
+  .summary-card .summary-symbol { width:36px; height:40px; border-radius:13px; }
+  .header-actions { max-width:340px; }
+  .page-header h1 { font-size:35px; }
+}
+@media screen and (max-width:700px) {
+  .container { width:calc(100% - 20px); padding:16px 10px 20px; margin:12px auto; border-radius:27px; }
+  .page-header { gap:12px; padding:2px 5px 0; margin-bottom:14px; }
+  .page-header h1 { font-size:31px; }
+  .subtitle { font-size:12px; }
+  .header-actions { gap:7px; }
+  .header-actions button { min-height:40px; padding:0 12px; }
+  #reportsButton { min-width:100px; }
+  .storage-badge { flex-basis:100%; margin:0 0 2px; padding:0; font-size:10px; }
+  .offline-panel { border-radius:17px; margin-bottom:12px; }
+  .offline-panel summary { padding:10px 12px; font-size:10px; gap:6px 10px; }
+  #offlineStatus { min-width:140px; }
+  .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); margin-bottom:14px; gap:8px; }
+  .summary-card { grid-template-columns:32px 1fr; gap:8px; padding:12px 10px; min-height:87px; border-radius:18px; }
+  .summary-card .summary-symbol { display:flex !important; width:32px; height:36px; border-radius:12px; font-size:20px; }
+  .summary-symbol .glass-icon { width:21px; height:21px; }
+  .summary-label { font-size:10px; }.summary-note { font-size:9px; }
+  .summary-value, .summary-card.present .summary-value, .summary-card.absent .summary-value, .summary-card.late .summary-value { font-size:26px; }
+  .journal-panel { padding:14px 12px; margin-bottom:12px; border-radius:22px; }
+  .panel-heading { margin:0 0 12px; gap:10px; }
+  .panel-heading > div:first-child p { display:none; }
+  .panel-heading h2 { font-size:15px; }
+  .view-switcher { width:100%; }
+  .view-switcher button { padding:0 9px; min-height:36px; font-size:12px; }
+  .class-toolbar { margin:10px 0; gap:8px; }
+  .class-toolbar label { font-size:11px; }
+  .student-entry { gap:7px; }.student-entry input { min-width:0; }
+  input[type="text"], input[type="password"], input[type="search"] { font-size:16px; }
+  .student-entry button { min-width:0; padding:0 10px; font-size:11px; }
+  .controls { gap:10px; }.month-navigation { gap:5px; }
+  .month-navigation input[type="date"], .month-navigation input[type="month"] { min-width:100px; width:115px; flex:1; font-size:13px; }
+  #previousMonthButton, #nextMonthButton { width:35px; min-width:35px; min-height:40px; }
+  #todayButton { padding:0 10px; min-height:42px; font-size:11px; }
+  .search-block { margin-top:10px; padding-top:10px; gap:7px; }
+  .search-block label { display:none; }
+  .search-block input[type="search"] { flex:1 1 120px; max-width:none; min-width:0; }
+  .search-results-info { font-size:10px; width:auto; }
+  .journal-heading { margin:13px 0 0; gap:10px; }
+  .journal-heading .month-title { font-size:19px; }
+  .journal-heading .legend { gap:7px 10px; font-size:9px; }
+  .table-card { border-radius:20px; }
+  .table-card[data-view="week"] th.student-column, .table-card[data-view="week"] th.student-name-cell { width:98px; max-width:98px; padding:6px; }
+  .table-card[data-view="week"] .student-name-text { font-size:10px; }
+  .table-card[data-view="week"] .attendance-button { border-radius:12px; font-size:12px; min-height:40px; height:40px; }
+  .table-caption { padding:10px 12px; font-size:10px; }
+  .lessons-panel, .sync-panel { border-radius:22px; }
+  .lessons-panel > summary, .sync-summary { padding:16px 14px; }
+  .project-panel-body { padding:0 14px 18px; }.project-form { gap:12px; }
+  .modal, .modal.modal-attendance { border-radius:25px; padding:20px 16px; }
+  .modal.modal-attendance { padding:0; }
+  .modal h3 { font-size:21px; }.modal-actions { gap:8px; }
+  .report-modal { padding:18px 12px; }
+  .report-summary { padding:12px; font-size:12px; }
+  .report-filters label { font-size:11px; }.report-filters input, .report-filters select { font-size:12px; padding:0 7px; }
+  .journal-footer { padding:0 4px; font-size:10px; }
+}
+@media screen and (max-width:360px) {
+  .container { width:calc(100% - 12px); padding:14px 8px 18px; }
+  .page-header h1 { font-size:28px; }.header-actions button { padding:0 10px; font-size:11px; }
+  .summary-card { grid-template-columns:1fr; padding:11px 12px; min-height:90px; }
+  .summary-card .summary-symbol { display:none !important; }
+  .student-entry { flex-wrap:wrap; }.student-entry input { flex-basis:100%; }.student-entry button { width:100%; }
+  .journal-panel { padding:12px 10px; }
+  .table-card[data-view="week"] th.student-column, .table-card[data-view="week"] th.student-name-cell { width:86px; max-width:86px; padding:5px; }
+  .table-card[data-view="week"] .student-name-text { font-size:10px; }
+  .journal-heading .legend { gap:6px; }
+}
+@media screen and (prefers-color-scheme:dark) {
+  :root {
+    --primary:#8bd0e7; --primary-dark:#b2e7f7; --primary-light:#90d2e9; --primary-soft:#203e55;
+    --background:#102334; --background-alt:#142a3e; --card:#1b3448; --surface-1:#203b50; --surface-2:#27465c;
+    --text:#dbeaf3; --text-strong:#eff8ff; --text-soft:#cadae7; --muted:#b3c9d8; --muted-strong:#c9dce9; --placeholder:#a3bfce;
+    --border:#496679; --border-subtle:#345367; --border-strong:#729bad;
+    --success:#a0e8c3; --success-soft:#1d4b43; --absent:#583447; --absent-text:#ffc1cc; --absent-border:#8c5c70; --late:#53452d; --late-text:#ffdda5; --late-border:#897448; --error:#ffc1cc; --error-soft:#583447;
+    --weekend:#20384c; --today-bg:#21475b; --today-text:#baedff; --today-border:#659ab0; --row-hover:#294a5e;
+    --glass:rgba(30,57,79,.68); --glass-strong:rgba(24,48,68,.94); --glass-table:rgba(22,46,64,.92);
+    --glass-line:rgba(188,225,244,.3); --glass-edge:rgba(5,25,43,.42); --glass-highlight:rgba(200,231,247,.27);
+    --glass-field:rgba(41,71,93,.76); --glass-shadow:0 8px 24px #07182533, inset 0 1px 1px #c9edff33, inset 0 -1px 1px #05162733;
+    --glass-button:linear-gradient(165deg,#477e99,#285873 53%,#204e69); --button-text:#f5fcff;
+  }
+  body { background-image:radial-gradient(ellipse at 3% 12%, #284e6cc2, transparent 40%), radial-gradient(ellipse at 84% 6%, #4e466a70, transparent 38%), radial-gradient(ellipse at 80% 87%, #214f608a, transparent 45%), linear-gradient(125deg, transparent 12%, #55788b26 27%, transparent 40%, #36557240 60%, transparent 75%); }
+  .container { background:linear-gradient(145deg,#23425866,#10263b66); box-shadow:0 24px 80px #020e204d, inset 0 1px 2px #bddeee40, 0 0 0 1px #4b6c8740; }
+  button:not(.secondary):not(.danger):not(.warning):not(.attendance-button):not(.att-option):not(.version-badge):not(.att-head-close):not(.news-close) { color:var(--button-text); }
+  .summary-card .summary-symbol { background:linear-gradient(140deg,#4384a64d,#31597d66); color:#a2d9f1; border-color:var(--glass-line); box-shadow:inset 0 1px 2px #ffffff26; }
+  .summary-card.present .summary-symbol { background:var(--success-soft); color:var(--success); }
+  .summary-card.absent .summary-symbol { background:var(--absent); color:var(--absent-text); }
+  .summary-card.late .summary-symbol { background:var(--late); color:var(--late-text); }
+  .modal-backdrop { background:#04121d66; }
+  .toast, .toast.success, .toast.error, .toast.warning { background:#dceef8; color:#153a51; }
+}
+@media screen and (prefers-reduced-transparency:reduce) {
+  .container, .offline-panel, .summary-card, .journal-panel, .lessons-panel, .sync-panel, .table-card, .modal, .maintenance-content { background:var(--card); -webkit-backdrop-filter:none; backdrop-filter:none; }
+  input,select,textarea { background:var(--surface-1) !important; }
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  @media screen { .offline-panel, .summary-card, .journal-panel, .lessons-panel, .sync-panel, .table-card, .modal, .maintenance-content { background:var(--card); } }
+}
+@media screen and (forced-colors:active) {
+  .container, .panel, .table-card, .modal, .summary-card, .offline-panel { background:Canvas; color:CanvasText; border:1px solid CanvasText; box-shadow:none; backdrop-filter:none; }
+  button { border:1px solid ButtonText; }.view-switcher button[aria-pressed="true"] { outline:2px solid Highlight; }
+}
 </style></head>
 <body><main class="container" id="journalApp">
   <header class="page-header">
@@ -2230,9 +2482,9 @@ input[type="date"]:focus { outline: none; border-color: var(--primary); box-shad
     <div class="header-actions">
       <span id="localSaveStatus" class="storage-badge" role="status">Сохранено на устройстве</span>
       <button id="exportBackupButton" class="secondary" type="button">Скачать копию</button>
-      <button id="reportsButton" type="button">Отчёты</button>
+      <button id="reportsButton" type="button"><svg class="glass-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20v-7M12 20V8M19 20V3" stroke-width="3"/></svg>Отчёты</button>
       <button id="printButton" class="secondary" type="button">Печать</button>
-      <button id="versionButton" class="version-badge" type="button" title="Открыть настройки по коду" aria-haspopup="dialog"><span class="version-badge-dot" aria-hidden="true"></span><span id="versionButtonText">версия: 3.0</span><span aria-hidden="true">↗</span></button>
+      <button id="versionButton" class="version-badge" type="button" title="Открыть настройки по коду" aria-haspopup="dialog"><span class="version-badge-dot" aria-hidden="true"></span><span id="versionButtonText">версия: 3.1</span><span aria-hidden="true">↗</span></button>
     </div>
   </header>
 
@@ -2240,10 +2492,10 @@ input[type="date"]:focus { outline: none; border-color: var(--primary); box-shad
 
   <details id="offlineDetails" class="offline-panel"><summary><span id="offlineStatus" role="status">Изменения сохранены</span><span>В очереди: <b id="queueCount">0</b></span><span>Последняя синхронизация: <time id="lastSyncTime">ещё не было</time></span></summary><div class="offline-content"><p class="help-text">Повторные правки одной записи объединяются. Автоматическая отправка после восстановления связи работает при подключённой синхронизации и выбранном интервале обновления.</p><div id="conflictList"></div><ul id="queueList" class="queue-list"></ul></div></details>
   <section class="summary-grid" aria-label="Сводка за выбранный период">
-    <article class="summary-card"><span class="summary-symbol" aria-hidden="true">№</span><p class="summary-label">Ученики</p><strong id="summaryStudents" class="summary-value">0</strong><span class="summary-note">В списке класса</span></article>
-    <article class="summary-card present"><span class="summary-symbol" aria-hidden="true">✓</span><p class="summary-label">Присутствия</p><strong id="summaryPresent" class="summary-value">0</strong><span class="summary-note">Отметки за месяц</span></article>
-    <article class="summary-card absent"><span class="summary-symbol" aria-hidden="true">Н</span><p class="summary-label">Пропуски</p><strong id="summaryAbsent" class="summary-value">0</strong><span class="summary-note">Отметки за месяц</span></article>
-    <article class="summary-card late"><span class="summary-symbol" aria-hidden="true">О</span><p class="summary-label">Опоздания</p><strong id="summaryLate" class="summary-value">0</strong><span class="summary-note">Отметки за месяц</span></article>
+    <article class="summary-card"><span class="summary-symbol" aria-hidden="true"><svg class="glass-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M21 20v-3a5 5 0 0 0-3-4"/></svg></span><p class="summary-label">Ученики</p><strong id="summaryStudents" class="summary-value">0</strong><span class="summary-note">В списке класса</span></article>
+    <article class="summary-card present"><span class="summary-symbol" aria-hidden="true"><svg class="glass-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><p class="summary-label">Присутствия</p><strong id="summaryPresent" class="summary-value">0</strong><span class="summary-note">Отметки за месяц</span></article>
+    <article class="summary-card absent"><span class="summary-symbol" aria-hidden="true"><svg class="glass-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12h12"/></svg></span><p class="summary-label">Пропуски</p><strong id="summaryAbsent" class="summary-value">0</strong><span class="summary-note">Отметки за месяц</span></article>
+    <article class="summary-card late"><span class="summary-symbol" aria-hidden="true"><svg class="glass-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg></span><p class="summary-label">Опоздания</p><strong id="summaryLate" class="summary-value">0</strong><span class="summary-note">Отметки за месяц</span></article>
   </section>
 
   <section class="panel journal-panel" aria-label="Управление журналом">
@@ -2253,7 +2505,7 @@ input[type="date"]:focus { outline: none; border-color: var(--primary); box-shad
       <div class="student-entry"><label class="visually-hidden" for="studentName">Имя и фамилия ученика</label><input id="studentName" type="text" placeholder="Имя и фамилия ученика" autocomplete="off" maxlength="200"><button id="addStudentButton" type="button">Добавить ученика</button></div>
       <div class="month-navigation"><button id="previousMonthButton" class="secondary" type="button" aria-label="Предыдущий период">←</button><label class="visually-hidden" for="monthPicker">Месяц журнала</label><input id="monthPicker" type="month" min="1000-01" max="9999-12"><label class="visually-hidden" for="datePicker">Дата журнала</label><input id="datePicker" type="date" min="1000-01-01" max="9999-12-31" hidden><button id="nextMonthButton" class="secondary" type="button" aria-label="Следующий период">→</button><button id="todayButton" class="secondary" type="button">Сегодня</button></div>
     </div>
-    <div class="search-block"><label for="searchInput">Найти ученика</label><input id="searchInput" type="search" placeholder="Имя или фамилия" autocomplete="off"><button id="clearSearchButton" class="secondary" type="button" hidden>Сбросить</button><span id="searchResultsInfo" class="search-results-info" role="status"></span></div>
+    <div class="search-block"><label for="searchInput">Найти ученика</label><input id="searchInput" type="search" placeholder="Найти ученика" autocomplete="off"><button id="clearSearchButton" class="secondary" type="button" hidden>Сбросить</button><span id="searchResultsInfo" class="search-results-info" role="status"></span></div>
     <div class="journal-heading"><h2 id="monthTitle" class="month-title"></h2><div class="legend" aria-label="Обозначения"><div class="legend-item"><span class="legend-box-present">✓</span><span>Присутствует</span></div><div class="legend-item"><span class="legend-box">Н</span><span>Отсутствует</span></div><div class="legend-item"><span class="legend-box-late">О</span><span>Опоздал</span></div><div class="legend-item"><span class="legend-box-unmarked">·</span><span>Не отмечено</span></div></div></div>
   </section>
 
@@ -2324,7 +2576,7 @@ input[type="date"]:focus { outline: none; border-color: var(--primary); box-shad
   <div class="modal modal-dev" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <h3 id="settingsTitle">Настройки журнала</h3>
     <p class="settings-intro">Настройки общие для подключённых устройств. Эта автономная версия предназначена для доверенных пользователей.</p>
-    <div class="dev-section"><label for="devVersionTextInput">Текст кнопки версии</label><input id="devVersionTextInput" type="text" placeholder="версия: 3.0" maxlength="60"><div class="row-actions"><button id="devSaveVersionTextButton" type="button">Сохранить</button><button id="devResetVersionTextButton" class="secondary" type="button">По умолчанию</button></div></div>
+    <div class="dev-section"><label for="devVersionTextInput">Текст кнопки версии</label><input id="devVersionTextInput" type="text" placeholder="версия: 3.1" maxlength="60"><div class="row-actions"><button id="devSaveVersionTextButton" type="button">Сохранить</button><button id="devResetVersionTextButton" class="secondary" type="button">По умолчанию</button></div></div>
     <div class="dev-section"><label for="devNewsInput">Объявление для класса</label><textarea id="devNewsInput" placeholder="Напишите важное сообщение…" maxlength="4000"></textarea><div class="row-actions"><button id="devSaveNewsButton" type="button">Сохранить объявление</button><button id="devClearNewsButton" class="secondary" type="button">Очистить</button></div></div>
     <div class="dev-section"><label for="devMaintenanceMessageInput">Экран обслуживания</label><p class="help-text">Информационное сообщение на остальных устройствах. Управление настройками остаётся доступным.</p><textarea id="devMaintenanceMessageInput" maxlength="2000"></textarea><div class="row-actions"><button id="devSaveMaintenanceMessageButton" class="secondary" type="button">Сохранить сообщение</button><button id="devResetMaintenanceMessageButton" class="secondary" type="button">По умолчанию</button><button id="devToggleMaintenanceButton" class="secondary" type="button">Включить экран обслуживания</button></div></div>
     <div class="dev-section"><label>Резервные копии</label><p class="help-text">Копии содержат учеников, отметки и настройки. Перед заменой данных сохраняются три последние версии.</p><div class="row-actions"><button id="importBackupButton" class="secondary" type="button">Загрузить копию</button><button id="restoreBackupButton" class="secondary" type="button">Восстановить последнюю</button><input id="importBackupInput" type="file" accept="application/json,.json" hidden></div></div>
@@ -2439,7 +2691,7 @@ var GIST_FILENAME = "attendance.json";
 var DEFAULT_POLL_INTERVAL_MS = 30000, PUSH_DEBOUNCE_MS = 1500;
 var BACKUP_KEY = "attendance_recovery_backups";
 var NEWS_DISMISS_KEY = "attendance_news_dismissed";
-var DEFAULT_VERSION_TEXT = "версия: 3.0";
+var DEFAULT_VERSION_TEXT = "версия: 3.1";
 var DEFAULT_MAINTENANCE_MSG = "Журнал временно на обслуживании. Попробуйте вернуться позже.";
 var STATUS_PRESENT = "present", STATUS_ABSENT = "absent", STATUS_LATE = "late", STATUS_UNMARKED = "unmarked";
 var statusLabels = { present: "Присутствует", absent: "Отсутствует", late: "Опоздал", unmarked: "Не отмечено" };
